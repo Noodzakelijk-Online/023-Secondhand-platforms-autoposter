@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Setup_Script
+Icon=/home/noodzakelijkonline/.local/share/icons/start-button.png
+Exec=bash -c "cd /home/noodzakelijkonline/python_bot && ./setup.sh"
+Terminal=false
