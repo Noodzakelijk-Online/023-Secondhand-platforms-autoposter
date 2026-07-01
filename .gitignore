@@ -2,10 +2,16 @@
 .env
 
 /venv
+/.venv
 /__pycache__
+__pycache__/
+*.py[cod]
 /images
 /chromedriver-linux64
 /scraped_data.csv
 
 /build
 /dist
+/data
+/.pytest_cache
+/*.db

@@ -1,0 +1,7 @@
+# Optional dependencies for the legacy Selenium scripts.
+# These are not required for the FastAPI dashboard.
+selenium==4.27.1
+spacy==3.8.3; python_version < "3.14"
+python-decouple==3.8
+requests==2.32.3
+lastpass-python==0.3.2

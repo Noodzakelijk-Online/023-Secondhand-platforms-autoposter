@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secondhand Platforms Autoposter</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section class="auth-view" id="authView">
+        <div class="auth-panel">
+          <h1>Secondhand Autoposter</h1>
+          <form id="authForm">
+            <label>Email<input id="authEmail" type="email" required autocomplete="email" /></label>
+            <label>Password<input id="authPassword" type="password" required autocomplete="current-password" minlength="8" /></label>
+            <label>Name<input id="authName" type="text" autocomplete="name" /></label>
+            <div class="row">
+              <button type="submit" data-mode="login">Sign in</button>
+              <button type="button" id="registerButton">Create account</button>
+            </div>
+            <p class="error" id="authError"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="shell hidden" id="shell">
+        <aside class="sidebar">
+          <div class="brand">
+            <span class="brand-mark">S</span>
+            <div>
+              <strong>Autoposter</strong>
+              <small id="userEmail"></small>
+            </div>
+          </div>
+          <nav>
+            <button class="nav active" data-view="dashboard">Dashboard</button>
+            <button class="nav" data-view="listings">Listings</button>
+            <button class="nav" data-view="queue">Queue</button>
+            <button class="nav" data-view="accounts">Accounts</button>
+            <button class="nav" data-view="settings">Settings</button>
+          </nav>
+          <button id="logoutButton" class="ghost">Sign out</button>
+        </aside>
+
+        <main class="workspace">
+          <header class="topbar">
+            <div>
+              <h2 id="viewTitle">Dashboard</h2>
+              <span id="healthBadge" class="badge">Checking</span>
+            </div>
+            <button id="newListingButton">New listing</button>
+          </header>
+
+          <section id="dashboardView" class="view active">
+            <div class="metrics">
+              <article><strong id="metricListings">0</strong><span>Listings</span></article>
+              <article><strong id="metricReady">0</strong><span>Ready</span></article>
+              <article><strong id="metricAction">0</strong><span>Need action</span></article>
+              <article><strong id="metricFailed">0</strong><span>Failed</span></article>
+            </div>
+            <div class="two-column">
+              <section>
+                <h3>Recent listings</h3>
+                <div id="recentListings" class="list"></div>
+              </section>
+              <section>
+                <h3>Latest jobs</h3>
+                <div id="latestJobs" class="list"></div>
+              </section>
+            </div>
+          </section>
+
+          <section id="listingsView" class="view">
+            <div class="layout">
+              <section class="pane">
+                <div class="pane-head">
+                  <h3>Listings</h3>
+                  <button id="refreshButton" class="ghost">Refresh</button>
+                </div>
+                <div id="listingList" class="list"></div>
+              </section>
+              <section class="editor" id="listingEditor">
+                <form id="listingForm">
+                  <div class="form-grid">
+                    <label>Title<input name="title" maxlength="160" /></label>
+                    <label>Price<input name="price" type="number" min="0" step="0.01" /></label>
+                    <label>Condition
+                      <select name="condition">
+                        <option value="used">Used</option>
+                        <option value="new">New</option>
+                        <option value="refurbished">Refurbished</option>
+                        <option value="parts">For parts</option>
+                      </select>
+                    </label>
+                    <label>Category<input name="category" /></label>
+                    <label>Location<input name="location" /></label>
+                    <label>Tags<input name="tags" placeholder="comma separated" /></label>
+                  </div>
+                  <label>Description<textarea name="description" rows="7"></textarea></label>
+                  <label>Delivery options<textarea name="delivery_options" rows="3"></textarea></label>
+                  <div class="row">
+                    <button type="submit">Save</button>
+                    <button type="button" id="duplicateButton" class="ghost">Duplicate</button>
+                    <button type="button" id="deleteListingButton" class="danger">Delete</button>
+                  </div>
+                </form>
+
+                <div class="section-line"></div>
+                <div class="pane-head">
+                  <h3>Images</h3>
+                  <input id="imageInput" type="file" accept="image/*" />
+                </div>
+                <div id="imageList" class="image-grid"></div>
+
+                <div class="section-line"></div>
+                <div class="pane-head">
+                  <h3>Platforms</h3>
+                  <button id="validateButton" class="ghost">Validate</button>
+                </div>
+                <div id="platformList" class="platform-grid"></div>
+                <div class="row publish-row">
+                  <button id="publishButton" type="button">Queue publish</button>
+                  <span id="editorMessage"></span>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section id="queueView" class="view">
+            <h3>Publishing queue</h3>
+            <div id="jobList" class="list"></div>
+            <section id="jobDetails" class="details hidden"></section>
+          </section>
+
+          <section id="accountsView" class="view">
+            <div class="layout">
+              <section class="pane">
+                <h3>Platform accounts</h3>
+                <div id="accountList" class="list"></div>
+              </section>
+              <section class="editor">
+                <form id="accountForm">
+                  <label>Platform<select id="accountPlatform"></select></label>
+                  <label>Display name<input id="accountName" required /></label>
+                  <label>Status
+                    <select id="accountStatus">
+                      <option value="needs_setup">Needs setup</option>
+                      <option value="connected">Connected</option>
+                      <option value="disabled">Disabled</option>
+                    </select>
+                  </label>
+                  <button type="submit">Save account</button>
+                </form>
+              </section>
+            </div>
+          </section>
+
+          <section id="settingsView" class="view">
+            <div class="layout">
+              <section class="pane">
+                <h3>Description templates</h3>
+                <div id="templateList" class="list"></div>
+              </section>
+              <section class="editor">
+                <form id="templateForm">
+                  <label>Name<input id="templateName" required /></label>
+                  <label>Platform<select id="templatePlatform"><option value="">All platforms</option></select></label>
+                  <label>Body<textarea id="templateBody" rows="8" required></textarea></label>
+                  <button type="submit">Save template</button>
+                </form>
+              </section>
+            </div>
+          </section>
+        </main>
+      </section>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
