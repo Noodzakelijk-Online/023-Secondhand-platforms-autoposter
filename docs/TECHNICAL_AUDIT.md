@@ -19,6 +19,7 @@ Implemented foundations:
 - Assisted platform adapters for Marktplaats, Koopplein, Nextdoor, eBay, and Tweedehands.
 - Persistent jobs, job logs, publication attempts, idempotency keys, cooldowns, and worker entrypoint.
 - Persistent owner-scoped audit events for state-changing and privacy-sensitive actions.
+- Redacted support/debug bundle generation for operator handoff.
 - Local validated image storage.
 - API error envelope, request IDs, and security headers.
 

@@ -92,6 +92,16 @@ python -m app.doctor --json
 
 Use `/api/health` for a lightweight API liveness check and `/api/diagnostics` for authenticated operational diagnostics.
 
+## Support Bundle
+
+Create a redacted support/debug ZIP:
+
+```bash
+python scripts/support_bundle.py
+```
+
+The bundle is written under `tmp/support-bundles/` by default. It includes doctor output, git state, and selected docs. It intentionally excludes `.env` files, local databases, uploaded media, virtual environments, caches, and raw credentials.
+
 ## Audit Events
 
 Authenticated users can inspect their action history with:

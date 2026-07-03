@@ -134,6 +134,14 @@ python -m app.doctor --json
 
 The API also exposes `GET /api/diagnostics`, which includes the same doctor summary plus basic record counts.
 
+Create a redacted support/debug bundle for handoff or incident triage:
+
+```bash
+python scripts/support_bundle.py
+```
+
+The bundle includes doctor output, git state, and selected docs. It excludes `.env` files, local databases, uploaded media, virtual environments, caches, and raw credentials.
+
 ## Image storage
 
 Image uploads are validated before storage:

@@ -17,7 +17,7 @@ Verification command run:
 Result: passed.
 
 - Compile check: passed for `app`, `tests`, and `migrations`.
-- Pytest: 39 passed.
+- Pytest: 40 passed.
 - Doctor: completed with warning status for local development defaults:
   - default development `SECRET_KEY`
   - local SQLite database not yet at latest Alembic revision (`head_revision`: `20260703_0005`)
@@ -32,3 +32,4 @@ The doctor warnings are operational warnings for the current local environment, 
 - No platform password or raw API token storage was added.
 - Audit events record state-changing and privacy-sensitive actions without storing raw secrets or full exported payloads.
 - New platform account metadata rejects raw secret-like keys in `connection_data`.
+- Support/debug bundles are redacted and exclude `.env`, databases, uploads, caches, virtual environments, and raw credentials.

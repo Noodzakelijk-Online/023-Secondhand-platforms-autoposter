@@ -11,6 +11,15 @@
 - Verification target: `.venv/bin/python scripts/verify.py`.
 - Remaining high-value next work: official OAuth/secret-manager references, browser E2E, accessibility audit, worker locking, distributed rate limits, backup/restore, and final release dry run.
 
+### After Support-Bundle Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `7a10f82`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added redacted support/debug bundle generation and tests.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: backup/restore, official OAuth/secret-manager references, browser E2E, accessibility audit, worker locking, distributed rate limits, and final release dry run.
+
 ### After Audit-Event Pass
 
 - Current branch: `main`.

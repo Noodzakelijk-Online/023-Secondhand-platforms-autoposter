@@ -10,6 +10,13 @@
 - Kept export sanitization coverage for legacy/stored secret-like fields.
 - Added API hardening test coverage and updated security/provider docs.
 
+### Pass 4 - Support Bundle
+
+- Added `scripts/support_bundle.py` for redacted support/debug ZIP generation.
+- Included doctor output, git state, environment summary with secret-like values redacted, and selected docs.
+- Excluded `.env` files, local databases, uploaded media, virtual environments, caches, and raw credentials.
+- Added support bundle safety tests and operator documentation.
+
 ### Pass 2 - Audit Events
 
 - Re-inspected branch, remotes, PR state, files, migrations, docs, and completion matrix.
