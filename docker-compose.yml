@@ -9,6 +9,15 @@ services:
       - ./data:/app/data
     restart: unless-stopped
 
+  worker:
+    build: .
+    env_file:
+      - .env
+    command: ["python", "-m", "app.worker"]
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     profiles:

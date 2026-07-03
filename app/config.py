@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     login_rate_limit_window_seconds: int = 300
     auto_create_tables: bool = True
     job_process_inline: bool = True
+    job_worker_poll_seconds: int = 5
+    job_worker_batch_size: int = 10
     platform_rate_limit_seconds: int = 60
     session_expire_hours: int = 168
 

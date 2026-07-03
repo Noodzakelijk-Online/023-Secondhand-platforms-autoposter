@@ -168,3 +168,25 @@ def retry_job(db: Session, job: PublishingJob) -> PublishingJob:
     db.commit()
     db.refresh(job)
     return process_job(db, job.id)
+
+
+def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
+    now = datetime.now(timezone.utc)
+    return (
+        db.query(PublishingJob)
+        .filter(PublishingJob.status == "queued")
+        .filter(PublishingJob.scheduled_at <= now)
+        .filter((PublishingJob.next_retry_at.is_(None)) | (PublishingJob.next_retry_at <= now))
+        .order_by(PublishingJob.scheduled_at.asc(), PublishingJob.id.asc())
+        .limit(limit)
+        .all()
+    )
+
+
+def process_due_jobs(db: Session, limit: int) -> int:
+    jobs = get_due_queued_jobs(db, limit)
+    processed = 0
+    for job in jobs:
+        process_job(db, job.id)
+        processed += 1
+    return processed

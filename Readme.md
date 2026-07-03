@@ -40,6 +40,14 @@ docker compose up --build
 
 The app is available at `http://127.0.0.1:8000`. SQLite data and uploads are stored in `./data`.
 
+The Compose stack also starts a worker service that runs queued publishing jobs:
+
+```bash
+python -m app.worker
+```
+
+For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately processed in the API request. For production-style operation, set `JOB_PROCESS_INLINE=false` and run the worker process.
+
 ## Environment variables
 
 - `SECRET_KEY`: set to a long random value in production.
@@ -54,6 +62,8 @@ The app is available at `http://127.0.0.1:8000`. SQLite data and uploads are sto
 - `LOGIN_RATE_LIMIT_WINDOW_SECONDS`: failed login throttle window.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
+- `JOB_WORKER_POLL_SECONDS`: worker polling interval.
+- `JOB_WORKER_BATCH_SIZE`: maximum queued jobs processed per worker pass.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
 - `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
@@ -167,6 +177,16 @@ API errors use a consistent envelope:
 ```
 
 Every response includes `X-Request-ID`; callers may provide their own `X-Request-ID` header for traceability.
+
+## Worker
+
+Publishing jobs are persisted in the database. The worker command processes due queued jobs and can run independently from the web process:
+
+```bash
+python -m app.worker
+```
+
+Jobs with `next_retry_at` in the future remain queued until their retry time. This keeps assisted posting preparation and future official API publishing out of fragile blocking requests.
 
 ## Security and compliance
 

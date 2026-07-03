@@ -37,10 +37,10 @@ Legend:
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
 | 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
-| 18 | Real Job System | Partial | Persistent job records exist; separate worker loop still needed. |
+| 18 | Real Job System | Partial | Persistent job records and separate database-backed worker entrypoint exist; more locking/concurrency controls and production scheduling polish still needed. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Basic listing/platform key exists; revision/account/action/user not included yet. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
-| 21 | Live Job Updates Or Polling | Partial | Frontend reloads/polls manually; robust polling/SSE still needed. |
+| 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens exist; exports, category mappings, diagnostics/about, richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |

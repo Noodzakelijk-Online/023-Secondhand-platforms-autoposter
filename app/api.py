@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
+from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
 from app.adapters import get_adapter, list_platforms
@@ -419,7 +419,6 @@ def validate_listing(
 def publish_listing(
     listing_id: int,
     payload: PublishRequest,
-    background_tasks: BackgroundTasks,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -431,8 +430,6 @@ def publish_listing(
         job = enqueue_publish_job(db, listing, platform_key, account_id)
         if payload.process_now and get_settings().job_process_inline:
             job = process_job(db, job.id)
-        elif payload.process_now:
-            background_tasks.add_task(process_job_task, job.id)
         jobs.append(job)
     return jobs
 
