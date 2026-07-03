@@ -166,6 +166,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `DELETE /api/auth/me`
 - `GET /api/listings`
 - `POST /api/listings`
 - `PATCH /api/listings/{id}`
@@ -191,7 +192,7 @@ Category mappings let a user translate a master listing category into a platform
 
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`. The Listings screen uses those query parameters for search, status filtering, sorting, and previous/next paging.
 
-Data portability is available through Settings and the API. `GET /api/export` returns a JSON bundle with listings, platform override drafts, templates, category mappings, and sanitized platform account metadata. `POST /api/import` recreates that business data for the authenticated user. Password hashes, sessions, job history, platform secret references, and image binaries are not included in the JSON export.
+Data portability is available through Settings and the API. `GET /api/export` returns a JSON bundle with listings, platform override drafts, templates, category mappings, and sanitized platform account metadata. `POST /api/import` recreates that business data for the authenticated user. `DELETE /api/auth/me` removes the authenticated user's account, sessions, owned listings, jobs, templates, mappings, platform accounts, and uploaded image files. Password hashes, sessions, job history, platform secret references, and image binaries are not included in the JSON export.
 
 API errors use a consistent envelope:
 

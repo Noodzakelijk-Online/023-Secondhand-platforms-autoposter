@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from pathlib import Path
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
@@ -14,7 +15,9 @@ from app.models import (
     CategoryMapping,
     PlatformAccount,
     PlatformListingMapping,
+    PublicationAttempt,
     PublishingJob,
+    PublishingJobLog,
     User,
     UserSession,
 )
@@ -164,6 +167,53 @@ def logout(session: UserSession = Depends(get_current_session), db: Session = De
 @router.get("/auth/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)) -> User:
     return user
+
+
+@router.delete("/auth/me", status_code=204)
+def delete_me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    delete_user_data(db, user.id)
+    return None
+
+
+def delete_user_data(db: Session, user_id: int) -> None:
+    listing_ids = [id_ for (id_,) in db.query(Listing.id).filter(Listing.owner_id == user_id).all()]
+    job_ids = []
+    if listing_ids:
+        job_ids = [id_ for (id_,) in db.query(PublishingJob.id).filter(PublishingJob.listing_id.in_(listing_ids)).all()]
+        image_paths = [
+            path for (path,) in db.query(ListingImage.storage_path).filter(ListingImage.listing_id.in_(listing_ids)).all()
+        ]
+        if job_ids:
+            db.query(PublicationAttempt).filter(PublicationAttempt.job_id.in_(job_ids)).delete(synchronize_session=False)
+            db.query(PublishingJobLog).filter(PublishingJobLog.job_id.in_(job_ids)).delete(synchronize_session=False)
+            db.query(PublishingJob).filter(PublishingJob.id.in_(job_ids)).delete(synchronize_session=False)
+        db.query(ListingDraft).filter(ListingDraft.listing_id.in_(listing_ids)).delete(synchronize_session=False)
+        db.query(PlatformListingMapping).filter(PlatformListingMapping.listing_id.in_(listing_ids)).delete(
+            synchronize_session=False
+        )
+        db.query(ListingImage).filter(ListingImage.listing_id.in_(listing_ids)).delete(synchronize_session=False)
+        db.query(Listing).filter(Listing.id.in_(listing_ids)).delete(synchronize_session=False)
+        for image_path in image_paths:
+            remove_local_file(image_path)
+    db.query(ListingTemplate).filter(ListingTemplate.owner_id == user_id).delete(synchronize_session=False)
+    db.query(CategoryMapping).filter(CategoryMapping.owner_id == user_id).delete(synchronize_session=False)
+    db.query(PlatformAccount).filter(PlatformAccount.owner_id == user_id).delete(synchronize_session=False)
+    db.query(UserSession).filter(UserSession.user_id == user_id).delete(synchronize_session=False)
+    db.query(User).filter(User.id == user_id).delete(synchronize_session=False)
+    db.commit()
+
+
+def remove_local_file(path: str) -> None:
+    if not path:
+        return
+    try:
+        target = Path(path)
+        target.unlink(missing_ok=True)
+        parent = target.parent
+        if parent.exists() and not any(parent.iterdir()):
+            parent.rmdir()
+    except OSError:
+        return
 
 
 @router.get("/platforms")

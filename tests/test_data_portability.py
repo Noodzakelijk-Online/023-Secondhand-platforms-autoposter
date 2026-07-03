@@ -1,9 +1,10 @@
 import json
+from pathlib import Path
 import uuid
 
 from app.database import Base, SessionLocal, engine
-from app.models import PlatformAccount
-from tests.test_api import client
+from app.models import CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
+from tests.test_api import PNG_BYTES, client
 
 
 def setup_function():
@@ -148,3 +149,44 @@ def test_import_recreates_user_owned_business_data():
 
     mappings = client.get("/api/category-mappings", headers=target_headers).json()
     assert mappings[0]["platform_category"] == "Huis en Inrichting"
+
+
+def test_delete_me_purges_owned_data_and_revokes_session():
+    headers = auth_headers("delete")
+    create_portable_workspace(headers)
+    listing = client.get("/api/listings", headers=headers).json()[0]
+    image_response = client.post(
+        f"/api/listings/{listing['id']}/images",
+        headers=headers,
+        files={"file": ("cabinet.png", PNG_BYTES, "image/png")},
+    )
+    assert image_response.status_code == 200, image_response.text
+    image_path = image_response.json()["images"][0]["storage_path"]
+    publish_response = client.post(
+        f"/api/listings/{listing['id']}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+
+    other_headers = auth_headers("keep")
+    other_listing = client.post("/api/listings", headers=other_headers, json={"title": "Keep me"})
+    assert other_listing.status_code == 200, other_listing.text
+
+    delete_response = client.delete("/api/auth/me", headers=headers)
+
+    assert delete_response.status_code == 204, delete_response.text
+    assert client.get("/api/auth/me", headers=headers).status_code == 401
+    assert client.get("/api/listings", headers=other_headers).json()[0]["title"] == "Keep me"
+
+    db = SessionLocal()
+    try:
+        assert db.query(User).filter(User.email.like("delete-%")).count() == 0
+        assert db.query(Listing).filter(Listing.title == "Portable cabinet").count() == 0
+        assert db.query(PublishingJob).count() == 0
+        assert db.query(PlatformAccount).filter(PlatformAccount.display_name == "Portable eBay").count() == 0
+        assert db.query(ListingTemplate).filter(ListingTemplate.name == "Pickup").count() == 0
+        assert db.query(CategoryMapping).filter(CategoryMapping.source_category == "Furniture").count() == 0
+    finally:
+        db.close()
+    assert not Path(image_path).exists()

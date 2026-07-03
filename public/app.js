@@ -803,4 +803,12 @@ $("#runDiagnosticsButton").addEventListener("click", async () => {
   renderDiagnostics(diagnostics);
 });
 
+$("#deleteMyDataButton").addEventListener("click", async () => {
+  const confirmation = window.prompt("Type DELETE to permanently remove your account data.");
+  if (confirmation !== "DELETE") return;
+  await api("/auth/me", { method: "DELETE" });
+  localStorage.removeItem("autoposterToken");
+  window.location.reload();
+});
+
 boot();
