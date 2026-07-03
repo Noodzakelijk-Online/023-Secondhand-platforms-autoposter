@@ -24,6 +24,10 @@ body {
   color: var(--ink);
 }
 
+body.busy {
+  cursor: progress;
+}
+
 button,
 input,
 textarea,
@@ -156,6 +160,27 @@ nav {
 .topbar h2 {
   margin: 0 0 6px;
   font-size: 24px;
+}
+
+.app-message {
+  border: 1px solid #f1b8b3;
+  border-radius: 8px;
+  background: #fff1f0;
+  color: var(--danger);
+  margin: -8px 0 18px;
+  padding: 12px 14px;
+}
+
+.app-message.success {
+  border-color: #a8d8be;
+  background: #edf8f2;
+  color: var(--ok);
+}
+
+.app-message.info {
+  border-color: #b7cbd6;
+  background: #eef6f9;
+  color: var(--primary-dark);
 }
 
 .badge,

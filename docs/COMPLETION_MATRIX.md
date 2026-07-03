@@ -53,7 +53,7 @@ Legend:
 | 31 | Platform Account Management | Partial | Accounts CRUD exists; secure token/account setup model needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
-| 34 | Frontend Error UX | Partial | Basic auth/editor messages exist; global error states needed. |
+| 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
 | 37 | Verification Commands | Partial | README documents tests, migrations, compile checks, and doctor command; full release verification script still needed. |

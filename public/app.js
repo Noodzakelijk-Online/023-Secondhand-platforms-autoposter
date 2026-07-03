@@ -17,11 +17,31 @@ const state = {
     offset: 0,
     total: 0,
   },
+  pendingRequests: 0,
 };
 
 const $ = (selector) => document.querySelector(selector);
 const money = (cents) => (cents / 100).toLocaleString(undefined, { style: "currency", currency: "EUR" });
 let listingSearchTimer = null;
+
+function setBusy(delta) {
+  state.pendingRequests = Math.max(0, state.pendingRequests + delta);
+  document.body.classList.toggle("busy", state.pendingRequests > 0);
+}
+
+function showAppMessage(message, tone = "error") {
+  const node = $("#appMessage");
+  if (!node) return;
+  node.textContent = message || "Something went wrong";
+  node.className = `app-message ${tone}`;
+}
+
+function clearAppMessage() {
+  const node = $("#appMessage");
+  if (!node) return;
+  node.textContent = "";
+  node.className = "app-message hidden";
+}
 
 async function api(path, options = {}) {
   const { data } = await apiWithMeta(path, options);
@@ -32,13 +52,21 @@ async function apiWithMeta(path, options = {}) {
   const headers = options.headers || {};
   if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
   if (state.token) headers.Authorization = `Bearer ${state.token}`;
-  const response = await fetch(`/api${path}`, { ...options, headers });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }));
-    throw new Error(error.error?.message || error.detail || "Request failed");
+  setBusy(1);
+  try {
+    const response = await fetch(`/api${path}`, { ...options, headers });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.error?.message || error.detail || "Request failed");
+    }
+    const data = response.status === 204 ? null : await response.json();
+    return { data, headers: response.headers };
+  } catch (error) {
+    if (error instanceof Error) throw error;
+    throw new Error("Network request failed");
+  } finally {
+    setBusy(-1);
   }
-  const data = response.status === 204 ? null : await response.json();
-  return { data, headers: response.headers };
 }
 
 function listingQueryPath() {
@@ -53,6 +81,7 @@ function listingQueryPath() {
 }
 
 function show(view) {
+  clearAppMessage();
   document.querySelectorAll(".view").forEach((node) => node.classList.remove("active"));
   document.querySelectorAll(".nav").forEach((node) => node.classList.toggle("active", node.dataset.view === view));
   $(`#${view}View`).classList.add("active");
@@ -270,6 +299,11 @@ function escapeHtml(value) {
   })[char]);
 }
 
+window.addEventListener("unhandledrejection", (event) => {
+  event.preventDefault();
+  showAppMessage(event.reason?.message || "Something went wrong");
+});
+
 async function boot() {
   try {
     const health = await api("/health", { headers: {} });
@@ -284,10 +318,16 @@ async function boot() {
     $("#userEmail").textContent = state.user.email;
     $("#authView").classList.add("hidden");
     $("#shell").classList.remove("hidden");
-    await loadAll();
   } catch {
     localStorage.removeItem("autoposterToken");
     state.token = null;
+    return;
+  }
+
+  try {
+    await loadAll();
+  } catch (error) {
+    showAppMessage(error.message);
   }
 }
 
