@@ -27,7 +27,7 @@ Legend:
 | 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/current user/session expiration exist; bcrypt/Argon2, logout revocation, rate limits need work. |
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
-| 8 | API Hardening | Partial | Response models and docs exist; request IDs, error envelope, pagination/filtering still needed. |
+| 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, and bounded list pagination/filtering exist; route tags and broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Uploads work; storage abstraction, size/MIME/content validation, checksums still needed. |
 | 10 | Listing Model Completion | Partial | Core fields exist; dimensions, weight, brand, model, internal notes, revisioning need work. |
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
@@ -51,7 +51,7 @@ Legend:
 | 29 | Exports And Imports | Not started | No export/import features yet. |
 | 30 | Privacy And Data Control | Partial | Auth isolation exists; export/delete/audit features need work. |
 | 31 | Platform Account Management | Partial | Accounts CRUD exists; secure token/account setup model needs work. |
-| 32 | Security Headers And Web Security | Not started | Security headers/CSRF/cookie hardening need work. |
+| 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
 | 34 | Frontend Error UX | Partial | Basic auth/editor messages exist; global error states needed. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |

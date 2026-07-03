@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 import uuid
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
 from app.adapters import get_adapter, list_platforms
@@ -20,6 +20,7 @@ from app.models import (
     User,
     UserSession,
 )
+from app.query import apply_pagination, apply_sort, listing_search_filter
 from app.schemas import (
     AuthLogin,
     AuthRegister,
@@ -137,14 +138,38 @@ def platforms() -> list[dict]:
 
 
 @router.get("/listings", response_model=list[ListingOut])
-def list_listings(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return (
+def list_listings(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    search: str | None = Query(default=None, max_length=120),
+    status: str | None = Query(default=None, max_length=40),
+    sort: str = Query(default="-updated_at", pattern="^-?(updated_at|created_at|title|price_cents|status)$"),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = (
         db.query(Listing)
         .options(selectinload(Listing.images), selectinload(Listing.platform_mappings))
         .filter(Listing.owner_id == user.id)
-        .order_by(Listing.updated_at.desc())
-        .all()
     )
+    query = listing_search_filter(query, Listing, search)
+    if status:
+        query = query.filter(Listing.status == status)
+    query = apply_sort(
+        query,
+        Listing,
+        sort,
+        {
+            "updated_at": "updated_at",
+            "created_at": "created_at",
+            "title": "title",
+            "price_cents": "price_cents",
+            "status": "status",
+            "default": "updated_at",
+        },
+    )
+    return apply_pagination(query, response, limit, offset).all()
 
 
 @router.post("/listings", response_model=ListingOut)
@@ -383,15 +408,40 @@ def process_job_task(job_id: int) -> None:
 
 
 @router.get("/jobs", response_model=list[PublishingJobOut])
-def list_jobs(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def list_jobs(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    platform: str | None = Query(default=None, max_length=80),
+    status: str | None = Query(default=None, max_length=40),
+    sort: str = Query(default="-created_at", pattern="^-?(created_at|started_at|finished_at|status|platform)$"),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     listing_ids = [id_ for (id_,) in db.query(Listing.id).filter(Listing.owner_id == user.id).all()]
-    return (
+    query = (
         db.query(PublishingJob)
         .options(selectinload(PublishingJob.logs))
         .filter(PublishingJob.listing_id.in_(listing_ids))
-        .order_by(PublishingJob.created_at.desc())
-        .all()
     )
+    if platform:
+        query = query.filter(PublishingJob.platform == platform)
+    if status:
+        query = query.filter(PublishingJob.status == status)
+    query = apply_sort(
+        query,
+        PublishingJob,
+        sort,
+        {
+            "created_at": "created_at",
+            "started_at": "started_at",
+            "finished_at": "finished_at",
+            "status": "status",
+            "platform": "platform",
+            "default": "created_at",
+        },
+    )
+    return apply_pagination(query, response, limit, offset).all()
 
 
 @router.get("/jobs/{job_id}", response_model=PublishingJobOut)
@@ -416,8 +466,22 @@ def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: S
 
 
 @router.get("/accounts", response_model=list[PlatformAccountOut])
-def list_accounts(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return db.query(PlatformAccount).filter(PlatformAccount.owner_id == user.id).all()
+def list_accounts(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    platform: str | None = Query(default=None, max_length=80),
+    status: str | None = Query(default=None, max_length=40),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(PlatformAccount).filter(PlatformAccount.owner_id == user.id)
+    if platform:
+        query = query.filter(PlatformAccount.platform == platform)
+    if status:
+        query = query.filter(PlatformAccount.status == status)
+    query = query.order_by(PlatformAccount.created_at.desc())
+    return apply_pagination(query, response, limit, offset).all()
 
 
 @router.post("/accounts", response_model=PlatformAccountOut)
@@ -448,8 +512,22 @@ def delete_account(account_id: int, user: User = Depends(get_current_user), db: 
 
 
 @router.get("/templates", response_model=list[TemplateOut])
-def list_templates(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return db.query(ListingTemplate).filter(ListingTemplate.owner_id == user.id).order_by(ListingTemplate.name).all()
+def list_templates(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    platform: str | None = Query(default=None, max_length=80),
+    search: str | None = Query(default=None, max_length=120),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(ListingTemplate).filter(ListingTemplate.owner_id == user.id)
+    if platform:
+        query = query.filter(ListingTemplate.platform == platform)
+    if search:
+        query = query.filter(ListingTemplate.name.ilike(f"%{search.strip()}%"))
+    query = query.order_by(ListingTemplate.name)
+    return apply_pagination(query, response, limit, offset).all()
 
 
 @router.post("/templates", response_model=TemplateOut)

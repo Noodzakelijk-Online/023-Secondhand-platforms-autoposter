@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api import router
 from app.config import get_settings, validate_startup_safety
 from app.database import init_db
+from app.middleware import setup_middleware
 
 
 def create_app() -> FastAPI:
@@ -17,6 +18,7 @@ def create_app() -> FastAPI:
     settings.upload_path.mkdir(parents=True, exist_ok=True)
 
     app = FastAPI(title=settings.app_name)
+    setup_middleware(app)
     origins = ["*"] if settings.cors_origins == "*" else [item.strip() for item in settings.cors_origins.split(",")]
     app.add_middleware(
         CORSMiddleware,

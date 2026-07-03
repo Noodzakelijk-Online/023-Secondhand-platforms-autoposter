@@ -131,6 +131,25 @@ The test suite uses an isolated temporary SQLite database and validates the core
 
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
+List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`.
+
+API errors use a consistent envelope:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The request contains invalid fields.",
+    "details": {},
+    "field_errors": {},
+    "retryable": false,
+    "request_id": "..."
+  }
+}
+```
+
+Every response includes `X-Request-ID`; callers may provide their own `X-Request-ID` header for traceability.
+
 ## Security and compliance
 
 - No raw platform passwords are stored by the web app.
@@ -157,3 +176,4 @@ Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 - Restrict `CORS_ORIGINS`.
 - Run Alembic migrations before production startup.
 - Configure platform OAuth/API credentials only through environment variables or a proper secret manager.
+- Keep the security headers middleware enabled. HTTPS deployments also receive HSTS.
