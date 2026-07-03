@@ -45,6 +45,11 @@ button:hover {
   background: var(--primary-dark);
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 button.ghost {
   background: #e7edf2;
   color: var(--ink);
@@ -253,6 +258,26 @@ h3 {
   gap: 10px;
 }
 
+.listing-tools {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pager-row {
+  justify-content: center;
+}
+
+.pager-row button {
+  width: 96px;
+}
+
 .list-item {
   padding: 12px;
   display: grid;
@@ -379,6 +404,7 @@ textarea {
   .metrics,
   .two-column,
   .layout,
+  .tool-grid,
   .form-grid {
     grid-template-columns: 1fr;
   }

@@ -9,12 +9,26 @@ const state = {
   categoryMappings: [],
   selectedListingId: null,
   selectedPlatforms: new Set(),
+  listingQuery: {
+    search: "",
+    status: "",
+    sort: "-updated_at",
+    limit: 10,
+    offset: 0,
+    total: 0,
+  },
 };
 
 const $ = (selector) => document.querySelector(selector);
 const money = (cents) => (cents / 100).toLocaleString(undefined, { style: "currency", currency: "EUR" });
+let listingSearchTimer = null;
 
 async function api(path, options = {}) {
+  const { data } = await apiWithMeta(path, options);
+  return data;
+}
+
+async function apiWithMeta(path, options = {}) {
   const headers = options.headers || {};
   if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
   if (state.token) headers.Authorization = `Bearer ${state.token}`;
@@ -23,8 +37,19 @@ async function api(path, options = {}) {
     const error = await response.json().catch(() => ({ detail: response.statusText }));
     throw new Error(error.error?.message || error.detail || "Request failed");
   }
-  if (response.status === 204) return null;
-  return response.json();
+  const data = response.status === 204 ? null : await response.json();
+  return { data, headers: response.headers };
+}
+
+function listingQueryPath() {
+  const params = new URLSearchParams({
+    limit: String(state.listingQuery.limit),
+    offset: String(state.listingQuery.offset),
+    sort: state.listingQuery.sort,
+  });
+  if (state.listingQuery.search.trim()) params.set("search", state.listingQuery.search.trim());
+  if (state.listingQuery.status) params.set("status", state.listingQuery.status);
+  return `/listings?${params.toString()}`;
 }
 
 function show(view) {
@@ -43,21 +68,25 @@ function selectedListing() {
 }
 
 async function loadAll() {
-  const [platforms, listings, jobs, accounts, templates, categoryMappings] = await Promise.all([
+  const [platforms, listingResult, jobs, accounts, templates, categoryMappings] = await Promise.all([
     api("/platforms"),
-    api("/listings"),
+    apiWithMeta(listingQueryPath()),
     api("/jobs"),
     api("/accounts"),
     api("/templates"),
     api("/category-mappings"),
   ]);
   state.platforms = platforms;
-  state.listings = listings;
+  state.listings = listingResult.data;
+  state.listingQuery.total = Number(listingResult.headers.get("X-Total-Count") || state.listings.length);
   state.jobs = jobs;
   state.accounts = accounts;
   state.templates = templates;
   state.categoryMappings = categoryMappings;
-  if (!state.selectedListingId && listings.length) state.selectedListingId = listings[0].id;
+  if (state.selectedListingId && !state.listings.some((listing) => listing.id === state.selectedListingId)) {
+    state.selectedListingId = null;
+  }
+  if (!state.selectedListingId && state.listings.length) state.selectedListingId = state.listings[0].id;
   render();
 }
 
@@ -101,6 +130,14 @@ function jobItemHtml(job) {
 }
 
 function renderListings() {
+  $("#listingSearch").value = state.listingQuery.search;
+  $("#listingStatusFilter").value = state.listingQuery.status;
+  $("#listingSort").value = state.listingQuery.sort;
+  const start = state.listingQuery.total ? state.listingQuery.offset + 1 : 0;
+  const end = Math.min(state.listingQuery.offset + state.listingQuery.limit, state.listingQuery.total);
+  $("#listingPageInfo").textContent = `${start}-${end} of ${state.listingQuery.total}`;
+  $("#listingPrevPage").disabled = state.listingQuery.offset === 0;
+  $("#listingNextPage").disabled = state.listingQuery.offset + state.listingQuery.limit >= state.listingQuery.total;
   $("#listingList").innerHTML = state.listings.map(listingItemHtml).join("") || `<p class="muted">No listings yet.</p>`;
   const listing = selectedListing();
   $("#listingEditor").classList.toggle("hidden", !listing);
@@ -306,11 +343,48 @@ $("#newListingButton").addEventListener("click", async () => {
     body: JSON.stringify({ title: "Untitled listing", status: "draft" }),
   });
   state.selectedListingId = listing.id;
+  state.listingQuery.search = "";
+  state.listingQuery.status = "";
+  state.listingQuery.sort = "-updated_at";
+  state.listingQuery.offset = 0;
   show("listings");
   await loadAll();
 });
 
 $("#refreshButton").addEventListener("click", loadAll);
+
+$("#listingSearch").addEventListener("input", (event) => {
+  clearTimeout(listingSearchTimer);
+  listingSearchTimer = setTimeout(async () => {
+    state.listingQuery.search = event.target.value;
+    state.listingQuery.offset = 0;
+    await loadAll();
+  }, 250);
+});
+
+$("#listingStatusFilter").addEventListener("change", async (event) => {
+  state.listingQuery.status = event.target.value;
+  state.listingQuery.offset = 0;
+  await loadAll();
+});
+
+$("#listingSort").addEventListener("change", async (event) => {
+  state.listingQuery.sort = event.target.value;
+  state.listingQuery.offset = 0;
+  await loadAll();
+});
+
+$("#listingPrevPage").addEventListener("click", async () => {
+  state.listingQuery.offset = Math.max(0, state.listingQuery.offset - state.listingQuery.limit);
+  await loadAll();
+});
+
+$("#listingNextPage").addEventListener("click", async () => {
+  const nextOffset = state.listingQuery.offset + state.listingQuery.limit;
+  if (nextOffset >= state.listingQuery.total) return;
+  state.listingQuery.offset = nextOffset;
+  await loadAll();
+});
 
 $("#listingList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");

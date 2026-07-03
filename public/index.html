@@ -78,6 +78,34 @@
                   <h3>Listings</h3>
                   <button id="refreshButton" class="ghost">Refresh</button>
                 </div>
+                <div class="listing-tools">
+                  <label>Search<input id="listingSearch" placeholder="title, category, location" /></label>
+                  <div class="tool-grid">
+                    <label>Status
+                      <select id="listingStatusFilter">
+                        <option value="">All</option>
+                        <option value="draft">Draft</option>
+                        <option value="ready">Ready</option>
+                        <option value="published">Published</option>
+                        <option value="archived">Archived</option>
+                      </select>
+                    </label>
+                    <label>Sort
+                      <select id="listingSort">
+                        <option value="-updated_at">Newest updated</option>
+                        <option value="updated_at">Oldest updated</option>
+                        <option value="title">Title A-Z</option>
+                        <option value="-price_cents">Highest price</option>
+                        <option value="price_cents">Lowest price</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="row pager-row">
+                    <button id="listingPrevPage" type="button" class="ghost">Previous</button>
+                    <span id="listingPageInfo" class="muted">0 listings</span>
+                    <button id="listingNextPage" type="button" class="ghost">Next</button>
+                  </div>
+                </div>
                 <div id="listingList" class="list"></div>
               </section>
               <section class="editor" id="listingEditor">

@@ -73,10 +73,29 @@ def test_listings_support_pagination_filtering_and_sorting():
             "status": "draft",
         },
     )
+    client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Dining chair",
+            "description": "Wood chair already sold.",
+            "price_cents": 6500,
+            "category": "Home and furniture",
+            "location": "Nijmegen",
+            "status": "published",
+        },
+    )
 
-    response = client.get("/api/listings?search=chair&limit=1&offset=0&sort=title", headers=headers)
+    response = client.get("/api/listings?search=chair&status=draft&limit=1&offset=0&sort=title", headers=headers)
 
     assert response.status_code == 200
     assert response.headers["X-Total-Count"] == "1"
     assert response.headers["X-Limit"] == "1"
     assert response.json()[0]["title"] == "Desk chair"
+
+    page_response = client.get("/api/listings?limit=1&offset=1&sort=-price_cents", headers=headers)
+
+    assert page_response.status_code == 200
+    assert page_response.headers["X-Total-Count"] == "3"
+    assert page_response.headers["X-Offset"] == "1"
+    assert page_response.json()[0]["title"] == "Desk chair"

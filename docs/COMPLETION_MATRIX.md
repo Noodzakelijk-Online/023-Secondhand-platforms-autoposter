@@ -12,8 +12,8 @@ Legend:
 
 - Total phases: 89.
 - Done: 7.
-- Partial: 50.
-- Not started: 32.
+- Partial: 51.
+- Not started: 31.
 
 ## Phase Status
 
@@ -47,7 +47,7 @@ Legend:
 | 25 | API Usage Audit | Not started | Need route-by-route frontend usage map. |
 | 26 | Templates And Productivity Features | Partial | Templates and category mappings exist; applying templates and richer variants need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
-| 28 | Search, Filtering, Sorting, And Pagination | Not started | List endpoints and UI need these. |
+| 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing API and UI support search, status filtering, sorting, bounded limit/offset paging, and pagination headers; broader screens still need query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
 | 30 | Privacy And Data Control | Partial | Auth isolation and sanitized user export exist; account/data deletion and audit features still need work. |
 | 31 | Platform Account Management | Partial | Accounts CRUD exists; secure token/account setup model needs work. |
