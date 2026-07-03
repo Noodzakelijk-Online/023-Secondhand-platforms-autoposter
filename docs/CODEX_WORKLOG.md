@@ -2,6 +2,14 @@
 
 ## 2026-07-03
 
+### Pass 5 - Local Backup And Restore
+
+- Added `scripts/backup_local_data.py` for explicit private-data local SQLite/upload backups.
+- Added `scripts/restore_local_data.py` for guarded local restore into configured SQLite/upload paths.
+- Required confirmation flags for both backup and restore to avoid accidental private data handling.
+- Added tests for refusal defaults and SQLite/upload round-trip behavior.
+- Updated acceptance, security, runbook, completion, and verification docs.
+
 ### Pass 3 - Platform Secret Boundary
 
 - Rechecked platform account security and provider credential boundaries.

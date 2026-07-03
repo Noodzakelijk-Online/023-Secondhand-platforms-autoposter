@@ -16,3 +16,5 @@ Visible actions and backing API routes:
 | Inspect audit history | `/api/audit-events` | API-only; no dedicated UI yet |
 
 No visible action is intended to claim automatic platform publishing in assisted mode.
+
+Local backup/restore has no visible UI action. It is operator-only through `scripts/backup_local_data.py` and `scripts/restore_local_data.py` because the archives contain private database and upload data.

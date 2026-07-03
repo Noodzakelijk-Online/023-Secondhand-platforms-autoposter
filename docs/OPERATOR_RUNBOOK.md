@@ -102,6 +102,32 @@ python scripts/support_bundle.py
 
 The bundle is written under `tmp/support-bundles/` by default. It includes doctor output, git state, and selected docs. It intentionally excludes `.env` files, local databases, uploaded media, virtual environments, caches, and raw credentials.
 
+## Local Backup And Restore
+
+The local backup scripts are for SQLite plus local filesystem uploads only. They intentionally require explicit confirmation because the archive contains private user data and uploaded images.
+
+Create a private backup:
+
+```bash
+python scripts/backup_local_data.py --confirm-private-data
+```
+
+Restore a private backup:
+
+```bash
+python scripts/restore_local_data.py tmp/backups/<backup>.zip --confirm-overwrite
+```
+
+Handling rules:
+
+- Store backup ZIPs encrypted and outside the repository.
+- Do not attach private backups to support tickets, public issues, pull requests, or redacted support bundles.
+- Stop the web and worker processes before restoring local data.
+- Run `alembic upgrade head` and `python -m app.doctor` after restoring.
+- Verify a sample listing, image URL, platform mapping, and job history before resuming worker processing.
+
+External blocker for production-grade backup: PostgreSQL and object-storage deployments need provider-native backup/restore tooling, retention policy, encryption controls, and a tested restore drill in the target hosting environment.
+
 ## Audit Events
 
 Authenticated users can inspect their action history with:

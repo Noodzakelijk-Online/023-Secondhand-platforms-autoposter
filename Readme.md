@@ -119,7 +119,7 @@ You can also run the test suite directly:
 pytest
 ```
 
-The test suite uses an isolated temporary SQLite database and validates the core create-listing-to-publish-job flow, adapter validation, auth, and image upload.
+The test suite uses an isolated temporary SQLite database and validates the core create-listing-to-publish-job flow, adapter validation, auth, image upload, and local backup/restore guardrails.
 
 GitHub Actions runs the same verification gate on pushes and pull requests to `main`.
 
@@ -141,6 +141,22 @@ python scripts/support_bundle.py
 ```
 
 The bundle includes doctor output, git state, and selected docs. It excludes `.env` files, local databases, uploaded media, virtual environments, caches, and raw credentials.
+
+## Local backup and restore
+
+For local SQLite deployments, create a private operator backup of the database and uploaded images:
+
+```bash
+python scripts/backup_local_data.py --confirm-private-data
+```
+
+Restore a local backup into the configured SQLite database/upload directory:
+
+```bash
+python scripts/restore_local_data.py tmp/backups/<backup>.zip --confirm-overwrite
+```
+
+These archives contain private user data and uploaded media. Store them encrypted, never attach them to public issues or support bundles, and delete them when the recovery window expires. PostgreSQL and object-storage deployments must use their provider-native backup/restore tooling.
 
 ## Image storage
 

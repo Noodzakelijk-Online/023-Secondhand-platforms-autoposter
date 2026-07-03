@@ -1,5 +1,29 @@
 # Task Graph
 
+Current critical path:
+
+1. User account.
+2. Listing.
+3. Images.
+4. Platform selection.
+5. Readiness validation.
+6. Platform overrides.
+7. Assisted/API job.
+8. Job logs.
+9. Manual completion/final URL.
+10. History.
+
+Operational hardening branches:
+
+- Diagnostics: `python -m app.doctor`, `/api/diagnostics`, redacted support bundles.
+- Auditability: owner-scoped `audit_events` for privacy and state-changing actions.
+- Recovery: guarded local SQLite/upload backup and restore scripts.
+
+Blocked production branches:
+
+- Official API publishing requires provider credentials, account approval, OAuth policy review, and secret-manager integration.
+- Production disaster recovery requires the real hosting database, object storage, retention policy, encryption custody, and restore-drill approvals.
+
 ```mermaid
 flowchart TD
   A["User account"] --> B["Master listing"]

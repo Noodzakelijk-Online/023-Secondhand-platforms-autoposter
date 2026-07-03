@@ -20,3 +20,5 @@ Current platform adapters are assisted-only. The app prepares fields and instruc
 The only path from `needs_user_action` to `published` for assisted jobs is explicit owner confirmation with a final URL. The confirmation payload records that the user completed the external action and that the app did not publish automatically.
 
 Audit events are recorded for listing changes, image changes, publish queue actions, manual completion, export/import, and account deletion. They provide user-owned operational history without storing raw credentials or full exported payloads.
+
+Local backup/restore is an operator recovery path and does not change the user critical path. Backup archives contain private database and upload data, so they are intentionally separate from user-facing JSON export/import and redacted support bundles.

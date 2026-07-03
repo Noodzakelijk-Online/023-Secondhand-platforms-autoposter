@@ -11,6 +11,15 @@
 - Verification target: `.venv/bin/python scripts/verify.py`.
 - Remaining high-value next work: official OAuth/secret-manager references, browser E2E, accessibility audit, worker locking, distributed rate limits, backup/restore, and final release dry run.
 
+### After Local-Backup-Restore Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `59079f9`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added guarded local SQLite/upload private backup and restore scripts with tests.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: browser E2E, official API credential checklist, storage abstraction beyond local filesystem, production backup drills, worker concurrency locking, distributed rate limits, and final release dry run.
+
 ### After Support-Bundle Pass
 
 - Current branch: `main`.
@@ -35,4 +44,4 @@
 - Starting commit: `bad1e2b`.
 - Critical path focus: assisted job final URL confirmation.
 - Verification target: `python scripts/verify.py`.
-- Remaining high-value next work: browser E2E, official API credential checklist, storage abstraction beyond local filesystem, worker concurrency locking, distributed rate limits, and final release dry run.
+- Remaining high-value next work: browser E2E, official API credential checklist, storage abstraction beyond local filesystem, production backup drills, worker concurrency locking, distributed rate limits, and final release dry run.

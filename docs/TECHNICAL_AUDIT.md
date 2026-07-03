@@ -20,6 +20,7 @@ Implemented foundations:
 - Persistent jobs, job logs, publication attempts, idempotency keys, cooldowns, and worker entrypoint.
 - Persistent owner-scoped audit events for state-changing and privacy-sensitive actions.
 - Redacted support/debug bundle generation for operator handoff.
+- Guarded local SQLite/upload private backup and restore scripts.
 - Local validated image storage.
 - API error envelope, request IDs, and security headers.
 
@@ -28,6 +29,7 @@ Known gaps:
 - No official marketplace API/OAuth publishing integration is enabled.
 - No browser E2E suite or accessibility automation yet.
 - Local filesystem storage only.
+- Production backup/restore still needs provider-native drills for PostgreSQL/object storage.
 - Worker locking and distributed rate limits need production hardening.
 - The legacy script folder remains in the repo for reference and should stay out of default runtime paths.
 - Audit events are summary records and are not tamper-proof immutable ledger entries.

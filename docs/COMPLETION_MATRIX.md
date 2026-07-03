@@ -77,7 +77,7 @@ This matrix was already present and tracks the repository's existing implementat
 | 52 | UI/UX Debugging Rounds | Not started | Needs manual/browser audit. |
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
-| 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
+| 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks; guarded local SQLite/upload scripts provide tested local backup/restore tooling. |
 | 56 | Observability And Maintenance | Partial | Job logs, user-visible audit events, doctor diagnostics, redacted support bundles, and operator runbook exist; app metrics and structured production logging still need work. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
