@@ -395,6 +395,14 @@ textarea {
   width: auto;
 }
 
+.template-apply-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
 .error {
   min-height: 20px;
   color: var(--danger);
@@ -430,6 +438,7 @@ textarea {
   .two-column,
   .layout,
   .tool-grid,
+  .template-apply-row,
   .form-grid {
     grid-template-columns: 1fr;
   }

@@ -192,8 +192,17 @@ function renderListings() {
   form.notes.value = listing.notes || "";
   form.internal_notes.value = listing.internal_notes || "";
   $("#listingRevision").textContent = `Revision ${listing.revision || 1}`;
+  renderListingTemplateOptions();
   renderImages(listing);
   renderPlatforms(listing);
+}
+
+function renderListingTemplateOptions() {
+  const options = state.templates.map((template) => {
+    const platform = template.platform ? ` (${template.platform})` : "";
+    return `<option value="${template.id}">${escapeHtml(template.name)}${escapeHtml(platform)}</option>`;
+  }).join("");
+  $("#listingTemplateSelect").innerHTML = `<option value="">Choose template</option>${options}`;
 }
 
 function renderImages(listing) {
@@ -477,6 +486,15 @@ $("#listingForm").addEventListener("submit", async (event) => {
   await savePlatformOverrides();
   $("#editorMessage").textContent = "Saved";
   await loadAll();
+});
+
+$("#applyTemplateButton").addEventListener("click", () => {
+  const templateId = Number($("#listingTemplateSelect").value);
+  const template = state.templates.find((candidate) => candidate.id === templateId);
+  if (!template) return;
+  const description = $("#listingForm").description;
+  description.value = [description.value.trim(), template.body.trim()].filter(Boolean).join("\n\n");
+  $("#editorMessage").textContent = "Template applied";
 });
 
 $("#duplicateButton").addEventListener("click", async () => {
