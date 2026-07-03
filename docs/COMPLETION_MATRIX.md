@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 18.
-- Partial: 50.
+- Done: 19.
+- Partial: 49.
 - Not started: 21.
 
 ## Phase Status
@@ -90,7 +90,7 @@ Legend:
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
 | 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates; final launch evidence still needed. |
-| 71 | Supply Chain And Dependencies | Partial | Requirements split exists; vulnerability tooling needed. |
+| 71 | Supply Chain And Dependencies | Done | `scripts/audit_dependencies.py` and `.github/workflows/supply-chain.yml` run `pip-audit`; see `docs/SUPPLY_CHAIN.md`. |
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
 | 74 | Real Non-Technical User Simulation | Not started | Needed. |
