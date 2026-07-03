@@ -238,10 +238,25 @@ def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
     )
 
 
-def process_due_jobs(db: Session, limit: int) -> int:
+def claim_due_queued_jobs(db: Session, limit: int) -> list[int]:
     jobs = get_due_queued_jobs(db, limit)
-    processed = 0
+    claimed_ids: list[int] = []
     for job in jobs:
-        process_job(db, job.id)
+        updated = (
+            db.query(PublishingJob)
+            .filter(PublishingJob.id == job.id, PublishingJob.status == "queued")
+            .update({"status": "running"})
+        )
+        if updated:
+            claimed_ids.append(job.id)
+    db.commit()
+    return claimed_ids
+
+
+def process_due_jobs(db: Session, limit: int) -> int:
+    job_ids = claim_due_queued_jobs(db, limit)
+    processed = 0
+    for job_id in job_ids:
+        process_job(db, job_id)
         processed += 1
     return processed

@@ -17,6 +17,13 @@
 - Surfaced credential/compliance reality in platform cards without adding fake connect or publish actions.
 - Extended platform metadata tests and provider reality docs.
 
+### Pass 7 - Worker Claiming
+
+- Added a due-job claim step before processing queued jobs.
+- Prevented a second worker session from claiming a job already moved out of `queued`.
+- Added worker test coverage for claim-once behavior.
+- Kept stale running-job recovery as an explicit production hardening gap.
+
 ### Pass 3 - Platform Secret Boundary
 
 - Rechecked platform account security and provider credential boundaries.

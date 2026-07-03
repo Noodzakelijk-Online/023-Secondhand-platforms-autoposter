@@ -29,7 +29,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Auth/security | `tests/test_auth_security.py` | Password hashing, login/logout/session behavior, token revocation, and failed-login throttling. |
 | Storage | `tests/test_storage_uploads.py` | Filename sanitization, MIME/signature validation, duplicate detection, delete/reorder behavior, and metadata persistence. |
 | Category mappings | `tests/test_category_mappings.py` | Mapping CRUD/upsert/patch behavior and mapping use in validation/publish output. |
-| Jobs/worker | `tests/test_worker.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, and job filtering/sorting/pagination. |
+| Jobs/worker | `tests/test_worker.py` | Database-backed queue processing, claim-once behavior, worker empty-queue behavior, job detail route, and job filtering/sorting/pagination. |
 | Listing revisions/idempotency | `tests/test_listing_revisions.py` | Revision increments and publish idempotency boundaries. |
 | Data portability | `tests/test_data_portability.py` | Sanitized export/import for listings, settings, mappings, and account metadata. |
 | Diagnostics/startup/migrations | `tests/test_doctor.py`, `tests/test_startup_safety.py`, `tests/test_migrations.py` | Doctor checks, startup safety guards, and migration availability. |
@@ -54,7 +54,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 
 - Browser end-to-end tests for the static dashboard.
 - Accessibility checks and keyboard navigation tests.
-- Multi-worker concurrency tests with database locking semantics.
+- Stale running-job recovery tests and database-specific locking drills.
 - PostgreSQL-backed migration and integration test run.
 - Frontend state consistency tests for filters, pagination, and edit modes.
 - Official API/OAuth sandbox tests when future platform API integrations are added.

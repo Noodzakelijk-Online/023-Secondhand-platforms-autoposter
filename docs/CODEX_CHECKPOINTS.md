@@ -29,6 +29,15 @@
 - Verification target: `.venv/bin/python scripts/verify.py`.
 - Remaining high-value next work: browser E2E, accessibility audit, actual OAuth/secret-manager implementation, worker concurrency locking, distributed rate limits, and final release dry run.
 
+### After Worker-Claiming Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `3678c0f`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added database due-job claiming and test coverage that a second worker session cannot claim the same queued job.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: stale running-job recovery, browser E2E, accessibility audit, actual OAuth/secret-manager implementation, distributed rate limits, and final release dry run.
+
 ### After Support-Bundle Pass
 
 - Current branch: `main`.

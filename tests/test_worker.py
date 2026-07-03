@@ -1,6 +1,8 @@
 import uuid
 
 from app.database import Base, engine
+from app.database import SessionLocal
+from app.services.jobs import claim_due_queued_jobs
 from app.worker import run_once
 from tests.test_api import PNG_BYTES, client
 
@@ -122,3 +124,34 @@ def test_jobs_support_pagination_filtering_and_sorting(monkeypatch):
 
 def test_worker_ignores_empty_queue():
     assert run_once() == 0
+
+
+def test_due_jobs_are_claimed_once(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+
+    first_session = SessionLocal()
+    second_session = SessionLocal()
+    try:
+        first_claim = claim_due_queued_jobs(first_session, 10)
+        second_claim = claim_due_queued_jobs(second_session, 10)
+    finally:
+        first_session.close()
+        second_session.close()
+
+    assert len(first_claim) == 1
+    assert second_claim == []
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    get_settings.cache_clear()
