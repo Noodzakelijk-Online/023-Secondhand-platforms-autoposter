@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 8.
+- Done: 9.
 - Partial: 51.
-- Not started: 30.
+- Not started: 29.
 
 ## Phase Status
 
@@ -68,7 +68,7 @@ Legend:
 | 46 | Documentation Overhaul | Partial | README and docs exist; more runbooks and API docs needed. |
 | 47 | Completion Matrix | Done | This file. |
 | 48 | Final Verification Report | Not started | Needed near release. |
-| 49 | Technical Debt Register | Not started | Needed. |
+| 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
 | 50 | Red Team Review | Not started | Needed. |
 | 51 | Adversarial Test Report | Not started | Needed. |
 | 52 | UI/UX Debugging Rounds | Not started | Needs manual/browser audit. |
