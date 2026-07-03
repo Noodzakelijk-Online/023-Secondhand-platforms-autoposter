@@ -283,7 +283,8 @@ h3 {
   gap: 10px;
 }
 
-.listing-tools {
+.listing-tools,
+.query-tools {
   display: grid;
   gap: 10px;
   margin-bottom: 14px;

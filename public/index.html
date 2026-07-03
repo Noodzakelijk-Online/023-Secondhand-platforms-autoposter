@@ -179,7 +179,41 @@
           </section>
 
           <section id="queueView" class="view">
-            <h3>Publishing queue</h3>
+            <div class="pane-head">
+              <h3>Publishing queue</h3>
+              <button id="refreshJobsButton" class="ghost">Refresh</button>
+            </div>
+            <div class="query-tools">
+              <div class="tool-grid">
+                <label>Platform<select id="jobPlatformFilter"><option value="">All platforms</option></select></label>
+                <label>Status
+                  <select id="jobStatusFilter">
+                    <option value="">All statuses</option>
+                    <option value="queued">Queued</option>
+                    <option value="processing">Processing</option>
+                    <option value="needs_user_action">Needs action</option>
+                    <option value="completed">Completed</option>
+                    <option value="failed">Failed</option>
+                  </select>
+                </label>
+              </div>
+              <div class="tool-grid">
+                <label>Sort
+                  <select id="jobSort">
+                    <option value="-created_at">Newest</option>
+                    <option value="created_at">Oldest</option>
+                    <option value="platform">Platform A-Z</option>
+                    <option value="status">Status A-Z</option>
+                    <option value="-finished_at">Recently finished</option>
+                  </select>
+                </label>
+                <div class="row pager-row">
+                  <button id="jobPrevPage" type="button" class="ghost">Previous</button>
+                  <span id="jobPageInfo" class="muted">0 jobs</span>
+                  <button id="jobNextPage" type="button" class="ghost">Next</button>
+                </div>
+              </div>
+            </div>
             <div id="jobList" class="list"></div>
             <section id="jobDetails" class="details hidden"></section>
           </section>

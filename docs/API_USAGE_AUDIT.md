@@ -32,7 +32,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/listings/{listing_id}/platforms` | Platform selection and description overrides | `test_listing_revisions.py`, `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/listings/{listing_id}/validate` | Validate button | `test_api.py`, `test_category_mappings.py` | Visible and tested. |
 | `POST` | `/api/listings/{listing_id}/publish` | Queue publish button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
-| `GET` | `/api/jobs` | Dashboard/latest jobs and queue view | `test_worker.py` indirectly | Visible; add query-control UI later. |
+| `GET` | `/api/jobs` | Dashboard/latest jobs and queue view with platform/status/sort/page controls | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs/{job_id}` | Not directly used | `test_worker.py` | Useful for future deep-linking. |
 | `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/accounts` | Accounts list | `test_api.py` | Visible and tested. |
@@ -49,6 +49,6 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 
 ## Required Follow-Up
 
-- Add frontend controls for job/list query filters.
+- Keep query controls aligned as additional list screens are added.
 - Keep image reorder coverage aligned if drag-and-drop replaces the current up/down controls.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

@@ -17,6 +17,14 @@ const state = {
     offset: 0,
     total: 0,
   },
+  jobQuery: {
+    platform: "",
+    status: "",
+    sort: "-created_at",
+    limit: 10,
+    offset: 0,
+    total: 0,
+  },
   pendingRequests: 0,
 };
 
@@ -80,6 +88,17 @@ function listingQueryPath() {
   return `/listings?${params.toString()}`;
 }
 
+function jobQueryPath() {
+  const params = new URLSearchParams({
+    limit: String(state.jobQuery.limit),
+    offset: String(state.jobQuery.offset),
+    sort: state.jobQuery.sort,
+  });
+  if (state.jobQuery.platform) params.set("platform", state.jobQuery.platform);
+  if (state.jobQuery.status) params.set("status", state.jobQuery.status);
+  return `/jobs?${params.toString()}`;
+}
+
 function show(view) {
   clearAppMessage();
   document.querySelectorAll(".view").forEach((node) => node.classList.remove("active"));
@@ -97,10 +116,10 @@ function selectedListing() {
 }
 
 async function loadAll() {
-  const [platforms, listingResult, jobs, accounts, templates, categoryMappings] = await Promise.all([
+  const [platforms, listingResult, jobResult, accounts, templates, categoryMappings] = await Promise.all([
     api("/platforms"),
     apiWithMeta(listingQueryPath()),
-    api("/jobs"),
+    apiWithMeta(jobQueryPath()),
     api("/accounts"),
     api("/templates"),
     api("/category-mappings"),
@@ -108,7 +127,8 @@ async function loadAll() {
   state.platforms = platforms;
   state.listings = listingResult.data;
   state.listingQuery.total = Number(listingResult.headers.get("X-Total-Count") || state.listings.length);
-  state.jobs = jobs;
+  state.jobs = jobResult.data;
+  state.jobQuery.total = Number(jobResult.headers.get("X-Total-Count") || state.jobs.length);
   state.accounts = accounts;
   state.templates = templates;
   state.categoryMappings = categoryMappings;
@@ -240,6 +260,16 @@ function renderPlatforms(listing) {
 }
 
 function renderJobs() {
+  const platformOptions = state.platforms.map((platform) => `<option value="${platform.key}">${escapeHtml(platform.name)}</option>`).join("");
+  $("#jobPlatformFilter").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
+  $("#jobPlatformFilter").value = state.jobQuery.platform;
+  $("#jobStatusFilter").value = state.jobQuery.status;
+  $("#jobSort").value = state.jobQuery.sort;
+  const start = state.jobQuery.total ? state.jobQuery.offset + 1 : 0;
+  const end = Math.min(state.jobQuery.offset + state.jobQuery.limit, state.jobQuery.total);
+  $("#jobPageInfo").textContent = `${start}-${end} of ${state.jobQuery.total}`;
+  $("#jobPrevPage").disabled = state.jobQuery.offset === 0;
+  $("#jobNextPage").disabled = state.jobQuery.offset + state.jobQuery.limit >= state.jobQuery.total;
   $("#jobList").innerHTML = state.jobs.map(jobItemHtml).join("") || `<p class="muted">No publishing jobs.</p>`;
 }
 
@@ -436,6 +466,8 @@ $("#newListingButton").addEventListener("click", async () => {
 
 $("#refreshButton").addEventListener("click", loadAll);
 
+$("#refreshJobsButton").addEventListener("click", loadAll);
+
 $("#listingSearch").addEventListener("input", (event) => {
   clearTimeout(listingSearchTimer);
   listingSearchTimer = setTimeout(async () => {
@@ -466,6 +498,36 @@ $("#listingNextPage").addEventListener("click", async () => {
   const nextOffset = state.listingQuery.offset + state.listingQuery.limit;
   if (nextOffset >= state.listingQuery.total) return;
   state.listingQuery.offset = nextOffset;
+  await loadAll();
+});
+
+$("#jobPlatformFilter").addEventListener("change", async (event) => {
+  state.jobQuery.platform = event.target.value;
+  state.jobQuery.offset = 0;
+  await loadAll();
+});
+
+$("#jobStatusFilter").addEventListener("change", async (event) => {
+  state.jobQuery.status = event.target.value;
+  state.jobQuery.offset = 0;
+  await loadAll();
+});
+
+$("#jobSort").addEventListener("change", async (event) => {
+  state.jobQuery.sort = event.target.value;
+  state.jobQuery.offset = 0;
+  await loadAll();
+});
+
+$("#jobPrevPage").addEventListener("click", async () => {
+  state.jobQuery.offset = Math.max(0, state.jobQuery.offset - state.jobQuery.limit);
+  await loadAll();
+});
+
+$("#jobNextPage").addEventListener("click", async () => {
+  const nextOffset = state.jobQuery.offset + state.jobQuery.limit;
+  if (nextOffset >= state.jobQuery.total) return;
+  state.jobQuery.offset = nextOffset;
   await loadAll();
 });
 
@@ -605,6 +667,7 @@ $("#publishButton").addEventListener("click", async () => {
     method: "POST",
     body: JSON.stringify({ platforms, process_now: true }),
   });
+  state.jobQuery.offset = 0;
   $("#editorMessage").textContent = "Queued";
   show("queue");
   await loadAll();
