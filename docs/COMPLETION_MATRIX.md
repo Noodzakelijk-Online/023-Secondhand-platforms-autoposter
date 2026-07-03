@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 17.
+- Done: 18.
 - Partial: 49.
-- Not started: 23.
+- Not started: 22.
 
 ## Phase Status
 
@@ -88,7 +88,7 @@ Legend:
 | 66 | Prepublish Safety Review | Partial | Validation exists; safety checklist UI needed. |
 | 67 | Platform Compliance UI | Partial | Compliance notes exist in metadata; richer UI needed. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
-| 69 | Performance And Scale Basics | Not started | Needed. |
+| 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
 | 70 | Release Readiness | Not started | Needed. |
 | 71 | Supply Chain And Dependencies | Partial | Requirements split exists; vulnerability tooling needed. |
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |

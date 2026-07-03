@@ -5,6 +5,7 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -43,6 +44,7 @@ class User(Base, TimestampMixin):
 
 class UserSession(Base):
     __tablename__ = "user_sessions"
+    __table_args__ = (Index("ix_user_sessions_user_id", "user_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
@@ -56,6 +58,10 @@ class UserSession(Base):
 
 class Listing(Base, TimestampMixin):
     __tablename__ = "listings"
+    __table_args__ = (
+        Index("ix_listings_owner_updated_at", "owner_id", "updated_at"),
+        Index("ix_listings_owner_status_updated_at", "owner_id", "status", "updated_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
@@ -97,6 +103,7 @@ class Listing(Base, TimestampMixin):
 
 class ListingImage(Base, TimestampMixin):
     __tablename__ = "listing_images"
+    __table_args__ = (Index("ix_listing_images_listing_position", "listing_id", "position"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"))
@@ -112,7 +119,11 @@ class ListingImage(Base, TimestampMixin):
 
 class PlatformAccount(Base, TimestampMixin):
     __tablename__ = "platform_accounts"
-    __table_args__ = (UniqueConstraint("owner_id", "platform", "display_name"),)
+    __table_args__ = (
+        UniqueConstraint("owner_id", "platform", "display_name"),
+        Index("ix_platform_accounts_owner_platform_status", "owner_id", "platform", "status"),
+        Index("ix_platform_accounts_owner_created_at", "owner_id", "created_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
@@ -143,7 +154,10 @@ class PlatformListingMapping(Base, TimestampMixin):
 
 class CategoryMapping(Base, TimestampMixin):
     __tablename__ = "category_mappings"
-    __table_args__ = (UniqueConstraint("owner_id", "source_category", "platform"),)
+    __table_args__ = (
+        UniqueConstraint("owner_id", "source_category", "platform"),
+        Index("ix_category_mappings_owner_platform_source", "owner_id", "platform", "source_category"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
@@ -154,7 +168,12 @@ class CategoryMapping(Base, TimestampMixin):
 
 class PublishingJob(Base, TimestampMixin):
     __tablename__ = "publishing_jobs"
-    __table_args__ = (UniqueConstraint("idempotency_key"),)
+    __table_args__ = (
+        UniqueConstraint("idempotency_key"),
+        Index("ix_publishing_jobs_listing_created_at", "listing_id", "created_at"),
+        Index("ix_publishing_jobs_listing_platform_status", "listing_id", "platform", "status"),
+        Index("ix_publishing_jobs_due_queue", "status", "scheduled_at", "next_retry_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"))
@@ -182,6 +201,7 @@ class PublishingJob(Base, TimestampMixin):
 
 class PublishingJobLog(Base):
     __tablename__ = "publishing_job_logs"
+    __table_args__ = (Index("ix_publishing_job_logs_job_created_at", "job_id", "created_at"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     job_id: Mapped[int] = mapped_column(ForeignKey("publishing_jobs.id", ondelete="CASCADE"))
@@ -195,6 +215,7 @@ class PublishingJobLog(Base):
 
 class ListingDraft(Base, TimestampMixin):
     __tablename__ = "listing_drafts"
+    __table_args__ = (Index("ix_listing_drafts_listing_created_at", "listing_id", "created_at"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"))
@@ -206,6 +227,7 @@ class ListingDraft(Base, TimestampMixin):
 
 class ListingTemplate(Base, TimestampMixin):
     __tablename__ = "listing_templates"
+    __table_args__ = (Index("ix_listing_templates_owner_platform_name", "owner_id", "platform", "name"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
@@ -216,6 +238,7 @@ class ListingTemplate(Base, TimestampMixin):
 
 class PublicationAttempt(Base):
     __tablename__ = "publication_attempts"
+    __table_args__ = (Index("ix_publication_attempts_job_created_at", "job_id", "created_at"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     job_id: Mapped[int] = mapped_column(ForeignKey("publishing_jobs.id", ondelete="CASCADE"))

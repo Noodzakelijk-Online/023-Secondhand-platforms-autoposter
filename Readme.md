@@ -248,6 +248,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
+- Performance and scale basics: `docs/PERFORMANCE_SCALE_BASICS.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes
