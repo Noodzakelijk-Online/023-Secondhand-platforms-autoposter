@@ -251,6 +251,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Performance and scale basics: `docs/PERFORMANCE_SCALE_BASICS.md`
 - Release readiness: `docs/RELEASE_READINESS.md`
 - Supply chain and dependencies: `docs/SUPPLY_CHAIN.md`
+- State machines: `docs/STATE_MACHINES.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes

@@ -15,8 +15,15 @@ from app.models import (
     PublishingJob,
     PublishingJobLog,
 )
-
-TERMINAL_STATUSES = {"published", "failed", "needs_user_action", "skipped"}
+from app.services.job_state import (
+    ACTIVE_IDEMPOTENCY_STATUSES,
+    FAILED,
+    PUBLISHED,
+    QUEUED,
+    RUNNING,
+    is_terminal_status,
+    transition_job,
+)
 
 
 def idempotency_key(
@@ -74,7 +81,7 @@ def enqueue_publish_job(
         db.query(PublishingJob)
         .filter(
             PublishingJob.idempotency_key == key,
-            PublishingJob.status.in_(["queued", "running", "published", "needs_user_action"]),
+            PublishingJob.status.in_(ACTIVE_IDEMPOTENCY_STATUSES),
         )
         .one_or_none()
     )
@@ -85,7 +92,7 @@ def enqueue_publish_job(
         listing_id=listing.id,
         platform=platform,
         account_id=account_id,
-        status="queued",
+        status=QUEUED,
         idempotency_key=key,
         listing_revision=listing.revision,
         action_type=action_type,
@@ -106,7 +113,7 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         .filter(PublishingJob.id == job_id)
         .one()
     )
-    if job.status in TERMINAL_STATUSES and job.status != "failed":
+    if is_terminal_status(job.status) and job.status != FAILED:
         return job
 
     settings = get_settings()
@@ -125,14 +132,14 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     if recent_started_at and recent_started_at.tzinfo is None:
         recent_started_at = recent_started_at.replace(tzinfo=UTC)
     if recent_job and recent_started_at and recent_started_at > cooldown_cutoff:
-        job.status = "queued"
+        transition_job(job, QUEUED)
         job.next_retry_at = datetime.now(UTC) + timedelta(seconds=settings.platform_rate_limit_seconds)
         add_log(db, job, "info", "Rate limit cooldown applied.", {"next_retry_at": job.next_retry_at.isoformat()})
         db.commit()
         db.refresh(job)
         return job
 
-    job.status = "running"
+    transition_job(job, RUNNING)
     job.started_at = datetime.now(UTC)
     job.attempts += 1
     add_log(db, job, "info", "Publishing job started.")
@@ -146,8 +153,8 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     try:
         overrides = effective_platform_overrides(db, listing, job.platform, mapping.overrides)
         outcome = adapter.publish_listing(listing, account=account, overrides=overrides)
-        job.status = outcome.status
-        job.error_message = None if outcome.status != "failed" else outcome.message
+        transition_job(job, outcome.status)
+        job.error_message = None if outcome.status != FAILED else outcome.message
         job.result = outcome.data
         job.finished_at = datetime.now(UTC)
 
@@ -155,7 +162,7 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         mapping.platform_listing_id = outcome.platform_listing_id
         mapping.platform_url = outcome.platform_url
         mapping.validation_errors = outcome.data.get("missing_fields", [])
-        if outcome.status == "published":
+        if outcome.status == PUBLISHED:
             mapping.last_published_at = datetime.now(UTC)
 
         db.add(
@@ -169,14 +176,14 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         )
         add_log(db, job, "info", outcome.message or f"Job finished with status {outcome.status}.", outcome.data)
     except Exception as exc:  # pragma: no cover - defensive boundary around external adapters
-        job.status = "failed"
+        transition_job(job, FAILED)
         job.error_message = str(exc)
         job.finished_at = datetime.now(UTC)
         db.add(
             PublicationAttempt(
                 job_id=job.id,
                 platform=job.platform,
-                status="failed",
+                status=FAILED,
                 error_message=str(exc),
                 payload_snapshot={},
             )
@@ -191,7 +198,7 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
 def retry_job(db: Session, job: PublishingJob) -> PublishingJob:
     if job.attempts >= job.max_attempts:
         job.max_attempts += 1
-    job.status = "queued"
+    transition_job(job, QUEUED)
     job.error_message = None
     job.next_retry_at = None
     add_log(db, job, "info", "Publishing job queued for retry.")
@@ -222,7 +229,7 @@ def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
     now = datetime.now(UTC)
     return (
         db.query(PublishingJob)
-        .filter(PublishingJob.status == "queued")
+        .filter(PublishingJob.status == QUEUED)
         .filter(PublishingJob.scheduled_at <= now)
         .filter((PublishingJob.next_retry_at.is_(None)) | (PublishingJob.next_retry_at <= now))
         .order_by(PublishingJob.scheduled_at.asc(), PublishingJob.id.asc())
