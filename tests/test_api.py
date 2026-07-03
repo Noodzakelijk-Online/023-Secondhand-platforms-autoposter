@@ -34,6 +34,20 @@ def auth_headers():
     return {"Authorization": f"Bearer {token}"}
 
 
+def test_platform_metadata_contract():
+    response = client.get("/api/platforms")
+
+    assert response.status_code == 200
+    platforms = response.json()
+    assert {platform["key"] for platform in platforms} >= {"marktplaats", "koopplein", "nextdoor", "ebay"}
+    for platform in platforms:
+        assert platform["name"]
+        assert platform["automation_mode"] == "assisted"
+        assert isinstance(platform["required_fields"], list)
+        assert isinstance(platform["supported_categories"], list)
+        assert isinstance(platform["compliance_notes"], list)
+
+
 def test_create_validate_and_publish_listing_flow():
     headers = auth_headers()
     listing_response = client.post(
@@ -78,6 +92,10 @@ def test_create_validate_and_publish_listing_flow():
     assert job["result"]["automation_mode"] == "assisted"
     assert job["logs"]
 
+    detail_response = client.get(f"/api/listings/{listing_id}", headers=headers)
+    assert detail_response.status_code == 200, detail_response.text
+    assert detail_response.json()["title"] == "Vintage desk lamp"
+
 
 def test_validation_reports_missing_fields():
     headers = auth_headers()
@@ -116,3 +134,22 @@ def test_accounts_and_templates():
     delete_response = client.delete(f"/api/accounts/{account['id']}", headers=headers)
     assert delete_response.status_code == 204
     assert client.get("/api/accounts", headers=headers).json() == []
+
+
+def test_listing_detail_and_delete_are_owner_scoped():
+    headers = auth_headers()
+    listing_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={"title": "Delete me", "status": "draft"},
+    )
+    assert listing_response.status_code == 200, listing_response.text
+    listing_id = listing_response.json()["id"]
+
+    detail_response = client.get(f"/api/listings/{listing_id}", headers=headers)
+    assert detail_response.status_code == 200, detail_response.text
+    assert detail_response.json()["id"] == listing_id
+
+    delete_response = client.delete(f"/api/listings/{listing_id}", headers=headers)
+    assert delete_response.status_code == 204
+    assert client.get(f"/api/listings/{listing_id}", headers=headers).status_code == 404

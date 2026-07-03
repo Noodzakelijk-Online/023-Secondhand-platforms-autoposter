@@ -60,7 +60,7 @@ Legend:
 | 38 | Demo Mode Without Fake Production | Partial | `DEV_AUTO_LOGIN` exists; stronger demo isolation needed. |
 | 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
 | 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |
-| 41 | Testing Strategy | Partial | API tests exist; strategy doc and broader tests needed. |
+| 41 | Testing Strategy | Partial | API, auth, storage, worker, revisions, portability, diagnostics, and direct route coverage tests exist; strategy doc and browser tests still needed. |
 | 42 | Acceptance Tests | Partial | Smoke flow exists; full acceptance suite needed. |
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
 | 44 | Code Quality Tooling | Not started | No formatter/linter/type config yet. |

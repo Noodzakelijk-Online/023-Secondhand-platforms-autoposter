@@ -19,12 +19,12 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/auth/login` | Auth form sign in | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
 | `GET` | `/api/auth/me` | Boot current user | `test_auth_security.py` | Visible through user email. |
-| `GET` | `/api/platforms` | Account, template, mapping, listing platform controls | `test_api.py` indirectly | Add explicit adapter metadata contract test. |
+| `GET` | `/api/platforms` | Account, template, mapping, listing platform controls | `test_api.py` | Visible and tested. |
 | `GET` | `/api/listings` | Dashboard/listing list with search/filter/sort/page controls | `test_api_hardening.py` | Visible and tested. |
 | `POST` | `/api/listings` | New listing button | `test_api.py` | Visible and tested. |
-| `GET` | `/api/listings/{listing_id}` | Not directly used | Covered indirectly by ownership/listing flows | Useful for future deep-linking. |
+| `GET` | `/api/listings/{listing_id}` | Not directly used | `test_api.py` | Useful for future deep-linking. |
 | `PATCH` | `/api/listings/{listing_id}` | Listing editor save | `test_listing_revisions.py`, `test_api.py` | Visible and tested. |
-| `DELETE` | `/api/listings/{listing_id}` | Listing editor delete | Covered indirectly by API flows | Add explicit delete ownership test. |
+| `DELETE` | `/api/listings/{listing_id}` | Listing editor delete | `test_api.py` | Visible and tested. |
 | `POST` | `/api/listings/{listing_id}/duplicate` | Listing editor duplicate | `test_listing_revisions.py` | Visible and tested. |
 | `POST` | `/api/listings/{listing_id}/images` | Listing image upload | `test_storage_uploads.py`, `test_api.py` | Visible and tested. |
 | `PATCH` | `/api/listings/{listing_id}/images/order` | Not yet visible | Not covered | Needs drag/reorder UI or removal from public contract. |
@@ -33,7 +33,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `GET` | `/api/listings/{listing_id}/validate` | Validate button | `test_api.py`, `test_category_mappings.py` | Visible and tested. |
 | `POST` | `/api/listings/{listing_id}/publish` | Queue publish button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs` | Dashboard/latest jobs and queue view | `test_worker.py` indirectly | Visible; add query-control UI later. |
-| `GET` | `/api/jobs/{job_id}` | Not directly used | Covered indirectly by job tests | Useful for future deep-linking. |
+| `GET` | `/api/jobs/{job_id}` | Not directly used | `test_worker.py` | Useful for future deep-linking. |
 | `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/accounts` | Accounts list | `test_api.py` | Visible and tested. |
 | `POST` | `/api/accounts` | Account form | `test_api.py` | Visible and tested. |
@@ -50,5 +50,5 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 ## Required Follow-Up
 
 - Add frontend controls for image reorder and job/list query filters.
-- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
+- Add explicit tests for `PATCH /api/listings/{listing_id}/images/order`.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

@@ -76,6 +76,11 @@ def test_worker_processes_queued_publish_job(monkeypatch):
     assert job["attempts"] == 1
     assert job["logs"]
 
+    detail_response = client.get(f"/api/jobs/{job['id']}", headers=headers)
+    assert detail_response.status_code == 200, detail_response.text
+    assert detail_response.json()["id"] == job["id"]
+    assert detail_response.json()["listing_id"] == listing_id
+
     monkeypatch.delenv("JOB_PROCESS_INLINE")
     get_settings.cache_clear()
 
