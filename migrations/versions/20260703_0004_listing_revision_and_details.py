@@ -6,9 +6,8 @@ Create Date: 2026-07-03
 """
 from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 revision: str = "20260703_0004"
 down_revision: str | None = "20260703_0003"
@@ -43,7 +42,10 @@ def upgrade() -> None:
     job_additions = [
         ("listing_revision", sa.Column("listing_revision", sa.Integer(), nullable=False, server_default="1")),
         ("action_type", sa.Column("action_type", sa.String(length=40), nullable=False, server_default="publish")),
-        ("operation_mode", sa.Column("operation_mode", sa.String(length=40), nullable=False, server_default="assisted")),
+        (
+            "operation_mode",
+            sa.Column("operation_mode", sa.String(length=40), nullable=False, server_default="assisted"),
+        ),
     ]
     for name, column in job_additions:
         if name not in job_columns:

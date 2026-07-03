@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from app.database import Base, engine
 from app.main import app
 
-
 client = TestClient(app)
 
 PNG_BYTES = (

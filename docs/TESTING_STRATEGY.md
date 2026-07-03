@@ -12,6 +12,7 @@ python scripts/verify.py
 
 The gate runs:
 
+- Ruff lint for `app`, `tests`, `migrations`, and `scripts`
 - Python compile checks for `app`, `tests`, and `migrations`
 - the full pytest suite
 - `python -m app.doctor --json`

@@ -1,12 +1,11 @@
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     DateTime,
     ForeignKey,
     Integer,
-    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -17,7 +16,7 @@ from app.database import Base
 
 
 def now_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class TimestampMixin:
@@ -49,7 +48,7 @@ class UserSession(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     token_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
 
     user: Mapped[User] = relationship(back_populates="sessions")
@@ -122,7 +121,7 @@ class PlatformAccount(Base, TimestampMixin):
     mode: Mapped[str] = mapped_column(String(40), default="assisted")
     status: Mapped[str] = mapped_column(String(40), default="needs_setup")
     connection_data: Mapped[dict] = mapped_column(JSON, default=dict)
-    secret_ref: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    secret_ref: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
 
 class PlatformListingMapping(Base, TimestampMixin):
@@ -132,12 +131,12 @@ class PlatformListingMapping(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"))
     platform: Mapped[str] = mapped_column(String(80), index=True)
-    platform_listing_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    platform_listing_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     status: Mapped[str] = mapped_column(String(40), default="draft")
-    platform_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    platform_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     overrides: Mapped[dict] = mapped_column(JSON, default=dict)
     validation_errors: Mapped[list] = mapped_column(JSON, default=list)
-    last_published_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     listing: Mapped[Listing] = relationship(back_populates="platform_mappings")
 
@@ -160,7 +159,7 @@ class PublishingJob(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"))
     platform: Mapped[str] = mapped_column(String(80), index=True)
-    account_id: Mapped[Optional[int]] = mapped_column(ForeignKey("platform_accounts.id"), nullable=True)
+    account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"), nullable=True)
     status: Mapped[str] = mapped_column(String(40), default="queued", index=True)
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     max_attempts: Mapped[int] = mapped_column(Integer, default=3)
@@ -169,10 +168,10 @@ class PublishingJob(Base, TimestampMixin):
     action_type: Mapped[str] = mapped_column(String(40), default="publish")
     operation_mode: Mapped[str] = mapped_column(String(40), default="assisted")
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
-    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    next_retry_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    next_retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     result: Mapped[dict] = mapped_column(JSON, default=dict)
 
     listing: Mapped[Listing] = relationship(back_populates="jobs")
@@ -211,7 +210,7 @@ class ListingTemplate(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column(String(120))
-    platform: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    platform: Mapped[str | None] = mapped_column(String(80), nullable=True)
     body: Mapped[str] = mapped_column(Text)
 
 
@@ -222,6 +221,6 @@ class PublicationAttempt(Base):
     job_id: Mapped[int] = mapped_column(ForeignKey("publishing_jobs.id", ondelete="CASCADE"))
     platform: Mapped[str] = mapped_column(String(80), index=True)
     status: Mapped[str] = mapped_column(String(40))
-    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     payload_snapshot: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)

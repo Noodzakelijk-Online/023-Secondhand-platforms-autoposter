@@ -1,5 +1,6 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
@@ -8,11 +9,11 @@ from app.config import get_settings
 from app.database import SessionLocal, get_db
 from app.doctor import run_checks
 from app.models import (
+    CategoryMapping,
     Listing,
     ListingDraft,
     ListingImage,
     ListingTemplate,
-    CategoryMapping,
     PlatformAccount,
     PlatformListingMapping,
     PublicationAttempt,
@@ -41,17 +42,23 @@ from app.schemas import (
     PlatformAccountOut,
     PlatformMappingOut,
     PlatformOverrideUpdate,
-    PublishRequest,
     PublishingJobOut,
+    PublishRequest,
     TemplateCreate,
     TemplateOut,
     UserOut,
     ValidationResult,
 )
-from app.security import create_session, hash_password, hash_token, password_needs_rehash, revoke_session, verify_password
+from app.security import (
+    create_session,
+    hash_password,
+    hash_token,
+    password_needs_rehash,
+    revoke_session,
+    verify_password,
+)
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
 from app.storage import StoredFile, read_validated_image, store_validated_image
-
 
 router = APIRouter(prefix="/api")
 SENSITIVE_CONNECTION_KEYS = ("password", "secret", "token", "api_key", "apikey", "access_key", "private_key")
@@ -76,7 +83,7 @@ def get_current_session(
         return UserSession(
             user_id=user.id,
             token_hash="dev-auto-login",
-            expires_at=datetime.now(timezone.utc),
+            expires_at=datetime.now(UTC),
             user=user,
         )
 
@@ -95,8 +102,8 @@ def get_current_session(
         raise HTTPException(status_code=401, detail="Invalid or expired session")
     expires_at = session.expires_at
     if expires_at and expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if expires_at < datetime.now(timezone.utc):
+        expires_at = expires_at.replace(tzinfo=UTC)
+    if expires_at < datetime.now(UTC):
         raise HTTPException(status_code=401, detail="Invalid or expired session")
     if not session.user.is_active:
         raise HTTPException(status_code=403, detail="User is disabled")
@@ -109,7 +116,7 @@ def get_current_user(session: UserSession = Depends(get_current_session)) -> Use
 
 @router.get("/health")
 def health() -> dict:
-    return {"status": "ok", "time": datetime.now(timezone.utc).isoformat()}
+    return {"status": "ok", "time": datetime.now(UTC).isoformat()}
 
 
 @router.get("/diagnostics")
@@ -181,7 +188,10 @@ def delete_user_data(db: Session, user_id: int) -> None:
     if listing_ids:
         job_ids = [id_ for (id_,) in db.query(PublishingJob.id).filter(PublishingJob.listing_id.in_(listing_ids)).all()]
         image_paths = [
-            path for (path,) in db.query(ListingImage.storage_path).filter(ListingImage.listing_id.in_(listing_ids)).all()
+            path
+            for (path,) in db.query(ListingImage.storage_path)
+            .filter(ListingImage.listing_id.in_(listing_ids))
+            .all()
         ]
         if job_ids:
             db.query(PublicationAttempt).filter(PublicationAttempt.job_id.in_(job_ids)).delete(synchronize_session=False)
@@ -593,7 +603,12 @@ def get_job(job_id: int, user: User = Depends(get_current_user), db: Session = D
 
 @router.post("/jobs/{job_id}/retry", response_model=PublishingJobOut)
 def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    job = db.query(PublishingJob).options(selectinload(PublishingJob.listing)).filter(PublishingJob.id == job_id).one_or_none()
+    job = (
+        db.query(PublishingJob)
+        .options(selectinload(PublishingJob.listing))
+        .filter(PublishingJob.id == job_id)
+        .one_or_none()
+    )
     if not job or job.listing.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Job not found")
     return retry_job(db, job)
@@ -832,7 +847,7 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
     )
     return {
         "version": "1",
-        "exported_at": datetime.now(timezone.utc),
+        "exported_at": datetime.now(UTC),
         "user": user,
         "listings": [_export_listing(listing) for listing in listings],
         "platform_accounts": [

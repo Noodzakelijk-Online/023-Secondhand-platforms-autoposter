@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone
 import hashlib
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import desc
 from sqlalchemy.orm import Session, selectinload
@@ -7,15 +7,14 @@ from sqlalchemy.orm import Session, selectinload
 from app.adapters import get_adapter
 from app.config import get_settings
 from app.models import (
-    Listing,
     CategoryMapping,
+    Listing,
     PlatformAccount,
     PlatformListingMapping,
     PublicationAttempt,
     PublishingJob,
     PublishingJobLog,
 )
-
 
 TERMINAL_STATUSES = {"published", "failed", "needs_user_action", "skipped"}
 
@@ -73,7 +72,10 @@ def enqueue_publish_job(
     )
     existing = (
         db.query(PublishingJob)
-        .filter(PublishingJob.idempotency_key == key, PublishingJob.status.in_(["queued", "running", "published", "needs_user_action"]))
+        .filter(
+            PublishingJob.idempotency_key == key,
+            PublishingJob.status.in_(["queued", "running", "published", "needs_user_action"]),
+        )
         .one_or_none()
     )
     if existing:
@@ -108,7 +110,7 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         return job
 
     settings = get_settings()
-    cooldown_cutoff = datetime.now(timezone.utc) - timedelta(seconds=settings.platform_rate_limit_seconds)
+    cooldown_cutoff = datetime.now(UTC) - timedelta(seconds=settings.platform_rate_limit_seconds)
     recent_job = (
         db.query(PublishingJob)
         .filter(
@@ -121,17 +123,17 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     )
     recent_started_at = recent_job.started_at if recent_job else None
     if recent_started_at and recent_started_at.tzinfo is None:
-        recent_started_at = recent_started_at.replace(tzinfo=timezone.utc)
+        recent_started_at = recent_started_at.replace(tzinfo=UTC)
     if recent_job and recent_started_at and recent_started_at > cooldown_cutoff:
         job.status = "queued"
-        job.next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=settings.platform_rate_limit_seconds)
+        job.next_retry_at = datetime.now(UTC) + timedelta(seconds=settings.platform_rate_limit_seconds)
         add_log(db, job, "info", "Rate limit cooldown applied.", {"next_retry_at": job.next_retry_at.isoformat()})
         db.commit()
         db.refresh(job)
         return job
 
     job.status = "running"
-    job.started_at = datetime.now(timezone.utc)
+    job.started_at = datetime.now(UTC)
     job.attempts += 1
     add_log(db, job, "info", "Publishing job started.")
     db.commit()
@@ -147,14 +149,14 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         job.status = outcome.status
         job.error_message = None if outcome.status != "failed" else outcome.message
         job.result = outcome.data
-        job.finished_at = datetime.now(timezone.utc)
+        job.finished_at = datetime.now(UTC)
 
         mapping.status = outcome.status
         mapping.platform_listing_id = outcome.platform_listing_id
         mapping.platform_url = outcome.platform_url
         mapping.validation_errors = outcome.data.get("missing_fields", [])
         if outcome.status == "published":
-            mapping.last_published_at = datetime.now(timezone.utc)
+            mapping.last_published_at = datetime.now(UTC)
 
         db.add(
             PublicationAttempt(
@@ -169,7 +171,7 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     except Exception as exc:  # pragma: no cover - defensive boundary around external adapters
         job.status = "failed"
         job.error_message = str(exc)
-        job.finished_at = datetime.now(timezone.utc)
+        job.finished_at = datetime.now(UTC)
         db.add(
             PublicationAttempt(
                 job_id=job.id,
@@ -217,7 +219,7 @@ def effective_platform_overrides(db: Session, listing: Listing, platform: str, o
 
 
 def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return (
         db.query(PublishingJob)
         .filter(PublishingJob.status == "queued")

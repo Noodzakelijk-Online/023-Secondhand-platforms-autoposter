@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException
 
@@ -17,7 +17,7 @@ login_buckets: dict[str, LoginBucket] = {}
 
 def check_login_rate_limit(identifier: str) -> None:
     settings = get_settings()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     window = timedelta(seconds=settings.login_rate_limit_window_seconds)
     bucket = login_buckets.get(identifier)
     if not bucket or now - bucket.window_started_at > window:
@@ -28,7 +28,7 @@ def check_login_rate_limit(identifier: str) -> None:
 
 
 def record_failed_login(identifier: str) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     bucket = login_buckets.get(identifier)
     if not bucket:
         login_buckets[identifier] = LoginBucket(attempts=1, window_started_at=now)

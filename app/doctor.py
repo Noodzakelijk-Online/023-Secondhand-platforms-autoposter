@@ -1,7 +1,7 @@
-from dataclasses import asdict, dataclass
 import argparse
 import json
 import sys
+from dataclasses import asdict, dataclass
 
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext

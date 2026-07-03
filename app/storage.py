@@ -1,13 +1,12 @@
-from dataclasses import dataclass
-from pathlib import Path
 import hashlib
 import re
 import uuid
+from dataclasses import dataclass
+from pathlib import Path
 
 from fastapi import HTTPException, UploadFile
 
 from app.config import Settings, get_settings
-
 
 IMAGE_SIGNATURES = {
     "image/jpeg": (b"\xff\xd8\xff", ".jpg"),

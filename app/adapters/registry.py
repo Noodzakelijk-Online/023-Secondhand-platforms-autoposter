@@ -6,7 +6,6 @@ from app.adapters.assisted import (
     TweedehandsAdapter,
 )
 
-
 ADAPTERS = {
     adapter.key: adapter
     for adapter in [

@@ -5,7 +5,6 @@ from app.config import get_settings
 from app.database import SessionLocal, init_db
 from app.services.jobs import process_due_jobs
 
-
 logger = logging.getLogger("autoposter.worker")
 
 

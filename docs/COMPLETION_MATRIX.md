@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 15.
+- Done: 16.
 - Partial: 49.
-- Not started: 25.
+- Not started: 24.
 
 ## Phase Status
 
@@ -56,14 +56,14 @@ Legend:
 | 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
-| 37 | Verification Commands | Done | `python scripts/verify.py` runs compile checks, the full pytest suite, and doctor diagnostics. |
+| 37 | Verification Commands | Done | `python scripts/verify.py` runs Ruff lint, compile checks, the full pytest suite, and doctor diagnostics. |
 | 38 | Demo Mode Without Fake Production | Partial | `DEV_AUTO_LOGIN` exists; stronger demo isolation needed. |
 | 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
 | 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |
 | 41 | Testing Strategy | Done | See `docs/TESTING_STRATEGY.md`; remaining browser/concurrency/PostgreSQL gaps are tracked there. |
 | 42 | Acceptance Tests | Partial | Smoke flow exists; full acceptance suite needed. |
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
-| 44 | Code Quality Tooling | Not started | No formatter/linter/type config yet. |
+| 44 | Code Quality Tooling | Done | Ruff is pinned/configured in `pyproject.toml` and enforced by `python scripts/verify.py`. |
 | 45 | CI/CD Quality Gates | Done | `.github/workflows/verify.yml` runs `python scripts/verify.py` on pushes and pull requests to `main`. |
 | 46 | Documentation Overhaul | Partial | README and docs exist; more runbooks and API docs needed. |
 | 47 | Completion Matrix | Done | This file. |

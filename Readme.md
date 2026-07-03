@@ -110,7 +110,7 @@ Run the local verification gate before pushing changes:
 python scripts/verify.py
 ```
 
-The script runs Python compile checks, the full pytest suite, and the doctor command.
+The script runs Ruff lint, Python compile checks, the full pytest suite, and the doctor command.
 
 You can also run the test suite directly:
 

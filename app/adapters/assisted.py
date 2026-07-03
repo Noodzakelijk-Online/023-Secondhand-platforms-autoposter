@@ -2,7 +2,6 @@ from typing import Any
 
 from app.adapters.base import PlatformAdapter, PublishOutcome, ValidationOutcome
 
-
 COMMON_CATEGORIES = [
     "Electronics",
     "Home and furniture",
@@ -116,7 +115,8 @@ class MarktplaatsAdapter(AssistedPostingAdapter):
     required_fields = AssistedPostingAdapter.required_fields + ["delivery_options"]
     supported_categories = COMMON_CATEGORIES + ["Bicycles", "Collectibles", "Music instruments"]
     extra_warnings = [
-        "Marktplaats is configured as assisted posting because login, two-factor checks, paid placement choices, and anti-abuse controls may require the account owner."
+        "Marktplaats is configured as assisted posting because login, two-factor checks, "
+        "paid placement choices, and anti-abuse controls may require the account owner."
     ]
 
 
@@ -148,7 +148,8 @@ class NextdoorAdapter(AssistedPostingAdapter):
         "Garden",
     ]
     extra_warnings = [
-        "Nextdoor posting remains assisted because neighborhood account controls and confirmations must stay user-controlled."
+        "Nextdoor posting remains assisted because neighborhood account controls and confirmations "
+        "must stay user-controlled."
     ]
 
 
@@ -159,7 +160,8 @@ class EbayAdapter(AssistedPostingAdapter):
     required_fields = AssistedPostingAdapter.required_fields + ["delivery_options"]
     supported_categories = COMMON_CATEGORIES + ["Collectibles", "Parts and accessories"]
     extra_warnings = [
-        "eBay can support official API integration later, but this build stays assisted until OAuth credentials and marketplace policies are configured."
+        "eBay can support official API integration later, but this build stays assisted "
+        "until OAuth credentials and marketplace policies are configured."
     ]
 
 
@@ -168,5 +170,6 @@ class TweedehandsAdapter(AssistedPostingAdapter):
     name = "Tweedehands"
     posting_url = "https://www.tweedehands.net"
     extra_warnings = [
-        "Tweedehands import/posting is assisted; use the legacy scraper only in a user-controlled session that respects site rules."
+        "Tweedehands import/posting is assisted; use the legacy scraper only in a user-controlled "
+        "session that respects site rules."
     ]

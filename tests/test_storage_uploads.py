@@ -2,7 +2,6 @@ import uuid
 
 from tests.test_api import client
 
-
 PNG_BYTES = (
     b"\x89PNG\r\n\x1a\n"
     b"\x00\x00\x00\rIHDR"

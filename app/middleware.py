@@ -1,5 +1,5 @@
-from collections.abc import Callable
 import uuid
+from collections.abc import Callable
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError

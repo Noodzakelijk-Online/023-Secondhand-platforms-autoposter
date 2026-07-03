@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
 import secrets
+from datetime import UTC, datetime, timedelta
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.models import User, UserSession
-
 
 password_hasher = PasswordHasher()
 
@@ -57,7 +56,7 @@ def create_session(db: Session, user: User) -> str:
     session = UserSession(
         user_id=user.id,
         token_hash=hash_token(token),
-        expires_at=datetime.now(timezone.utc) + timedelta(hours=settings.session_expire_hours),
+        expires_at=datetime.now(UTC) + timedelta(hours=settings.session_expire_hours),
     )
     db.add(session)
     db.commit()
@@ -65,5 +64,5 @@ def create_session(db: Session, user: User) -> str:
 
 
 def revoke_session(db: Session, session: UserSession) -> None:
-    session.revoked_at = datetime.now(timezone.utc)
+    session.revoked_at = datetime.now(UTC)
     db.commit()
