@@ -3,7 +3,7 @@ import uuid
 from pathlib import Path
 
 from app.database import Base, SessionLocal, engine
-from app.models import CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
+from app.models import AuditEvent, CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
 from tests.test_api import PNG_BYTES, client
 
 
@@ -117,6 +117,13 @@ def test_export_omits_private_and_secret_fields():
     assert "vault://secret/platform-token" not in serialized
     assert "do-not-export" not in serialized
 
+    audit_response = client.get("/api/audit-events?event_type=data_exported", headers=headers)
+    assert audit_response.status_code == 200, audit_response.text
+    audit_event = audit_response.json()[0]
+    assert audit_event["resource_type"] == "user"
+    assert audit_event["details"]["includes_secrets"] is False
+    assert audit_event["details"]["listings"] == 1
+
 
 def test_import_recreates_user_owned_business_data():
     source_headers = auth_headers("source")
@@ -149,6 +156,27 @@ def test_import_recreates_user_owned_business_data():
 
     mappings = client.get("/api/category-mappings", headers=target_headers).json()
     assert mappings[0]["platform_category"] == "Huis en Inrichting"
+
+    audit_events = client.get("/api/audit-events?event_type=data_imported", headers=target_headers).json()
+    assert audit_events[0]["details"]["listings_created"] == 1
+    assert audit_events[0]["details"]["platform_accounts_created"] == 1
+
+
+def test_audit_events_are_owner_scoped_and_cover_state_changes():
+    owner_headers = auth_headers("audit-owner")
+    other_headers = auth_headers("audit-other")
+    listing_response = client.post("/api/listings", headers=owner_headers, json={"title": "Audited listing"})
+    listing_id = listing_response.json()["id"]
+    client.patch(f"/api/listings/{listing_id}", headers=owner_headers, json={"description": "Updated"})
+
+    owner_events = client.get("/api/audit-events?resource_type=listing", headers=owner_headers)
+    other_events = client.get("/api/audit-events", headers=other_headers)
+
+    assert owner_events.status_code == 200, owner_events.text
+    event_types = {event["event_type"] for event in owner_events.json()}
+    assert {"listing_created", "listing_updated"} <= event_types
+    assert other_events.status_code == 200, other_events.text
+    assert other_events.json() == []
 
 
 def test_delete_me_purges_owned_data_and_revokes_session():
@@ -187,6 +215,9 @@ def test_delete_me_purges_owned_data_and_revokes_session():
         assert db.query(PlatformAccount).filter(PlatformAccount.display_name == "Portable eBay").count() == 0
         assert db.query(ListingTemplate).filter(ListingTemplate.name == "Pickup").count() == 0
         assert db.query(CategoryMapping).filter(CategoryMapping.source_category == "Furniture").count() == 0
+        deletion_events = db.query(AuditEvent).filter(AuditEvent.event_type == "account_deleted").all()
+        assert len(deletion_events) == 1
+        assert deletion_events[0].details["retained_after_delete"] is True
     finally:
         db.close()
     assert not Path(image_path).exists()

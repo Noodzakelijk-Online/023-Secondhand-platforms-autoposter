@@ -92,6 +92,16 @@ python -m app.doctor --json
 
 Use `/api/health` for a lightweight API liveness check and `/api/diagnostics` for authenticated operational diagnostics.
 
+## Audit Events
+
+Authenticated users can inspect their action history with:
+
+```bash
+curl -H "Authorization: Bearer <token>" http://127.0.0.1:8000/api/audit-events
+```
+
+Use query parameters such as `event_type=data_exported` or `resource_type=listing` during support investigations. Audit events are summary records only; they should not contain raw passwords, bearer tokens, platform API tokens, or exported data bundles.
+
 ## Safety Stop
 
 If platform policy, credentials, or user account safety is uncertain, leave jobs in `needs_user_action` and do not add automated provider clients. The operator can disable workers by stopping `python -m app.worker`; queued jobs remain persisted.

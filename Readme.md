@@ -94,6 +94,7 @@ The schema includes:
 - listing drafts
 - description templates
 - publication attempts
+- audit events
 
 SQLite is the default for quick local development. PostgreSQL is supported through SQLAlchemy by setting `DATABASE_URL`, for example:
 
@@ -169,6 +170,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `DELETE /api/auth/me`
+- `GET /api/audit-events`
 - `GET /api/listings`
 - `POST /api/listings`
 - `PATCH /api/listings/{id}`
@@ -198,6 +200,8 @@ Category mappings let a user translate a master listing category into a platform
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`. The Listings screen uses those query parameters for search, status filtering, sorting, and previous/next paging.
 
 Data portability is available through Settings and the API. `GET /api/export` returns a JSON bundle with listings, platform override drafts, templates, category mappings, and sanitized platform account metadata. `POST /api/import` recreates that business data for the authenticated user. `DELETE /api/auth/me` removes the authenticated user's account, sessions, owned listings, jobs, templates, mappings, platform accounts, and uploaded image files. Password hashes, sessions, job history, platform secret references, and image binaries are not included in the JSON export.
+
+Security and privacy-sensitive actions are recorded in `audit_events`. `GET /api/audit-events` returns the authenticated user's owner-scoped audit history for listing changes, image changes, publish queue actions, manual completion, export/import, and account deletion. Audit details are summary-only and do not store exported payloads, raw platform secrets, passwords, or bearer tokens.
 
 API errors use a consistent envelope:
 

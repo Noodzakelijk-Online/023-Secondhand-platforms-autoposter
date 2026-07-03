@@ -13,6 +13,6 @@ Visible actions and backing API routes:
 | Confirm manual completion | `/api/jobs/{id}/confirm-completion` | Wired |
 | Create/delete platform account | `/api/accounts*` | Wired |
 | Export/import/delete account data | `/api/export`, `/api/import`, `/api/auth/me` | Wired |
+| Inspect audit history | `/api/audit-events` | API-only; no dedicated UI yet |
 
 No visible action is intended to claim automatic platform publishing in assisted mode.
-

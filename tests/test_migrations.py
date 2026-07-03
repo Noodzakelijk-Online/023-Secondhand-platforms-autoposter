@@ -19,6 +19,7 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "listing_images" in tables
     assert "publishing_jobs" in tables
     assert "publishing_job_logs" in tables
+    assert "audit_events" in tables
     image_columns = {column["name"] for column in inspect(engine).get_columns("listing_images")}
     assert "file_size" in image_columns
     assert "checksum_sha256" in image_columns
@@ -39,3 +40,8 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     job_indexes = {index["name"] for index in inspect(engine).get_indexes("publishing_jobs")}
     assert "ix_publishing_jobs_due_queue" in job_indexes
     assert "ix_publishing_jobs_listing_platform_status" in job_indexes
+    audit_columns = {column["name"] for column in inspect(engine).get_columns("audit_events")}
+    assert "owner_id" in audit_columns
+    assert "event_type" in audit_columns
+    assert "resource_type" in audit_columns
+    assert "details" in audit_columns

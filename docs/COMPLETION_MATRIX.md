@@ -26,7 +26,7 @@ This matrix was already present and tracks the repository's existing implementat
 | 1 | Deep Technical Audit | Partial | Repo was inspected; formal audit report still needed. |
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
-| 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
+| 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic migrations include listing details, job metadata, and audit events; migration workflow still needs PostgreSQL verification and rollback practice. |
 | 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, and basic failed-login throttling exist; cookie mode and persistent distributed rate limits still need work. |
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
@@ -52,7 +52,7 @@ This matrix was already present and tracks the repository's existing implementat
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing and job API/UI support focused filtering, sorting, bounded limit/offset paging, and pagination headers; account/template/mapping screens still need deeper query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
-| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export, import, and self-service account/data deletion exist; audit event features still need work. |
+| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export, import, self-service account/data deletion, and summary audit events exist; formal retention policy and privacy impact review still need work. |
 | 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
@@ -78,7 +78,7 @@ This matrix was already present and tracks the repository's existing implementat
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
-| 56 | Observability And Maintenance | Partial | Job logs and operator runbook exist; app-level structured logging/metrics still needed. |
+| 56 | Observability And Maintenance | Partial | Job logs, user-visible audit events, diagnostics, and operator runbook exist; app-level structured logging/metrics still needed. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |

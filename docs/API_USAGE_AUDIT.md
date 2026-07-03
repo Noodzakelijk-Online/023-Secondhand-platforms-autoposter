@@ -20,6 +20,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
 | `GET` | `/api/auth/me` | Boot current user | `test_auth_security.py` | Visible through user email. |
 | `DELETE` | `/api/auth/me` | Settings privacy delete action | `test_data_portability.py` | Visible and tested. |
+| `GET` | `/api/audit-events` | API/diagnostic audit history; no dedicated UI yet | `test_data_portability.py` | Owner-scoped and tested. Useful for privacy/export/import/delete evidence. |
 | `GET` | `/api/platforms` | Account, template, mapping, listing platform controls | `test_api.py` | Visible and tested. |
 | `GET` | `/api/listings` | Dashboard/listing list with search/filter/sort/page controls | `test_api_hardening.py` | Visible and tested. |
 | `POST` | `/api/listings` | New listing button | `test_api.py` | Visible and tested. |

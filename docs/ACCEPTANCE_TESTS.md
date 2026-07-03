@@ -16,6 +16,7 @@ Core acceptance coverage currently includes:
 | Platform validation and assisted publish package | `tests/test_api.py`, `tests/test_category_mappings.py` |
 | Worker/job processing | `tests/test_worker.py` |
 | Manual completion/final URL/history | `tests/test_api.py::test_manual_completion_records_final_url_and_history` |
+| Privacy audit events | `tests/test_data_portability.py` |
 | Migration smoke | `tests/test_migrations.py` |
 | Doctor diagnostics | `tests/test_doctor.py` |
 
@@ -30,4 +31,4 @@ Core acceptance coverage currently includes:
 7. Complete the external platform step manually.
 8. Paste the final platform URL into the manual completion form.
 9. Confirm the job becomes `published`, the mapping stores the URL, and the log says manual completion was confirmed by the user.
-
+10. Call `GET /api/audit-events` and confirm owner-scoped audit events exist for the listing, publish, export/import, or manual completion actions performed.

@@ -17,10 +17,10 @@ Verification command run:
 Result: passed.
 
 - Compile check: passed for `app`, `tests`, and `migrations`.
-- Pytest: 37 passed.
+- Pytest: 38 passed.
 - Doctor: completed with warning status for local development defaults:
   - default development `SECRET_KEY`
-  - local SQLite database not yet at latest Alembic revision
+  - local SQLite database not yet at latest Alembic revision (`head_revision`: `20260703_0005`)
 
 The doctor warnings are operational warnings for the current local environment, not test failures.
 
@@ -30,3 +30,4 @@ The doctor warnings are operational warnings for the current local environment, 
 - The UI exposes a manual completion form only for assisted jobs waiting for user action.
 - The confirmation stores a truth boundary in `job.result.manual_completion`.
 - No platform password or raw API token storage was added.
+- Audit events record state-changing and privacy-sensitive actions without storing raw secrets or full exported payloads.

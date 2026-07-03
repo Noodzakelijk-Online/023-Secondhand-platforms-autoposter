@@ -59,6 +59,20 @@ class UserOut(BaseModel):
     name: str
 
 
+class AuditEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    owner_id: int | None
+    actor_id: int | None
+    event_type: str
+    resource_type: str
+    resource_id: str | None
+    message: str
+    details: dict[str, Any]
+    created_at: datetime
+
+
 class AuthToken(BaseModel):
     token: str
     user: UserOut

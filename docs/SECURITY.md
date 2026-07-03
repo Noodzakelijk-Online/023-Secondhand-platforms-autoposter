@@ -10,6 +10,8 @@
 - Upload filename sanitization, size checks, MIME/signature validation, checksums, and listing-scoped storage paths.
 - Security headers and request IDs in middleware.
 - No raw platform passwords are stored by the web app.
+- Security and privacy-sensitive user actions are recorded in `audit_events` with summary-only details.
+- Export/import and account deletion produce audit evidence without storing exported payloads, passwords, bearer tokens, or platform secrets.
 
 ## Operational Requirements
 
@@ -24,4 +26,4 @@
 - Distributed rate limiting is not implemented.
 - Cookie/CSRF deployment mode is not implemented.
 - Formal threat model and penetration test are not complete.
-
+- Audit events are application-level records, not immutable append-only ledger storage.

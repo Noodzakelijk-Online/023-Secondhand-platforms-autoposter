@@ -2,6 +2,17 @@
 
 ## 2026-07-03
 
+### Pass 2 - Audit Events
+
+- Re-inspected branch, remotes, PR state, files, migrations, docs, and completion matrix.
+- Added persistent `audit_events` model and Alembic migration.
+- Added `GET /api/audit-events` with owner-scoped filtering and pagination.
+- Recorded audit events for listing/image changes, publish queue actions, manual completion, platform account metadata changes, templates, category mappings, export, import, and self-service account deletion.
+- Added tests for audit migration, owner scoping, export/import events, and retained account-deletion evidence.
+- Updated README and required Giant Prompt docs.
+
+### Pass 1 - Assisted Completion
+
 - Read the Giant Codex Goal Prompt PDF.
 - Audited branch, commit history, repository files, stack, tests, docs, adapters, jobs, schemas, and UI.
 - Identified the missing critical-path segment: recording manual completion and final platform URL after assisted posting.
@@ -9,4 +20,3 @@
 - Added queue UI package preview and manual completion form.
 - Added API tests for happy path, invalid status, and owner isolation.
 - Added or updated audit, critical path, acceptance, security, runbook, UI action, completion matrix, and verification docs.
-

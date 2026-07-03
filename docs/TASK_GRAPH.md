@@ -12,10 +12,14 @@ flowchart TD
   H --> I["Human platform completion"]
   I --> J["Final URL confirmation"]
   J --> K["Publication history"]
+  B --> L["Audit events"]
+  C --> L
+  G --> L
+  J --> L
+  K --> L
 ```
 
 ## External Blockers
 
 - Official API publishing requires provider credentials, OAuth/app approval, quota review, and platform-specific compliance work.
 - Assisted workflows require the user to complete external login, CAPTCHA, payment, confirmation, and final submit steps.
-

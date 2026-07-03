@@ -10,6 +10,7 @@ from app.database import SessionLocal, get_db
 from app.demo import demo_mode_enabled, ensure_demo_user
 from app.doctor import run_checks
 from app.models import (
+    AuditEvent,
     CategoryMapping,
     Listing,
     ListingDraft,
@@ -29,6 +30,7 @@ from app.schemas import (
     AuthLogin,
     AuthRegister,
     AuthToken,
+    AuditEventOut,
     CategoryMappingCreate,
     CategoryMappingOut,
     CategoryMappingUpdate,
@@ -64,6 +66,30 @@ from app.storage import StoredFile, read_validated_image, store_validated_image
 
 router = APIRouter(prefix="/api")
 SENSITIVE_CONNECTION_KEYS = ("password", "secret", "token", "api_key", "apikey", "access_key", "private_key")
+
+
+def add_audit_event(
+    db: Session,
+    *,
+    owner_id: int | None,
+    actor_id: int | None,
+    event_type: str,
+    resource_type: str,
+    resource_id: str | int | None = None,
+    message: str = "",
+    details: dict | None = None,
+) -> None:
+    db.add(
+        AuditEvent(
+            owner_id=owner_id,
+            actor_id=actor_id,
+            event_type=event_type,
+            resource_type=resource_type,
+            resource_id=str(resource_id) if resource_id is not None else None,
+            message=message,
+            details=details or {},
+        )
+    )
 
 
 def get_current_session(
@@ -171,8 +197,38 @@ def me(user: User = Depends(get_current_user)) -> User:
     return user
 
 
+@router.get("/audit-events", response_model=list[AuditEventOut])
+def list_audit_events(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    event_type: str | None = Query(default=None, max_length=80),
+    resource_type: str | None = Query(default=None, max_length=80),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(AuditEvent).filter(AuditEvent.owner_id == user.id)
+    if event_type:
+        query = query.filter(AuditEvent.event_type == event_type)
+    if resource_type:
+        query = query.filter(AuditEvent.resource_type == resource_type)
+    query = query.order_by(AuditEvent.created_at.desc(), AuditEvent.id.desc())
+    return apply_pagination(query, response, limit, offset).all()
+
+
 @router.delete("/auth/me", status_code=204)
 def delete_me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="account_deleted",
+        resource_type="user",
+        resource_id=user.id,
+        message="User requested self-service account deletion.",
+        details={"retained_after_delete": True},
+    )
+    db.flush()
     delete_user_data(db, user.id)
     return None
 
@@ -269,6 +325,16 @@ def create_listing(
 ):
     listing = Listing(owner_id=user.id, **payload.model_dump())
     db.add(listing)
+    db.flush()
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="listing_created",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing created.",
+    )
     db.commit()
     db.refresh(listing)
     return _load_listing(db, user.id, listing.id)
@@ -309,6 +375,16 @@ def update_listing(
     if data:
         listing.revision += 1
     db.add(ListingDraft(listing_id=listing.id, payload=data, source="manual_save"))
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="listing_updated",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing updated.",
+        details={"fields": sorted(data.keys())},
+    )
     db.commit()
     return _load_listing(db, user.id, listing_id)
 
@@ -320,6 +396,15 @@ def delete_listing(
     db: Session = Depends(get_db),
 ):
     listing = _load_listing(db, user.id, listing_id)
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="listing_deleted",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing deleted.",
+    )
     db.delete(listing)
     db.commit()
 
@@ -369,6 +454,16 @@ def duplicate_listing(
                 position=image.position,
             )
         )
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="listing_duplicated",
+        resource_type="listing",
+        resource_id=clone.id,
+        message="Listing duplicated.",
+        details={"source_listing_id": source.id},
+    )
     db.commit()
     return _load_listing(db, user.id, clone.id)
 
@@ -412,6 +507,21 @@ async def upload_image(
             position=position,
         )
     )
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="image_uploaded",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing image uploaded.",
+        details={
+            "filename": stored_file.original_filename,
+            "content_type": stored_file.content_type,
+            "file_size": stored_file.file_size,
+            "checksum_sha256": stored_file.checksum_sha256,
+        },
+    )
     db.commit()
     return _load_listing(db, user.id, listing.id)
 
@@ -428,6 +538,16 @@ def reorder_images(
     for position, image_id in enumerate(payload.image_ids):
         if image_id in images:
             images[image_id].position = position
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="images_reordered",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing images reordered.",
+        details={"image_ids": payload.image_ids},
+    )
     db.commit()
     return _load_listing(db, user.id, listing.id)
 
@@ -443,6 +563,16 @@ def delete_image(
     image = next((item for item in listing.images if item.id == image_id), None)
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="image_deleted",
+        resource_type="listing",
+        resource_id=listing.id,
+        message="Listing image deleted.",
+        details={"image_id": image.id, "filename": image.filename},
+    )
     db.delete(image)
     db.commit()
     return _load_listing(db, user.id, listing.id)
@@ -460,6 +590,16 @@ def save_platform_override(
     mapping = get_or_create_mapping(db, listing_id, payload.platform)
     mapping.overrides = payload.overrides
     mapping.status = "draft" if payload.selected else "skipped"
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="platform_override_saved",
+        resource_type="platform_mapping",
+        resource_id=mapping.id,
+        message="Platform override saved.",
+        details={"listing_id": listing_id, "platform": payload.platform, "selected": payload.selected},
+    )
     db.commit()
     db.refresh(mapping)
     return mapping
@@ -532,9 +672,20 @@ def publish_listing(
         get_adapter(platform_key)
         account_id = payload.account_ids.get(platform_key)
         job = enqueue_publish_job(db, listing, platform_key, account_id)
+        add_audit_event(
+            db,
+            owner_id=user.id,
+            actor_id=user.id,
+            event_type="publish_job_queued",
+            resource_type="publishing_job",
+            resource_id=job.id,
+            message="Publishing job queued or reused.",
+            details={"listing_id": listing.id, "platform": platform_key, "operation_mode": job.operation_mode},
+        )
         if payload.process_now and get_settings().job_process_inline:
             job = process_job(db, job.id)
         jobs.append(job)
+    db.commit()
     return jobs
 
 
@@ -672,6 +823,21 @@ def confirm_manual_completion(
             data=result["manual_completion"],
         )
     )
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="manual_completion_confirmed",
+        resource_type="publishing_job",
+        resource_id=job.id,
+        message="Manual platform completion confirmed by user.",
+        details={
+            "listing_id": job.listing_id,
+            "platform": job.platform,
+            "platform_url": platform_url,
+            "platform_listing_id": payload.platform_listing_id,
+        },
+    )
     db.commit()
     db.refresh(job)
     return job
@@ -705,6 +871,17 @@ def create_account(
     get_adapter(payload.platform)
     account = PlatformAccount(owner_id=user.id, **payload.model_dump())
     db.add(account)
+    db.flush()
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="platform_account_created",
+        resource_type="platform_account",
+        resource_id=account.id,
+        message="Platform account metadata created.",
+        details={"platform": account.platform, "mode": account.mode, "status": account.status},
+    )
     db.commit()
     db.refresh(account)
     return account
@@ -719,6 +896,16 @@ def delete_account(account_id: int, user: User = Depends(get_current_user), db: 
     )
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="platform_account_deleted",
+        resource_type="platform_account",
+        resource_id=account.id,
+        message="Platform account metadata deleted.",
+        details={"platform": account.platform, "display_name": account.display_name},
+    )
     db.delete(account)
     db.commit()
 
@@ -750,6 +937,17 @@ def create_template(
 ):
     template = ListingTemplate(owner_id=user.id, **payload.model_dump())
     db.add(template)
+    db.flush()
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="template_created",
+        resource_type="template",
+        resource_id=template.id,
+        message="Listing template created.",
+        details={"platform": template.platform},
+    )
     db.commit()
     db.refresh(template)
     return template
@@ -792,11 +990,32 @@ def create_category_mapping(
     )
     if existing:
         existing.platform_category = payload.platform_category
+        add_audit_event(
+            db,
+            owner_id=user.id,
+            actor_id=user.id,
+            event_type="category_mapping_updated",
+            resource_type="category_mapping",
+            resource_id=existing.id,
+            message="Category mapping updated.",
+            details={"source_category": existing.source_category, "platform": existing.platform},
+        )
         db.commit()
         db.refresh(existing)
         return existing
     category_mapping = CategoryMapping(owner_id=user.id, **payload.model_dump())
     db.add(category_mapping)
+    db.flush()
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="category_mapping_created",
+        resource_type="category_mapping",
+        resource_id=category_mapping.id,
+        message="Category mapping created.",
+        details={"source_category": category_mapping.source_category, "platform": category_mapping.platform},
+    )
     db.commit()
     db.refresh(category_mapping)
     return category_mapping
@@ -821,6 +1040,16 @@ def update_category_mapping(
         get_adapter(data["platform"])
     for key, value in data.items():
         setattr(category_mapping, key, value)
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="category_mapping_updated",
+        resource_type="category_mapping",
+        resource_id=category_mapping.id,
+        message="Category mapping updated.",
+        details={"fields": sorted(data.keys())},
+    )
     db.commit()
     db.refresh(category_mapping)
     return category_mapping
@@ -839,6 +1068,16 @@ def delete_category_mapping(
     )
     if not category_mapping:
         raise HTTPException(status_code=404, detail="Category mapping not found")
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="category_mapping_deleted",
+        resource_type="category_mapping",
+        resource_id=category_mapping.id,
+        message="Category mapping deleted.",
+        details={"source_category": category_mapping.source_category, "platform": category_mapping.platform},
+    )
     db.delete(category_mapping)
     db.commit()
 
@@ -908,7 +1147,7 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
     category_mappings = (
         db.query(CategoryMapping).filter(CategoryMapping.owner_id == user.id).order_by(CategoryMapping.id).all()
     )
-    return {
+    payload = {
         "version": "1",
         "exported_at": datetime.now(UTC),
         "user": user,
@@ -936,6 +1175,25 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
             for category_mapping in category_mappings
         ],
     }
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="data_exported",
+        resource_type="user",
+        resource_id=user.id,
+        message="User exported portable business data.",
+        details={
+            "listings": len(payload["listings"]),
+            "platform_accounts": len(payload["platform_accounts"]),
+            "templates": len(payload["templates"]),
+            "category_mappings": len(payload["category_mappings"]),
+            "includes_secrets": False,
+            "includes_image_binaries": False,
+        },
+    )
+    db.commit()
+    return payload
 
 
 @router.post("/import", response_model=DataImportResult)
@@ -1028,5 +1286,15 @@ def import_data(
             )
             result.platform_mappings_created += 1
 
+    add_audit_event(
+        db,
+        owner_id=user.id,
+        actor_id=user.id,
+        event_type="data_imported",
+        resource_type="user",
+        resource_id=user.id,
+        message="User imported portable business data.",
+        details=result.model_dump(),
+    )
     db.commit()
     return result
