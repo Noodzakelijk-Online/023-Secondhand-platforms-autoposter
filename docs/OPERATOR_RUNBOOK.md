@@ -38,8 +38,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 Worker process:
 
 ```bash
-python -m app.worker
+JOB_PROCESS_INLINE=false python -m app.worker
 ```
+
+Workers claim due queued jobs before processing. If a worker exits after claiming a job, a later worker pass requeues jobs that have remained `running` longer than `JOB_RUNNING_TIMEOUT_SECONDS` so they can be retried. Tune the timeout above the longest expected assisted/API preparation duration.
 
 Docker Compose:
 
@@ -80,6 +82,19 @@ Restore order:
 4. Run `alembic upgrade head`.
 5. Run `python -m app.doctor --json`.
 6. Start web and worker services.
+
+## Diagnostics
+
+```bash
+python -m app.doctor
+python -m app.doctor --json
+```
+
+Use `/api/health` for a lightweight API liveness check and `/api/diagnostics` for authenticated operational diagnostics.
+
+## Safety Stop
+
+If platform policy, credentials, or user account safety is uncertain, leave jobs in `needs_user_action` and do not add automated provider clients. The operator can disable workers by stopping `python -m app.worker`; queued jobs remain persisted.
 
 ## Incident Checklist
 

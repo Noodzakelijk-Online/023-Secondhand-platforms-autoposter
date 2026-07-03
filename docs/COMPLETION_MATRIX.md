@@ -14,6 +14,9 @@ Legend:
 - Done: 23.
 - Partial: 46.
 - Not started: 20.
+- Giant Prompt phases: 116, numbered 000 through 115.
+
+This matrix was already present and tracks the repository's existing implementation program. It has not yet been expanded to every named phase in the 2026-07-03 Giant Prompt; unmapped phases should be treated as missing until explicitly audited.
 
 ## Phase Status
 
@@ -33,7 +36,7 @@ Legend:
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
-| 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields; richer UI package/copy buttons/manual completion still needed. |
+| 14 | Assisted Posting As A First-Class Product | Done | Jobs prepare mapped fields, show assisted packages in the queue UI, and let the owner record final manual completion URL/history without claiming automatic publishing. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
 | 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |

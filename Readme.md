@@ -177,6 +177,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `POST /api/listings/{id}/publish`
 - `GET /api/jobs`
 - `POST /api/jobs/{id}/retry`
+- `POST /api/jobs/{id}/confirm-completion`
 - `GET /api/platforms`
 - `GET /api/diagnostics`
 - `POST /api/accounts`
@@ -189,6 +190,8 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
 Listings include revision tracking. Editing a listing increments its `revision`, and publishing job idempotency includes user, listing, revision, platform, action type, account, and operation mode. Re-queuing the same listing revision returns the existing job; editing the listing allows a fresh platform package/job.
+
+Assisted jobs finish as `needs_user_action` until the owner completes the external platform submission. After that, the owner records the final platform URL with `POST /api/jobs/{id}/confirm-completion` or the queue UI. That changes the job and platform mapping to `published`, adds a publication attempt/history entry, and records that the app did not publish automatically.
 
 Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category.
 
@@ -238,11 +241,17 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 
 ## Project phase documentation
 
+- Technical audit: `docs/TECHNICAL_AUDIT.md`
+- Critical path: `docs/CRITICAL_PATH.md`
+- Acceptance tests: `docs/ACCEPTANCE_TESTS.md`
 - Product definition: `docs/PRODUCT_DEFINITION.md`
 - Platform reality review: `docs/PLATFORM_REALITY_REVIEW.md`
 - Legacy script quarantine: `docs/LEGACY_SCRIPT_QUARANTINE.md`
 - Rate limits: `docs/RATE_LIMITS.md`
+- Security: `docs/SECURITY.md`
 - API usage audit: `docs/API_USAGE_AUDIT.md`
+- UI action audit: `docs/UI_ACTION_AUDIT.md`
+- Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Technical debt register: `docs/TECHNICAL_DEBT_REGISTER.md`
 - Testing strategy: `docs/TESTING_STRATEGY.md`
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
@@ -255,6 +264,10 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Feature flags: `docs/FEATURE_FLAGS.md`
 - Demo mode: `docs/DEMO_MODE.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
+- Final verification report: `docs/FINAL_VERIFICATION_REPORT.md`
+- Codex worklog: `docs/CODEX_WORKLOG.md`
+- Codex checkpoints: `docs/CODEX_CHECKPOINTS.md`
+- Task graph: `docs/TASK_GRAPH.md`
 
 ## Production notes
 

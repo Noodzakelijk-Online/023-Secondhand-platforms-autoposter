@@ -96,6 +96,123 @@ def test_create_validate_and_publish_listing_flow():
     assert detail_response.json()["title"] == "Vintage desk lamp"
 
 
+def test_manual_completion_records_final_url_and_history():
+    headers = auth_headers()
+    listing_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Oak side table",
+            "description": "Solid oak table with light wear.",
+            "price_cents": 4500,
+            "condition": "good",
+            "category": "Furniture",
+            "location": "Arnhem",
+            "delivery_options": {"pickup": True},
+        },
+    )
+    listing_id = listing_response.json()["id"]
+    client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=headers,
+        files={"file": ("table.png", PNG_BYTES, "image/png")},
+    )
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    job = publish_response.json()[0]
+    assert job["status"] == "needs_user_action"
+
+    completion_response = client.post(
+        f"/api/jobs/{job['id']}/confirm-completion",
+        headers=headers,
+        json={
+            "platform_url": "https://www.marktplaats.nl/v/huis-en-inrichting/tafels/m1234567890-oak-side-table",
+            "platform_listing_id": "m1234567890",
+            "note": "User completed CAPTCHA and final submit on Marktplaats.",
+        },
+    )
+
+    assert completion_response.status_code == 200, completion_response.text
+    completed_job = completion_response.json()
+    assert completed_job["status"] == "published"
+    assert completed_job["result"]["manual_completion"]["platform_listing_id"] == "m1234567890"
+    assert "did not publish automatically" in completed_job["result"]["manual_completion"]["truth_boundary"]
+    assert completed_job["logs"][-1]["message"] == "Manual platform completion confirmed by user."
+
+    listing = client.get(f"/api/listings/{listing_id}", headers=headers).json()
+    mapping = listing["platform_mappings"][0]
+    assert mapping["status"] == "published"
+    assert mapping["platform_listing_id"] == "m1234567890"
+    assert mapping["platform_url"].startswith("https://www.marktplaats.nl/")
+    assert mapping["last_published_at"] is not None
+
+
+def test_manual_completion_requires_waiting_assisted_job():
+    headers = auth_headers()
+    listing_response = client.post("/api/listings", headers=headers, json={"title": "Incomplete"})
+    listing_id = listing_response.json()["id"]
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": False},
+    )
+    job = publish_response.json()[0]
+
+    completion_response = client.post(
+        f"/api/jobs/{job['id']}/confirm-completion",
+        headers=headers,
+        json={"platform_url": "https://www.marktplaats.nl/v/example"},
+    )
+
+    assert completion_response.status_code == 409
+    assert completion_response.json()["error"]["code"] == "CONFLICT"
+
+
+def test_manual_completion_is_owner_scoped():
+    owner_headers = auth_headers()
+    listing_response = client.post(
+        "/api/listings",
+        headers=owner_headers,
+        json={
+            "title": "Vintage mirror",
+            "description": "Brass-framed mirror.",
+            "price_cents": 3000,
+            "condition": "used",
+            "category": "Home",
+            "location": "Arnhem",
+            "delivery_options": {"pickup": True},
+        },
+    )
+    listing_id = listing_response.json()["id"]
+    client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=owner_headers,
+        files={"file": ("mirror.png", PNG_BYTES, "image/png")},
+    )
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=owner_headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    job_id = publish_response.json()[0]["id"]
+    other_auth = client.post(
+        "/api/auth/register",
+        json={"email": "other@example.com", "password": "correct-password", "name": "Other"},
+    ).json()
+    other_headers = {"Authorization": f"Bearer {other_auth['token']}"}
+
+    completion_response = client.post(
+        f"/api/jobs/{job_id}/confirm-completion",
+        headers=other_headers,
+        json={"platform_url": "https://www.marktplaats.nl/v/example"},
+    )
+
+    assert completion_response.status_code == 404
+
+
 def test_validation_reports_missing_fields():
     headers = auth_headers()
     listing_response = client.post("/api/listings", headers=headers, json={"title": "Incomplete"})

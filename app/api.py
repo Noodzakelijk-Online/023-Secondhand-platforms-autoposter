@@ -39,6 +39,7 @@ from app.schemas import (
     ListingCreate,
     ListingOut,
     ListingUpdate,
+    ManualCompletionRequest,
     PlatformAccountCreate,
     PlatformAccountOut,
     PlatformMappingOut,
@@ -606,6 +607,74 @@ def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: S
     if not job or job.listing.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Job not found")
     return retry_job(db, job)
+
+
+@router.post("/jobs/{job_id}/confirm-completion", response_model=PublishingJobOut)
+def confirm_manual_completion(
+    job_id: int,
+    payload: ManualCompletionRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    job = (
+        db.query(PublishingJob)
+        .options(selectinload(PublishingJob.listing), selectinload(PublishingJob.logs))
+        .filter(PublishingJob.id == job_id)
+        .one_or_none()
+    )
+    if not job or job.listing.owner_id != user.id:
+        raise HTTPException(status_code=404, detail="Job not found")
+    if job.operation_mode != "assisted":
+        raise HTTPException(status_code=409, detail="Only assisted jobs can be manually confirmed")
+    if job.status != "needs_user_action":
+        raise HTTPException(status_code=409, detail="Job is not waiting for manual completion")
+
+    now = datetime.now(timezone.utc)
+    platform_url = str(payload.platform_url)
+    mapping = get_or_create_mapping(db, job.listing_id, job.platform)
+    mapping.status = "published"
+    mapping.platform_url = platform_url
+    mapping.platform_listing_id = payload.platform_listing_id
+    mapping.last_published_at = now
+    mapping.validation_errors = []
+
+    result = dict(job.result or {})
+    result["manual_completion"] = {
+        "confirmed_by_user_id": user.id,
+        "confirmed_at": now.isoformat(),
+        "platform_url": platform_url,
+        "platform_listing_id": payload.platform_listing_id,
+        "note": payload.note,
+        "truth_boundary": "User confirmed the external platform submission; the app did not publish automatically.",
+    }
+    job.status = "published"
+    job.error_message = None
+    job.finished_at = now
+    job.result = result
+
+    db.add(
+        PublicationAttempt(
+            job_id=job.id,
+            platform=job.platform,
+            status="published",
+            error_message=None,
+            payload_snapshot={
+                "manual_completion": result["manual_completion"],
+                "source_status": "needs_user_action",
+            },
+        )
+    )
+    db.add(
+        PublishingJobLog(
+            job_id=job.id,
+            level="info",
+            message="Manual platform completion confirmed by user.",
+            data=result["manual_completion"],
+        )
+    )
+    db.commit()
+    db.refresh(job)
+    return job
 
 
 @router.get("/accounts", response_model=list[PlatformAccountOut])

@@ -178,6 +178,28 @@ function jobItemHtml(job) {
   `;
 }
 
+function mappedFieldsHtml(fields = {}) {
+  const entries = Object.entries(fields || {});
+  if (!entries.length) return `<p class="muted">No prepared fields were returned for this job.</p>`;
+  return entries
+    .map(([key, value]) => `<p class="field-row"><strong>${escapeHtml(key)}</strong><span>${escapeHtml(String(value ?? ""))}</span></p>`)
+    .join("");
+}
+
+function manualCompletionFormHtml(job) {
+  if (job.status !== "needs_user_action" || job.operation_mode !== "assisted") return "";
+  return `
+    <form id="manualCompletionForm" class="manual-completion-form">
+      <h3>Manual completion</h3>
+      <p class="muted">Complete the external platform step yourself, then record the final listing URL here.</p>
+      <label>Final platform URL<input name="platform_url" type="url" required placeholder="https://..." /></label>
+      <label>Platform listing ID<input name="platform_listing_id" maxlength="255" /></label>
+      <label>Note<textarea name="note" rows="2" maxlength="500"></textarea></label>
+      <button type="submit">Confirm completed</button>
+    </form>
+  `;
+}
+
 function renderListings() {
   $("#listingSearch").value = state.listingQuery.search;
   $("#listingStatusFilter").value = state.listingQuery.status;
@@ -686,13 +708,32 @@ $("#jobList").addEventListener("click", (event) => {
     </div>
     <p><span class="${statusClass(job.status)}">${escapeHtml(job.status)}</span></p>
     <p class="muted">${escapeHtml(job.error_message || job.result?.posting_url || "")}</p>
+    <h3>Prepared package</h3>
+    <div class="prepared-package">${mappedFieldsHtml(job.result?.mapped_fields)}</div>
     <h3>Logs</h3>
     ${(job.logs || []).map((log) => `<p class="job-log">${escapeHtml(log.message)}</p>`).join("")}
+    ${manualCompletionFormHtml(job)}
   `;
   $("#retryJobButton").addEventListener("click", async () => {
     await api(`/jobs/${job.id}/retry`, { method: "POST" });
     await loadAll();
   });
+  const completionForm = $("#manualCompletionForm");
+  if (completionForm) {
+    completionForm.addEventListener("submit", async (submitEvent) => {
+      submitEvent.preventDefault();
+      await api(`/jobs/${job.id}/confirm-completion`, {
+        method: "POST",
+        body: JSON.stringify({
+          platform_url: completionForm.platform_url.value,
+          platform_listing_id: completionForm.platform_listing_id.value || null,
+          note: completionForm.note.value,
+        }),
+      });
+      await loadAll();
+      $("#jobDetails").classList.add("hidden");
+    });
+  }
 });
 
 $("#accountForm").addEventListener("submit", async (event) => {

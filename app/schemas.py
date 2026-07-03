@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl, field_validator
 
 
 def _non_negative(value: int | None) -> int | None:
@@ -215,6 +215,12 @@ class PublishRequest(BaseModel):
     platforms: list[str]
     account_ids: dict[str, int] = Field(default_factory=dict)
     process_now: bool = True
+
+
+class ManualCompletionRequest(BaseModel):
+    platform_url: HttpUrl
+    platform_listing_id: str | None = Field(default=None, max_length=255)
+    note: str = Field(default="", max_length=500)
 
 
 class JobLogOut(BaseModel):
