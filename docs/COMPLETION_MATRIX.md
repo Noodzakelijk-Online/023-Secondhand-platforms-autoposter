@@ -42,14 +42,14 @@ Legend:
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens and category mapping settings exist; exports, frontend diagnostics/about, and richer package views missing. |
+| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, and data portability controls exist; frontend diagnostics/about and richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Not started | Need route-by-route frontend usage map. |
 | 26 | Templates And Productivity Features | Partial | Templates and category mappings exist; applying templates and richer variants need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Not started | List endpoints and UI need these. |
-| 29 | Exports And Imports | Not started | No export/import features yet. |
-| 30 | Privacy And Data Control | Partial | Auth isolation exists; export/delete/audit features need work. |
+| 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
+| 30 | Privacy And Data Control | Partial | Auth isolation and sanitized user export exist; account/data deletion and audit features still need work. |
 | 31 | Platform Account Management | Partial | Accounts CRUD exists; secure token/account setup model needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |

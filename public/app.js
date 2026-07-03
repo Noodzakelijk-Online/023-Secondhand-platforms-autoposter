@@ -502,4 +502,32 @@ $("#categoryMappingList").addEventListener("click", async (event) => {
   await loadAll();
 });
 
+$("#exportDataButton").addEventListener("click", async () => {
+  const bundle = await api("/export");
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `autoposter-export-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  $("#dataPortabilityMessage").textContent = "Export ready";
+});
+
+$("#importDataInput").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const bundle = JSON.parse(await file.text());
+    const result = await api("/import", { method: "POST", body: JSON.stringify(bundle) });
+    $("#dataPortabilityMessage").textContent =
+      `Imported ${result.listings_created} listings, ${result.templates_created + result.templates_updated} templates, ` +
+      `${result.category_mappings_created + result.category_mappings_updated} mappings`;
+    await loadAll();
+  } catch (error) {
+    $("#dataPortabilityMessage").textContent = error.message;
+  } finally {
+    event.target.value = "";
+  }
+});
+
 boot();

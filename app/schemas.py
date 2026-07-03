@@ -219,6 +219,70 @@ class CategoryMappingOut(CategoryMappingCreate):
     updated_at: datetime
 
 
+class ExportListingImage(BaseModel):
+    filename: str
+    storage_path: str
+    content_type: str
+    file_size: int
+    checksum_sha256: str
+    position: int
+
+
+class ExportPlatformMapping(BaseModel):
+    platform: str
+    platform_listing_id: str | None = None
+    status: str = "draft"
+    platform_url: str | None = None
+    overrides: dict[str, Any] = Field(default_factory=dict)
+    validation_errors: list[Any] = Field(default_factory=list)
+    last_published_at: datetime | None = None
+
+
+class ExportListing(ListingBase):
+    revision: int = 1
+    images: list[ExportListingImage] = Field(default_factory=list)
+    platform_mappings: list[ExportPlatformMapping] = Field(default_factory=list)
+
+
+class DataExportBundle(BaseModel):
+    version: str = "1"
+    exported_at: datetime
+    user: UserOut
+    listings: list[ExportListing] = Field(default_factory=list)
+    platform_accounts: list[PlatformAccountCreate] = Field(default_factory=list)
+    templates: list[TemplateCreate] = Field(default_factory=list)
+    category_mappings: list[CategoryMappingCreate] = Field(default_factory=list)
+
+
+class ImportPlatformMapping(BaseModel):
+    platform: str
+    overrides: dict[str, Any] = Field(default_factory=dict)
+
+
+class ImportListing(ListingCreate):
+    platform_mappings: list[ImportPlatformMapping] = Field(default_factory=list)
+
+
+class DataImportBundle(BaseModel):
+    version: str | None = None
+    listings: list[ImportListing] = Field(default_factory=list)
+    platform_accounts: list[PlatformAccountCreate] = Field(default_factory=list)
+    templates: list[TemplateCreate] = Field(default_factory=list)
+    category_mappings: list[CategoryMappingCreate] = Field(default_factory=list)
+
+
+class DataImportResult(BaseModel):
+    listings_created: int = 0
+    platform_mappings_created: int = 0
+    platform_accounts_created: int = 0
+    platform_accounts_updated: int = 0
+    templates_created: int = 0
+    templates_updated: int = 0
+    category_mappings_created: int = 0
+    category_mappings_updated: int = 0
+    skipped: int = 0
+
+
 class ValidationResult(BaseModel):
     platform: str
     ready: bool

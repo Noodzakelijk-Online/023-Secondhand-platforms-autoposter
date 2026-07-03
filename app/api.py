@@ -27,6 +27,9 @@ from app.schemas import (
     CategoryMappingCreate,
     CategoryMappingOut,
     CategoryMappingUpdate,
+    DataExportBundle,
+    DataImportBundle,
+    DataImportResult,
     ImageOrderUpdate,
     ListingCreate,
     ListingOut,
@@ -48,6 +51,7 @@ from app.storage import StoredFile, read_validated_image, store_validated_image
 
 
 router = APIRouter(prefix="/api")
+SENSITIVE_CONNECTION_KEYS = ("password", "secret", "token", "api_key", "apikey", "access_key", "private_key")
 
 
 def get_current_session(
@@ -709,3 +713,192 @@ def delete_category_mapping(
         raise HTTPException(status_code=404, detail="Category mapping not found")
     db.delete(category_mapping)
     db.commit()
+
+
+def _adapter_available(platform: str) -> bool:
+    try:
+        get_adapter(platform)
+    except ValueError:
+        return False
+    return True
+
+
+def _sanitize_connection_data(value):
+    if isinstance(value, dict):
+        clean = {}
+        for key, nested_value in value.items():
+            normalized = key.lower().replace("-", "_")
+            if any(secret_key in normalized for secret_key in SENSITIVE_CONNECTION_KEYS):
+                continue
+            clean[key] = _sanitize_connection_data(nested_value)
+        return clean
+    if isinstance(value, list):
+        return [_sanitize_connection_data(item) for item in value]
+    return value
+
+
+def _export_listing(listing: Listing) -> dict:
+    payload = {field: getattr(listing, field) for field in ListingCreate.model_fields}
+    payload["revision"] = listing.revision
+    payload["images"] = [
+        {
+            "filename": image.filename,
+            "storage_path": image.storage_path,
+            "content_type": image.content_type,
+            "file_size": image.file_size,
+            "checksum_sha256": image.checksum_sha256,
+            "position": image.position,
+        }
+        for image in listing.images
+    ]
+    payload["platform_mappings"] = [
+        {
+            "platform": mapping.platform,
+            "platform_listing_id": mapping.platform_listing_id,
+            "status": mapping.status,
+            "platform_url": mapping.platform_url,
+            "overrides": mapping.overrides or {},
+            "validation_errors": mapping.validation_errors or [],
+            "last_published_at": mapping.last_published_at,
+        }
+        for mapping in listing.platform_mappings
+    ]
+    return payload
+
+
+@router.get("/export", response_model=DataExportBundle)
+def export_data(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    listings = (
+        db.query(Listing)
+        .options(selectinload(Listing.images), selectinload(Listing.platform_mappings))
+        .filter(Listing.owner_id == user.id)
+        .order_by(Listing.created_at.asc())
+        .all()
+    )
+    accounts = db.query(PlatformAccount).filter(PlatformAccount.owner_id == user.id).order_by(PlatformAccount.id).all()
+    templates = db.query(ListingTemplate).filter(ListingTemplate.owner_id == user.id).order_by(ListingTemplate.id).all()
+    category_mappings = (
+        db.query(CategoryMapping).filter(CategoryMapping.owner_id == user.id).order_by(CategoryMapping.id).all()
+    )
+    return {
+        "version": "1",
+        "exported_at": datetime.now(timezone.utc),
+        "user": user,
+        "listings": [_export_listing(listing) for listing in listings],
+        "platform_accounts": [
+            {
+                "platform": account.platform,
+                "display_name": account.display_name,
+                "mode": account.mode,
+                "status": account.status,
+                "connection_data": _sanitize_connection_data(account.connection_data or {}),
+            }
+            for account in accounts
+        ],
+        "templates": [
+            {"name": template.name, "platform": template.platform, "body": template.body}
+            for template in templates
+        ],
+        "category_mappings": [
+            {
+                "source_category": category_mapping.source_category,
+                "platform": category_mapping.platform,
+                "platform_category": category_mapping.platform_category,
+            }
+            for category_mapping in category_mappings
+        ],
+    }
+
+
+@router.post("/import", response_model=DataImportResult)
+def import_data(
+    payload: DataImportBundle,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    result = DataImportResult()
+
+    for account_payload in payload.platform_accounts:
+        if not _adapter_available(account_payload.platform):
+            result.skipped += 1
+            continue
+        account = (
+            db.query(PlatformAccount)
+            .filter(
+                PlatformAccount.owner_id == user.id,
+                PlatformAccount.platform == account_payload.platform,
+                PlatformAccount.display_name == account_payload.display_name,
+            )
+            .one_or_none()
+        )
+        if account:
+            account.mode = account_payload.mode
+            account.status = account_payload.status
+            account.connection_data = _sanitize_connection_data(account_payload.connection_data)
+            result.platform_accounts_updated += 1
+        else:
+            account_data = account_payload.model_dump()
+            account_data["connection_data"] = _sanitize_connection_data(account_data["connection_data"])
+            db.add(PlatformAccount(owner_id=user.id, **account_data))
+            result.platform_accounts_created += 1
+
+    for template_payload in payload.templates:
+        template = (
+            db.query(ListingTemplate)
+            .filter(
+                ListingTemplate.owner_id == user.id,
+                ListingTemplate.name == template_payload.name,
+                ListingTemplate.platform == template_payload.platform,
+            )
+            .one_or_none()
+        )
+        if template:
+            template.body = template_payload.body
+            result.templates_updated += 1
+        else:
+            db.add(ListingTemplate(owner_id=user.id, **template_payload.model_dump()))
+            result.templates_created += 1
+
+    for category_payload in payload.category_mappings:
+        if not _adapter_available(category_payload.platform):
+            result.skipped += 1
+            continue
+        category_mapping = (
+            db.query(CategoryMapping)
+            .filter(
+                CategoryMapping.owner_id == user.id,
+                CategoryMapping.source_category == category_payload.source_category,
+                CategoryMapping.platform == category_payload.platform,
+            )
+            .one_or_none()
+        )
+        if category_mapping:
+            category_mapping.platform_category = category_payload.platform_category
+            result.category_mappings_updated += 1
+        else:
+            db.add(CategoryMapping(owner_id=user.id, **category_payload.model_dump()))
+            result.category_mappings_created += 1
+
+    for listing_payload in payload.listings:
+        listing_data = listing_payload.model_dump(exclude={"platform_mappings"})
+        listing = Listing(owner_id=user.id, **listing_data)
+        db.add(listing)
+        db.flush()
+        result.listings_created += 1
+        for mapping_payload in listing_payload.platform_mappings:
+            if not _adapter_available(mapping_payload.platform):
+                result.skipped += 1
+                continue
+            db.add(
+                PlatformListingMapping(
+                    listing_id=listing.id,
+                    platform=mapping_payload.platform,
+                    status="draft",
+                    overrides=mapping_payload.overrides,
+                    validation_errors=[],
+                )
+            )
+            result.platform_mappings_created += 1
+
+    db.commit()
+    return result

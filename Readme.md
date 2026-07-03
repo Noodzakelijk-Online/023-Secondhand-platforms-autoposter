@@ -170,6 +170,8 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `POST /api/templates`
 - `GET /api/category-mappings`
 - `POST /api/category-mappings`
+- `GET /api/export`
+- `POST /api/import`
 
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
@@ -178,6 +180,8 @@ Listings include revision tracking. Editing a listing increments its `revision`,
 Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category.
 
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`.
+
+Data portability is available through Settings and the API. `GET /api/export` returns a JSON bundle with listings, platform override drafts, templates, category mappings, and sanitized platform account metadata. `POST /api/import` recreates that business data for the authenticated user. Password hashes, sessions, job history, platform secret references, and image binaries are not included in the JSON export.
 
 API errors use a consistent envelope:
 
