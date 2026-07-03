@@ -102,7 +102,17 @@ DATABASE_URL=postgresql+psycopg://autoposter:autoposter@postgres:5432/autoposter
 docker compose --profile postgres up --build
 ```
 
-## Running tests
+## Verification
+
+Run the local verification gate before pushing changes:
+
+```bash
+python scripts/verify.py
+```
+
+The script runs Python compile checks, the full pytest suite, and the doctor command.
+
+You can also run the test suite directly:
 
 ```bash
 pytest

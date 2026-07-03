@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 9.
-- Partial: 51.
+- Done: 10.
+- Partial: 50.
 - Not started: 29.
 
 ## Phase Status
@@ -56,7 +56,7 @@ Legend:
 | 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
-| 37 | Verification Commands | Partial | README documents tests, migrations, compile checks, and doctor command; full release verification script still needed. |
+| 37 | Verification Commands | Done | `python scripts/verify.py` runs compile checks, the full pytest suite, and doctor diagnostics. |
 | 38 | Demo Mode Without Fake Production | Partial | `DEV_AUTO_LOGIN` exists; stronger demo isolation needed. |
 | 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
 | 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |
