@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 13.
+- Done: 15.
 - Partial: 49.
-- Not started: 27.
+- Not started: 25.
 
 ## Phase Status
 
@@ -74,7 +74,7 @@ Legend:
 | 52 | UI/UX Debugging Rounds | Not started | Needs manual/browser audit. |
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
-| 55 | Backup, Restore, And Data Reconciliation | Not started | Needed. |
+| 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
 | 56 | Observability And Maintenance | Partial | Job logs and operator runbook exist; app-level structured logging/metrics still needed. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
@@ -91,7 +91,7 @@ Legend:
 | 69 | Performance And Scale Basics | Not started | Needed. |
 | 70 | Release Readiness | Not started | Needed. |
 | 71 | Supply Chain And Dependencies | Partial | Requirements split exists; vulnerability tooling needed. |
-| 72 | Backup/Restore And Disaster Recovery | Not started | Needed. |
+| 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
 | 74 | Real Non-Technical User Simulation | Not started | Needed. |
 | 75 | Autonomy-First Design | Not started | Needs product walkthrough. |
