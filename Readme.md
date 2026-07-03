@@ -47,15 +47,26 @@ The app is available at `http://127.0.0.1:8000`. SQLite data and uploads are sto
 - `UPLOAD_DIR`: image upload directory. Default: `./data/uploads`.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
 - `DEV_AUTO_LOGIN`: creates a demo session for local-only development when `true`.
+- `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
+- `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
+- `LOG_LEVEL`: desired logging verbosity for deployment.
 
 Legacy Selenium variables are documented in `.env.example` and should only be filled locally.
 
 ## Database
 
-Tables are created automatically at startup. The schema includes:
+In development, tables can be created automatically when `AUTO_CREATE_TABLES=true`.
+
+For production, set `AUTO_CREATE_TABLES=false` and run Alembic migrations explicitly:
+
+```bash
+alembic upgrade head
+```
+
+The schema includes:
 
 - users and user sessions
 - listings/products
@@ -69,7 +80,12 @@ Tables are created automatically at startup. The schema includes:
 - description templates
 - publication attempts
 
-For future production migrations, add Alembic and generate migrations from the SQLAlchemy models in `app/models.py`.
+SQLite is the default for quick local development. PostgreSQL is supported through SQLAlchemy by setting `DATABASE_URL`, for example:
+
+```bash
+DATABASE_URL=postgresql+psycopg://autoposter:autoposter@postgres:5432/autoposter
+docker compose --profile postgres up --build
+```
 
 ## Running tests
 
@@ -139,5 +155,5 @@ Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 - Place uploads on persistent storage.
 - Put the app behind HTTPS.
 - Restrict `CORS_ORIGINS`.
-- Add Alembic migrations before collaborative production development.
+- Run Alembic migrations before production startup.
 - Configure platform OAuth/API credentials only through environment variables or a proper secret manager.

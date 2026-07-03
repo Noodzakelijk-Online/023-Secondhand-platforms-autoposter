@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api import router
-from app.config import get_settings
+from app.config import get_settings, validate_startup_safety
 from app.database import init_db
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    init_db()
+    validate_startup_safety(settings)
+    if settings.auto_create_tables:
+        init_db()
     settings.upload_path.mkdir(parents=True, exist_ok=True)
 
     app = FastAPI(title=settings.app_name)

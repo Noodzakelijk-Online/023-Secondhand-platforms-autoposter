@@ -23,8 +23,8 @@ Legend:
 | 1 | Deep Technical Audit | Partial | Repo was inspected; formal audit report still needed. |
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
-| 4 | Database And Migrations | Partial | SQLAlchemy schema exists; Alembic migration system still needed. |
-| 5 | Configuration And Startup Safety | Partial | `.env.example` exists; production startup guards need expansion. |
+| 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
+| 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/current user/session expiration exist; bcrypt/Argon2, logout revocation, rate limits need work. |
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
 | 8 | API Hardening | Partial | Response models and docs exist; request IDs, error envelope, pagination/filtering still needed. |

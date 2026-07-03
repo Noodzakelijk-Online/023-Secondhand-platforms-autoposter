@@ -8,3 +8,20 @@ services:
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_DB: autoposter
+      POSTGRES_USER: autoposter
+      POSTGRES_PASSWORD: autoposter
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

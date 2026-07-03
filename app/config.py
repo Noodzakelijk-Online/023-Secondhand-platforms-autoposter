@@ -9,9 +9,12 @@ class Settings(BaseSettings):
     app_env: str = "development"
     secret_key: str = "change-me-in-production"
     database_url: str = "sqlite:///./data/autoposter.db"
+    public_base_url: str = "http://127.0.0.1:8000"
     upload_dir: str = "./data/uploads"
     cors_origins: str = "*"
+    log_level: str = "INFO"
     dev_auto_login: bool = False
+    auto_create_tables: bool = True
     job_process_inline: bool = True
     platform_rate_limit_seconds: int = 60
     session_expire_hours: int = 168
@@ -21,6 +24,29 @@ class Settings(BaseSettings):
     @property
     def upload_path(self) -> Path:
         return Path(self.upload_dir)
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env.lower() == "production"
+
+
+def validate_startup_safety(settings: Settings) -> None:
+    if not settings.is_production:
+        return
+
+    problems: list[str] = []
+    if settings.secret_key in {"", "change-me-in-production"}:
+        problems.append("SECRET_KEY must be set to a strong non-default value")
+    if settings.dev_auto_login:
+        problems.append("DEV_AUTO_LOGIN must be false in production")
+    if settings.auto_create_tables:
+        problems.append("AUTO_CREATE_TABLES must be false in production; run Alembic migrations explicitly")
+    if settings.cors_origins.strip() == "*":
+        problems.append("CORS_ORIGINS must be restricted in production")
+
+    if problems:
+        detail = "; ".join(problems)
+        raise RuntimeError(f"Unsafe production configuration: {detail}")
 
 
 @lru_cache
