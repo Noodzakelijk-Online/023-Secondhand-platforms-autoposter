@@ -241,6 +241,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Rate limits: `docs/RATE_LIMITS.md`
 - API usage audit: `docs/API_USAGE_AUDIT.md`
 - Technical debt register: `docs/TECHNICAL_DEBT_REGISTER.md`
+- Testing strategy: `docs/TESTING_STRATEGY.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes
