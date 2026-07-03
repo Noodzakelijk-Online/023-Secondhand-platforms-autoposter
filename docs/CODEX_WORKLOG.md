@@ -2,6 +2,14 @@
 
 ## 2026-07-03
 
+### Pass 3 - Platform Secret Boundary
+
+- Rechecked platform account security and provider credential boundaries.
+- Added recursive detection for secret-like keys in platform account `connection_data`.
+- Rejected new platform account metadata that includes raw passwords, tokens, API keys, access keys, private keys, or secrets.
+- Kept export sanitization coverage for legacy/stored secret-like fields.
+- Added API hardening test coverage and updated security/provider docs.
+
 ### Pass 2 - Audit Events
 
 - Re-inspected branch, remotes, PR state, files, migrations, docs, and completion matrix.

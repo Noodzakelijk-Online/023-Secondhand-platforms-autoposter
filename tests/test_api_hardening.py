@@ -47,6 +47,24 @@ def test_validation_errors_use_structured_envelope():
     assert "query.limit" in payload["error"]["field_errors"]
 
 
+def test_platform_account_rejects_raw_secret_connection_data():
+    headers = auth_headers()
+    response = client.post(
+        "/api/accounts",
+        headers=headers,
+        json={
+            "platform": "ebay",
+            "display_name": "Unsafe eBay",
+            "connection_data": {"store": "main", "access_token": "do-not-store"},
+        },
+    )
+
+    assert response.status_code == 400
+    payload = response.json()
+    assert payload["error"]["code"] == "BAD_REQUEST"
+    assert "must not contain raw secrets" in payload["error"]["message"]
+
+
 def test_listings_support_pagination_filtering_and_sorting():
     headers = auth_headers()
     client.post(

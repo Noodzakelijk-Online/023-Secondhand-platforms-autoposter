@@ -55,3 +55,5 @@ This document records the current integration reality for each platform. It inte
 ## Cross-Platform Compliance Position
 
 All current platform integrations are assisted. Jobs may prepare a platform posting package and return `needs_user_action`; they must not claim `published` unless a real official API confirms publication or a user confirmation feature is added and records the published URL.
+
+Platform account records are metadata only. New account metadata requests reject raw secret-like keys such as passwords, access tokens, API keys, and private keys in `connection_data`. Future official API integrations must store credentials in a real secret manager and reference them without exposing raw values to exports, audit logs, or frontend responses.

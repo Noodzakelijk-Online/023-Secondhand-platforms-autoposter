@@ -92,6 +92,34 @@ def add_audit_event(
     )
 
 
+def find_sensitive_connection_keys(value, prefix: str = "") -> list[str]:
+    matches: list[str] = []
+    if isinstance(value, dict):
+        for key, nested_value in value.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            normalized = str(key).lower().replace("-", "_")
+            if any(secret_key in normalized for secret_key in SENSITIVE_CONNECTION_KEYS):
+                matches.append(path)
+                continue
+            matches.extend(find_sensitive_connection_keys(nested_value, path))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            matches.extend(find_sensitive_connection_keys(item, f"{prefix}[{index}]"))
+    return matches
+
+
+def reject_sensitive_connection_data(connection_data: dict) -> None:
+    sensitive_keys = find_sensitive_connection_keys(connection_data or {})
+    if sensitive_keys:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Platform account connection_data must not contain raw secrets. "
+                "Store credentials in a secret manager and reference them outside this payload."
+            ),
+        )
+
+
 def get_current_session(
     authorization: str | None = Header(default=None),
     db: Session = Depends(get_db),
@@ -869,6 +897,7 @@ def create_account(
     db: Session = Depends(get_db),
 ):
     get_adapter(payload.platform)
+    reject_sensitive_connection_data(payload.connection_data)
     account = PlatformAccount(owner_id=user.id, **payload.model_dump())
     db.add(account)
     db.flush()

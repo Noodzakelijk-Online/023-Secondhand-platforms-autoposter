@@ -64,7 +64,7 @@ def create_portable_workspace(headers):
             "display_name": "Portable eBay",
             "mode": "assisted",
             "status": "ready",
-            "connection_data": {"store": "main", "access_token": "do-not-export"},
+            "connection_data": {"store": "main"},
         },
     )
     assert account_response.status_code == 200, account_response.text
@@ -72,6 +72,7 @@ def create_portable_workspace(headers):
     db = SessionLocal()
     try:
         account = db.query(PlatformAccount).filter(PlatformAccount.display_name == "Portable eBay").one()
+        account.connection_data = {"store": "main", "access_token": "do-not-export"}
         account.secret_ref = "vault://secret/platform-token"
         db.commit()
     finally:

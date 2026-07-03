@@ -52,8 +52,8 @@ This matrix was already present and tracks the repository's existing implementat
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing and job API/UI support focused filtering, sorting, bounded limit/offset paging, and pagination headers; account/template/mapping screens still need deeper query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
-| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export, import, self-service account/data deletion, and summary audit events exist; formal retention policy and privacy impact review still need work. |
-| 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
+| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export, import, self-service account/data deletion, summary audit events, and raw secret rejection exist; formal retention policy and privacy impact review still need work. |
+| 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI, and new metadata rejects raw secrets; real secret-manager references and OAuth setup still need work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
 | 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
