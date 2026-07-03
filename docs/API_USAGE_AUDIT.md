@@ -1,0 +1,54 @@
+# API Usage Audit
+
+This audit maps the FastAPI surface to visible frontend usage, tests, and remaining gaps.
+
+## Summary
+
+- Frontend entrypoint: `public/app.js`
+- API implementation: `app/api.py`
+- Current UI coverage: dashboard, listings, queue, accounts, settings, export/import
+- Current test coverage: API smoke flow, hardening, auth, storage, worker, revisions, category mappings, data portability, diagnostics
+
+## Route Map
+
+| Method | Route | Frontend usage | Test coverage | Notes |
+| --- | --- | --- | --- | --- |
+| `GET` | `/api/health` | Boot health badge | `test_api_hardening.py` | Public endpoint. |
+| `GET` | `/api/diagnostics` | Not yet visible | `test_doctor.py` | Candidate for Settings/About diagnostic panel. |
+| `POST` | `/api/auth/register` | Auth form create account | `test_api.py`, `test_auth_security.py` | Visible and tested. |
+| `POST` | `/api/auth/login` | Auth form sign in | `test_api.py`, `test_auth_security.py` | Visible and tested. |
+| `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
+| `GET` | `/api/auth/me` | Boot current user | `test_auth_security.py` | Visible through user email. |
+| `GET` | `/api/platforms` | Account, template, mapping, listing platform controls | `test_api.py` indirectly | Add explicit adapter metadata contract test. |
+| `GET` | `/api/listings` | Dashboard/listing list with search/filter/sort/page controls | `test_api_hardening.py` | Visible and tested. |
+| `POST` | `/api/listings` | New listing button | `test_api.py` | Visible and tested. |
+| `GET` | `/api/listings/{listing_id}` | Not directly used | Covered indirectly by ownership/listing flows | Useful for future deep-linking. |
+| `PATCH` | `/api/listings/{listing_id}` | Listing editor save | `test_listing_revisions.py`, `test_api.py` | Visible and tested. |
+| `DELETE` | `/api/listings/{listing_id}` | Listing editor delete | Covered indirectly by API flows | Add explicit delete ownership test. |
+| `POST` | `/api/listings/{listing_id}/duplicate` | Listing editor duplicate | `test_listing_revisions.py` | Visible and tested. |
+| `POST` | `/api/listings/{listing_id}/images` | Listing image upload | `test_storage_uploads.py`, `test_api.py` | Visible and tested. |
+| `PATCH` | `/api/listings/{listing_id}/images/order` | Not yet visible | Not covered | Needs drag/reorder UI or removal from public contract. |
+| `DELETE` | `/api/listings/{listing_id}/images/{image_id}` | Image tile delete | `test_storage_uploads.py` | Visible and tested. |
+| `POST` | `/api/listings/{listing_id}/platforms` | Platform selection and description overrides | `test_listing_revisions.py`, `test_category_mappings.py` | Visible and tested. |
+| `GET` | `/api/listings/{listing_id}/validate` | Validate button | `test_api.py`, `test_category_mappings.py` | Visible and tested. |
+| `POST` | `/api/listings/{listing_id}/publish` | Queue publish button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
+| `GET` | `/api/jobs` | Dashboard/latest jobs and queue view | `test_worker.py` indirectly | Visible; add query-control UI later. |
+| `GET` | `/api/jobs/{job_id}` | Not directly used | Covered indirectly by job tests | Useful for future deep-linking. |
+| `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |
+| `GET` | `/api/accounts` | Accounts list | `test_api.py` | Visible and tested. |
+| `POST` | `/api/accounts` | Account form | `test_api.py` | Visible and tested. |
+| `DELETE` | `/api/accounts/{account_id}` | Not yet visible | Not covered | Needs account delete UI and ownership test. |
+| `GET` | `/api/templates` | Settings template list | `test_api.py`, `test_data_portability.py` | Visible and tested. |
+| `POST` | `/api/templates` | Settings template form | `test_api.py`, `test_data_portability.py` | Visible and tested. |
+| `GET` | `/api/category-mappings` | Settings mapping list | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
+| `POST` | `/api/category-mappings` | Settings mapping form | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
+| `PATCH` | `/api/category-mappings/{mapping_id}` | Not yet visible | Not covered | Current UI uses upsert via `POST`; inline edit can use this route later. |
+| `DELETE` | `/api/category-mappings/{mapping_id}` | Settings mapping delete | `test_category_mappings.py` | Visible and tested. |
+| `GET` | `/api/export` | Settings export JSON | `test_data_portability.py` | Visible and tested. |
+| `POST` | `/api/import` | Settings import JSON | `test_data_portability.py` | Visible and tested. |
+
+## Required Follow-Up
+
+- Add frontend controls for diagnostics, account deletion, category mapping edit, image reorder, and job/list query filters.
+- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, `DELETE /api/accounts/{account_id}`, `PATCH /api/category-mappings/{mapping_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
+- Keep this audit updated whenever a route is added, removed, or made visible in the UI.

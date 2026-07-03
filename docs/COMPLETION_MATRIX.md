@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 7.
+- Done: 8.
 - Partial: 51.
-- Not started: 31.
+- Not started: 30.
 
 ## Phase Status
 
@@ -44,7 +44,7 @@ Legend:
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, and data portability controls exist; frontend diagnostics/about and richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
-| 25 | API Usage Audit | Not started | Need route-by-route frontend usage map. |
+| 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Partial | Templates and category mappings exist; applying templates and richer variants need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing API and UI support search, status filtering, sorting, bounded limit/offset paging, and pagination headers; broader screens still need query controls. |

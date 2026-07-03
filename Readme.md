@@ -229,6 +229,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Platform reality review: `docs/PLATFORM_REALITY_REVIEW.md`
 - Legacy script quarantine: `docs/LEGACY_SCRIPT_QUARANTINE.md`
 - Rate limits: `docs/RATE_LIMITS.md`
+- API usage audit: `docs/API_USAGE_AUDIT.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes
