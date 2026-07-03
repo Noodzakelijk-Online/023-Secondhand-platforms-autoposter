@@ -10,6 +10,7 @@ from sqlalchemy import create_engine, text
 
 from app.adapters import list_platforms
 from app.config import Settings, get_settings, validate_startup_safety
+from app.feature_flags import feature_flag_summary
 
 
 @dataclass(frozen=True)
@@ -51,20 +52,20 @@ def check_startup_safety(settings: Settings) -> DoctorCheck:
             name="startup_safety",
             status="error",
             message=str(exc),
-            details={"app_env": settings.app_env},
+            details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
         )
     if not settings.is_production and settings.secret_key == "change-me-in-production":
         return DoctorCheck(
             name="startup_safety",
             status="warning",
             message="Development is using the default SECRET_KEY. Replace it before production.",
-            details={"app_env": settings.app_env},
+            details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
         )
     return DoctorCheck(
         name="startup_safety",
         status="ok",
         message="Startup safety checks passed.",
-        details={"app_env": settings.app_env},
+        details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
     )
 
 

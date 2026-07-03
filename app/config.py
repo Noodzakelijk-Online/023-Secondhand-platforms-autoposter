@@ -3,6 +3,8 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.feature_flags import FeatureFlag, build_feature_flags, unsafe_production_feature_flags
+
 
 class Settings(BaseSettings):
     app_name: str = "Secondhand Platforms Autoposter"
@@ -44,6 +46,10 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         return self.app_env.lower() == "production"
 
+    @property
+    def feature_flags(self) -> tuple[FeatureFlag, ...]:
+        return build_feature_flags(self)
+
 
 def validate_startup_safety(settings: Settings) -> None:
     if not settings.is_production:
@@ -52,10 +58,8 @@ def validate_startup_safety(settings: Settings) -> None:
     problems: list[str] = []
     if settings.secret_key in {"", "change-me-in-production"}:
         problems.append("SECRET_KEY must be set to a strong non-default value")
-    if settings.dev_auto_login:
-        problems.append("DEV_AUTO_LOGIN must be false in production")
-    if settings.auto_create_tables:
-        problems.append("AUTO_CREATE_TABLES must be false in production; run Alembic migrations explicitly")
+    for flag in unsafe_production_feature_flags(settings):
+        problems.append(flag.production_error)
     if settings.cors_origins.strip() == "*":
         problems.append("CORS_ORIGINS must be restricted in production")
 

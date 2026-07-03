@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 21.
-- Partial: 48.
+- Done: 22.
+- Partial: 47.
 - Not started: 20.
 
 ## Phase Status
@@ -80,7 +80,7 @@ Legend:
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |
 | 60 | Internationalization | Not started | Needed. |
-| 61 | Feature Flags | Partial | Environment toggles exist; formal feature flag system needed. |
+| 61 | Feature Flags | Done | `app.feature_flags` centralizes runtime flags, production safety checks, doctor output, and docs. |
 | 62 | State Machines | Done | Publishing job transitions are centralized in `app.services.job_state` with tests and docs. |
 | 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
