@@ -40,7 +40,7 @@ This document records the current integration reality for each platform. It inte
 - What can be prepared: title, description, price, condition, category, location, delivery/shipping options, images.
 - What cannot be automated here: official marketplace publish without OAuth/API credentials; final listing confirmation in assisted mode.
 - Current tests: assisted validation and job flow only.
-- Future work: add official API provider interface, sandbox configuration, token model, credential verification checklist, mocked Sell API tests, and real credential runbook.
+- Future work: add official API provider interface, sandbox configuration, token model, mocked Sell API tests, and a real credential runbook using `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`.
 
 ## Tweedehands
 
