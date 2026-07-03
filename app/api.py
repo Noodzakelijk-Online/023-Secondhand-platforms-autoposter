@@ -1,8 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
-import shutil
-import uuid
-
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
@@ -42,6 +38,7 @@ from app.schemas import (
 )
 from app.security import create_session, hash_password, hash_token, verify_password
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
+from app.storage import StoredFile, read_validated_image, store_validated_image
 
 
 router = APIRouter(prefix="/api")
@@ -270,28 +267,41 @@ def duplicate_listing(
 
 
 @router.post("/listings/{listing_id}/images", response_model=ListingOut)
-def upload_image(
+async def upload_image(
     listing_id: int,
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     listing = _load_listing(db, user.id, listing_id)
-    settings = get_settings()
-    upload_dir = settings.upload_path / str(listing.id)
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    suffix = Path(file.filename or "upload").suffix
-    stored_name = f"{uuid.uuid4().hex}{suffix}"
-    target = upload_dir / stored_name
-    with target.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    validated = await read_validated_image(file)
+    duplicate = (
+        db.query(ListingImage)
+        .filter(
+            ListingImage.listing_id == listing.id,
+            ListingImage.checksum_sha256 == validated.checksum_sha256,
+        )
+        .one_or_none()
+    )
+    if duplicate:
+        return _load_listing(db, user.id, listing.id)
+    target = store_validated_image(validated, listing.id)
+    stored_file = StoredFile(
+        original_filename=validated.original_filename,
+        storage_path=str(target),
+        content_type=validated.content_type,
+        file_size=validated.file_size,
+        checksum_sha256=validated.checksum_sha256,
+    )
     position = len(listing.images)
     db.add(
         ListingImage(
             listing_id=listing.id,
-            filename=file.filename or stored_name,
-            storage_path=str(target),
-            content_type=file.content_type or "application/octet-stream",
+            filename=stored_file.original_filename,
+            storage_path=stored_file.storage_path,
+            content_type=stored_file.content_type,
+            file_size=stored_file.file_size,
+            checksum_sha256=stored_file.checksum_sha256,
             position=position,
         )
     )

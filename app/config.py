@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./data/autoposter.db"
     public_base_url: str = "http://127.0.0.1:8000"
     upload_dir: str = "./data/uploads"
+    storage_backend: str = "local"
+    max_upload_size_mb: int = 10
+    allowed_image_types: str = "image/jpeg,image/png,image/gif,image/webp"
     cors_origins: str = "*"
     log_level: str = "INFO"
     dev_auto_login: bool = False
@@ -24,6 +27,14 @@ class Settings(BaseSettings):
     @property
     def upload_path(self) -> Path:
         return Path(self.upload_dir)
+
+    @property
+    def max_upload_bytes(self) -> int:
+        return self.max_upload_size_mb * 1024 * 1024
+
+    @property
+    def allowed_image_type_set(self) -> set[str]:
+        return {item.strip().lower() for item in self.allowed_image_types.split(",") if item.strip()}
 
     @property
     def is_production(self) -> bool:

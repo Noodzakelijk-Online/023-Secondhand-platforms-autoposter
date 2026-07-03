@@ -91,6 +91,8 @@ class ListingImage(Base, TimestampMixin):
     filename: Mapped[str] = mapped_column(String(255))
     storage_path: Mapped[str] = mapped_column(String(500))
     content_type: Mapped[str] = mapped_column(String(120), default="application/octet-stream")
+    file_size: Mapped[int] = mapped_column(Integer, default=0)
+    checksum_sha256: Mapped[str] = mapped_column(String(64), default="", index=True)
     position: Mapped[int] = mapped_column(Integer, default=0)
 
     listing: Mapped[Listing] = relationship(back_populates="images")

@@ -11,6 +11,13 @@ from app.main import app
 
 client = TestClient(app)
 
+PNG_BYTES = (
+    b"\x89PNG\r\n\x1a\n"
+    b"\x00\x00\x00\rIHDR"
+    b"\x00\x00\x00\x01\x00\x00\x00\x01"
+    b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89"
+)
+
 
 def setup_function():
     Base.metadata.drop_all(bind=engine)
@@ -49,7 +56,7 @@ def test_create_validate_and_publish_listing_flow():
     image_response = client.post(
         f"/api/listings/{listing_id}/images",
         headers=headers,
-        files={"file": ("lamp.jpg", b"fake image bytes", "image/jpeg")},
+        files={"file": ("lamp.png", PNG_BYTES, "image/png")},
     )
     assert image_response.status_code == 200, image_response.text
     assert len(image_response.json()["images"]) == 1

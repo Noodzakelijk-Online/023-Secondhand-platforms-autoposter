@@ -28,7 +28,7 @@ Legend:
 | 6 | Authentication And User Security | Partial | Register/login/current user/session expiration exist; bcrypt/Argon2, logout revocation, rate limits need work. |
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, and bounded list pagination/filtering exist; route tags and broader rate limiting still needed. |
-| 9 | Secure Image And File Storage | Partial | Uploads work; storage abstraction, size/MIME/content validation, checksums still needed. |
+| 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, and per-listing duplicate detection exist; S3 adapter and deeper image processing still needed. |
 | 10 | Listing Model Completion | Partial | Core fields exist; dimensions, weight, brand, model, internal notes, revisioning need work. |
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |

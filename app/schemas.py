@@ -65,6 +65,8 @@ class ListingImageOut(BaseModel):
     filename: str
     storage_path: str
     content_type: str
+    file_size: int
+    checksum_sha256: str
     position: int
     created_at: datetime
 

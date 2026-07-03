@@ -45,6 +45,9 @@ The app is available at `http://127.0.0.1:8000`. SQLite data and uploads are sto
 - `SECRET_KEY`: set to a long random value in production.
 - `DATABASE_URL`: SQLAlchemy database URL. Default: `sqlite:///./data/autoposter.db`.
 - `UPLOAD_DIR`: image upload directory. Default: `./data/uploads`.
+- `STORAGE_BACKEND`: storage adapter. Current supported value: `local`.
+- `MAX_UPLOAD_SIZE_MB`: maximum image upload size.
+- `ALLOWED_IMAGE_TYPES`: comma-separated accepted image MIME types.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
 - `DEV_AUTO_LOGIN`: creates a demo session for local-only development when `true`.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
@@ -94,6 +97,19 @@ pytest
 ```
 
 The test suite uses an isolated temporary SQLite database and validates the core create-listing-to-publish-job flow, adapter validation, auth, and image upload.
+
+## Image storage
+
+Image uploads are validated before storage:
+
+- filenames are sanitized
+- upload size is bounded by `MAX_UPLOAD_SIZE_MB`
+- MIME type and file signature are checked
+- SHA-256 checksum is stored
+- duplicate images on the same listing are ignored
+- local storage is isolated under `UPLOAD_DIR/{listing_id}/`
+
+Only JPEG, PNG, GIF, and WebP are enabled by default.
 
 ## Platform support
 
