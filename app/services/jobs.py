@@ -8,6 +8,7 @@ from app.adapters import get_adapter
 from app.config import get_settings
 from app.models import (
     Listing,
+    CategoryMapping,
     PlatformAccount,
     PlatformListingMapping,
     PublicationAttempt,
@@ -141,7 +142,8 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     account = db.get(PlatformAccount, job.account_id) if job.account_id else None
 
     try:
-        outcome = adapter.publish_listing(listing, account=account, overrides=mapping.overrides)
+        overrides = effective_platform_overrides(db, listing, job.platform, mapping.overrides)
+        outcome = adapter.publish_listing(listing, account=account, overrides=overrides)
         job.status = outcome.status
         job.error_message = None if outcome.status != "failed" else outcome.message
         job.result = outcome.data
@@ -194,6 +196,24 @@ def retry_job(db: Session, job: PublishingJob) -> PublishingJob:
     db.commit()
     db.refresh(job)
     return process_job(db, job.id)
+
+
+def effective_platform_overrides(db: Session, listing: Listing, platform: str, overrides: dict) -> dict:
+    effective = dict(overrides or {})
+    if "category" in effective and effective["category"]:
+        return effective
+    category_mapping = (
+        db.query(CategoryMapping)
+        .filter(
+            CategoryMapping.owner_id == listing.owner_id,
+            CategoryMapping.source_category == listing.category,
+            CategoryMapping.platform == platform,
+        )
+        .one_or_none()
+    )
+    if category_mapping:
+        effective["category"] = category_mapping.platform_category
+    return effective
 
 
 def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:

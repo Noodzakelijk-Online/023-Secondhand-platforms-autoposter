@@ -10,6 +10,7 @@ from app.models import (
     ListingDraft,
     ListingImage,
     ListingTemplate,
+    CategoryMapping,
     PlatformAccount,
     PlatformListingMapping,
     PublishingJob,
@@ -22,6 +23,9 @@ from app.schemas import (
     AuthLogin,
     AuthRegister,
     AuthToken,
+    CategoryMappingCreate,
+    CategoryMappingOut,
+    CategoryMappingUpdate,
     ImageOrderUpdate,
     ListingCreate,
     ListingOut,
@@ -412,7 +416,8 @@ def validate_listing(
     for platform_key in platforms_to_validate:
         adapter = get_adapter(platform_key)
         mapping = get_or_create_mapping(db, listing.id, platform_key)
-        outcome = adapter.validate_listing(listing, mapping.overrides)
+        overrides = effective_platform_overrides(db, user.id, listing, platform_key, mapping.overrides)
+        outcome = adapter.validate_listing(listing, overrides)
         mapping.validation_errors = outcome.missing_fields
         mapping.status = "draft" if outcome.ready else "needs_user_action"
         results.append(
@@ -426,6 +431,30 @@ def validate_listing(
         )
     db.commit()
     return results
+
+
+def effective_platform_overrides(
+    db: Session,
+    owner_id: int,
+    listing: Listing,
+    platform: str,
+    overrides: dict,
+) -> dict:
+    effective = dict(overrides or {})
+    if "category" in effective and effective["category"]:
+        return effective
+    category_mapping = (
+        db.query(CategoryMapping)
+        .filter(
+            CategoryMapping.owner_id == owner_id,
+            CategoryMapping.source_category == listing.category,
+            CategoryMapping.platform == platform,
+        )
+        .one_or_none()
+    )
+    if category_mapping:
+        effective["category"] = category_mapping.platform_category
+    return effective
 
 
 @router.post("/listings/{listing_id}/publish", response_model=list[PublishingJobOut])
@@ -589,3 +618,91 @@ def create_template(
     db.commit()
     db.refresh(template)
     return template
+
+
+@router.get("/category-mappings", response_model=list[CategoryMappingOut])
+def list_category_mappings(
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    platform: str | None = Query(default=None, max_length=80),
+    source_category: str | None = Query(default=None, max_length=120),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(CategoryMapping).filter(CategoryMapping.owner_id == user.id)
+    if platform:
+        query = query.filter(CategoryMapping.platform == platform)
+    if source_category:
+        query = query.filter(CategoryMapping.source_category.ilike(f"%{source_category.strip()}%"))
+    query = query.order_by(CategoryMapping.source_category.asc(), CategoryMapping.platform.asc())
+    return apply_pagination(query, response, limit, offset).all()
+
+
+@router.post("/category-mappings", response_model=CategoryMappingOut)
+def create_category_mapping(
+    payload: CategoryMappingCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    get_adapter(payload.platform)
+    existing = (
+        db.query(CategoryMapping)
+        .filter(
+            CategoryMapping.owner_id == user.id,
+            CategoryMapping.source_category == payload.source_category,
+            CategoryMapping.platform == payload.platform,
+        )
+        .one_or_none()
+    )
+    if existing:
+        existing.platform_category = payload.platform_category
+        db.commit()
+        db.refresh(existing)
+        return existing
+    category_mapping = CategoryMapping(owner_id=user.id, **payload.model_dump())
+    db.add(category_mapping)
+    db.commit()
+    db.refresh(category_mapping)
+    return category_mapping
+
+
+@router.patch("/category-mappings/{mapping_id}", response_model=CategoryMappingOut)
+def update_category_mapping(
+    mapping_id: int,
+    payload: CategoryMappingUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    category_mapping = (
+        db.query(CategoryMapping)
+        .filter(CategoryMapping.id == mapping_id, CategoryMapping.owner_id == user.id)
+        .one_or_none()
+    )
+    if not category_mapping:
+        raise HTTPException(status_code=404, detail="Category mapping not found")
+    data = payload.model_dump(exclude_unset=True)
+    if "platform" in data:
+        get_adapter(data["platform"])
+    for key, value in data.items():
+        setattr(category_mapping, key, value)
+    db.commit()
+    db.refresh(category_mapping)
+    return category_mapping
+
+
+@router.delete("/category-mappings/{mapping_id}", status_code=204)
+def delete_category_mapping(
+    mapping_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    category_mapping = (
+        db.query(CategoryMapping)
+        .filter(CategoryMapping.id == mapping_id, CategoryMapping.owner_id == user.id)
+        .one_or_none()
+    )
+    if not category_mapping:
+        raise HTTPException(status_code=404, detail="Category mapping not found")
+    db.delete(category_mapping)
+    db.commit()

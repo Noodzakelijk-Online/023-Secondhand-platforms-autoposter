@@ -156,10 +156,14 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `GET /api/platforms`
 - `POST /api/accounts`
 - `POST /api/templates`
+- `GET /api/category-mappings`
+- `POST /api/category-mappings`
 
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
 Listings include revision tracking. Editing a listing increments its `revision`, and publishing job idempotency includes user, listing, revision, platform, action type, account, and operation mode. Re-queuing the same listing revision returns the existing job; editing the listing allows a fresh platform package/job.
+
+Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category.
 
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`.
 

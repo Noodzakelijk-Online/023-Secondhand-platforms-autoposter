@@ -42,10 +42,10 @@ Legend:
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens exist; exports, category mappings, diagnostics/about, richer package views missing. |
+| 23 | Frontend Product Completion | Partial | Core screens and category mapping settings exist; exports, diagnostics/about, and richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Not started | Need route-by-route frontend usage map. |
-| 26 | Templates And Productivity Features | Partial | Templates exist; applying templates and variants need work. |
+| 26 | Templates And Productivity Features | Partial | Templates and category mappings exist; applying templates and richer variants need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Not started | List endpoints and UI need these. |
 | 29 | Exports And Imports | Not started | No export/import features yet. |

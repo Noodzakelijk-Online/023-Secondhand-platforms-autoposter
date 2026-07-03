@@ -6,6 +6,7 @@ const state = {
   jobs: [],
   accounts: [],
   templates: [],
+  categoryMappings: [],
   selectedListingId: null,
   selectedPlatforms: new Set(),
 };
@@ -42,18 +43,20 @@ function selectedListing() {
 }
 
 async function loadAll() {
-  const [platforms, listings, jobs, accounts, templates] = await Promise.all([
+  const [platforms, listings, jobs, accounts, templates, categoryMappings] = await Promise.all([
     api("/platforms"),
     api("/listings"),
     api("/jobs"),
     api("/accounts"),
     api("/templates"),
+    api("/category-mappings"),
   ]);
   state.platforms = platforms;
   state.listings = listings;
   state.jobs = jobs;
   state.accounts = accounts;
   state.templates = templates;
+  state.categoryMappings = categoryMappings;
   if (!state.selectedListingId && listings.length) state.selectedListingId = listings[0].id;
   render();
 }
@@ -164,6 +167,7 @@ function renderAccounts() {
   const platformOptions = state.platforms.map((platform) => `<option value="${platform.key}">${escapeHtml(platform.name)}</option>`).join("");
   $("#accountPlatform").innerHTML = platformOptions;
   $("#templatePlatform").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
+  $("#mappingPlatform").innerHTML = platformOptions;
   $("#accountList").innerHTML = state.accounts.map((account) => `
     <article class="list-item">
       <strong>${escapeHtml(account.display_name)}</strong>
@@ -181,6 +185,15 @@ function renderSettings() {
       <p>${escapeHtml(template.body.slice(0, 160))}</p>
     </article>
   `).join("") || `<p class="muted">No templates saved.</p>`;
+  $("#categoryMappingList").innerHTML = state.categoryMappings.map((mapping) => `
+    <article class="list-item">
+      <div class="pane-head">
+        <strong>${escapeHtml(mapping.source_category)}</strong>
+        <button class="ghost" data-delete-category-mapping="${mapping.id}">Delete</button>
+      </div>
+      <span class="muted">${escapeHtml(mapping.platform)} -> ${escapeHtml(mapping.platform_category)}</span>
+    </article>
+  `).join("") || `<p class="muted">No category mappings saved.</p>`;
 }
 
 function parseDeliveryOptions(value) {
@@ -464,6 +477,28 @@ $("#templateForm").addEventListener("submit", async (event) => {
   });
   $("#templateName").value = "";
   $("#templateBody").value = "";
+  await loadAll();
+});
+
+$("#categoryMappingForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await api("/category-mappings", {
+    method: "POST",
+    body: JSON.stringify({
+      source_category: $("#mappingSourceCategory").value,
+      platform: $("#mappingPlatform").value,
+      platform_category: $("#mappingPlatformCategory").value,
+    }),
+  });
+  $("#mappingSourceCategory").value = "";
+  $("#mappingPlatformCategory").value = "";
+  await loadAll();
+});
+
+$("#categoryMappingList").addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-delete-category-mapping]");
+  if (!button) return;
+  await api(`/category-mappings/${button.dataset.deleteCategoryMapping}`, { method: "DELETE" });
   await loadAll();
 });
 

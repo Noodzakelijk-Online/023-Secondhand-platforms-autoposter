@@ -198,6 +198,27 @@ class TemplateOut(TemplateCreate):
     updated_at: datetime
 
 
+class CategoryMappingCreate(BaseModel):
+    source_category: str
+    platform: str
+    platform_category: str
+
+
+class CategoryMappingUpdate(BaseModel):
+    source_category: str | None = None
+    platform: str | None = None
+    platform_category: str | None = None
+
+
+class CategoryMappingOut(CategoryMappingCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    owner_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
 class ValidationResult(BaseModel):
     platform: str
     ready: bool

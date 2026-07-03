@@ -179,6 +179,9 @@
               <section class="pane">
                 <h3>Description templates</h3>
                 <div id="templateList" class="list"></div>
+                <div class="section-line"></div>
+                <h3>Category mappings</h3>
+                <div id="categoryMappingList" class="list"></div>
               </section>
               <section class="editor">
                 <form id="templateForm">
@@ -186,6 +189,13 @@
                   <label>Platform<select id="templatePlatform"><option value="">All platforms</option></select></label>
                   <label>Body<textarea id="templateBody" rows="8" required></textarea></label>
                   <button type="submit">Save template</button>
+                </form>
+                <div class="section-line"></div>
+                <form id="categoryMappingForm">
+                  <label>Source category<input id="mappingSourceCategory" required /></label>
+                  <label>Platform<select id="mappingPlatform"></select></label>
+                  <label>Platform category<input id="mappingPlatformCategory" required /></label>
+                  <button type="submit">Save mapping</button>
                 </form>
               </section>
             </div>
