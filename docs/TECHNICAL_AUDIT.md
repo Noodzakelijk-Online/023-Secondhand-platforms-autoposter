@@ -17,6 +17,7 @@ Implemented foundations:
 - Authenticated user accounts and bearer sessions.
 - Owner-scoped listings, images, platform mappings, jobs, accounts, templates, category mappings, export/import, and deletion.
 - Assisted platform adapters for Marktplaats, Koopplein, Nextdoor, eBay, and Tweedehands.
+- Platform metadata that exposes official API status, credential requirements, and automation blockers.
 - Persistent jobs, job logs, publication attempts, idempotency keys, cooldowns, and worker entrypoint.
 - Persistent owner-scoped audit events for state-changing and privacy-sensitive actions.
 - Redacted support/debug bundle generation for operator handoff.
@@ -27,6 +28,7 @@ Implemented foundations:
 Known gaps:
 
 - No official marketplace API/OAuth publishing integration is enabled.
+- eBay is only marked eligible when configured; provider OAuth/app/sandbox/secret-store prerequisites remain external blockers.
 - No browser E2E suite or accessibility automation yet.
 - Local filesystem storage only.
 - Production backup/restore still needs provider-native drills for PostgreSQL/object storage.

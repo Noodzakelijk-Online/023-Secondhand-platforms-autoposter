@@ -20,6 +20,15 @@
 - Verification target: `.venv/bin/python scripts/verify.py`.
 - Remaining high-value next work: browser E2E, official API credential checklist, storage abstraction beyond local filesystem, production backup drills, worker concurrency locking, distributed rate limits, and final release dry run.
 
+### After Provider-Credential-Reality Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `6d19f32`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added platform official API status, credential requirements, automation blockers, UI display, and API tests.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: browser E2E, accessibility audit, actual OAuth/secret-manager implementation, worker concurrency locking, distributed rate limits, and final release dry run.
+
 ### After Support-Bundle Pass
 
 - Current branch: `main`.

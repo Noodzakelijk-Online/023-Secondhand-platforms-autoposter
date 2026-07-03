@@ -35,6 +35,9 @@ def list_platforms() -> list[dict]:
             "required_fields": adapter.get_required_fields(),
             "supported_categories": adapter.get_supported_categories(),
             "compliance_notes": adapter.extra_warnings,
+            "official_api_status": adapter.official_api_status,
+            "credential_requirements": adapter.credential_requirements,
+            "automation_blockers": adapter.automation_blockers,
         }
         for adapter in ADAPTERS.values()
     ]

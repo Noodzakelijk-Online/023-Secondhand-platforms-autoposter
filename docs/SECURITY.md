@@ -14,6 +14,7 @@
 - Export/import and account deletion produce audit evidence without storing exported payloads, passwords, bearer tokens, or platform secrets.
 - New platform account metadata requests reject raw secret-like keys in `connection_data`; use an external secret manager for real credentials.
 - Private local backup/restore scripts require explicit confirmation flags and are separate from redacted support bundles.
+- Provider credential readiness is exposed as metadata only; no raw OAuth tokens or provider credentials are accepted through the UI/API.
 
 ## Operational Requirements
 

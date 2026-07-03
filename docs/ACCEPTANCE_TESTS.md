@@ -18,6 +18,7 @@ Core acceptance coverage currently includes:
 | Manual completion/final URL/history | `tests/test_api.py::test_manual_completion_records_final_url_and_history` |
 | Privacy audit events | `tests/test_data_portability.py` |
 | Platform account secret rejection | `tests/test_api_hardening.py::test_platform_account_rejects_raw_secret_connection_data` |
+| Platform credential reality metadata | `tests/test_api.py::test_platform_metadata_contract` |
 | Support/debug bundle safety | `tests/test_support_bundle.py` |
 | Local backup/restore guardrails | `tests/test_local_backup_restore.py` |
 | Migration smoke | `tests/test_migrations.py` |

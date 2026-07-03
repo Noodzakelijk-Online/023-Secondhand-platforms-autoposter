@@ -33,12 +33,12 @@ This matrix was already present and tracks the repository's existing implementat
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, and bounded list pagination/filtering exist; route tags and broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
 | 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, and revisioning; category mapping depth and condition invariants still need work. |
-| 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
+| 11 | Platform Adapter System | Partial | Adapter contract exists and now exposes official API status, credential requirements, and automation blockers; deeper provider-specific contracts still need work. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
 | 14 | Assisted Posting As A First-Class Product | Done | Jobs prepare mapped fields, show assisted packages in the queue UI, and let the owner record final manual completion URL/history without claiming automatic publishing. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
-| 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
+| 16 | Official API Foundations | Partial | Platform metadata now declares eBay as eligible when configured and lists OAuth/app/sandbox/secret-store blockers; no real OAuth flow or Sell API client is implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
 | 18 | Real Job System | Partial | Persistent job records and separate database-backed worker entrypoint exist; more locking/concurrency controls and production scheduling polish still needed. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
@@ -89,8 +89,8 @@ This matrix was already present and tracks the repository's existing implementat
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Partial | Basic state object exists; deeper consistency rules needed. |
 | 66 | Prepublish Safety Review | Partial | Validation exists; safety checklist UI needed. |
-| 67 | Platform Compliance UI | Partial | Compliance notes exist in metadata; richer UI needed. |
-| 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
+| 67 | Platform Compliance UI | Partial | Platform cards now show official API status, blocked credential requirements, and automation blockers; richer prepublish compliance review still needed. |
+| 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates; platform metadata exposes credential requirements and blockers. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
 | 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates; final launch evidence still needed. |
 | 71 | Supply Chain And Dependencies | Done | `scripts/audit_dependencies.py` and `.github/workflows/supply-chain.yml` run `pip-audit`; see `docs/SUPPLY_CHAIN.md`. |

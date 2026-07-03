@@ -270,10 +270,17 @@ function renderPlatforms(listing) {
     const checked = state.selectedPlatforms.has(platform.key) ? "checked" : "";
     const override = mapping?.overrides?.description || "";
     const errors = mapping?.validation_errors?.length ? `Missing: ${mapping.validation_errors.join(", ")}` : "Ready for validation";
+    const requirementSummary = (platform.credential_requirements || [])
+      .map((item) => `${item.name}: ${item.status}`)
+      .join(" · ");
+    const blockers = (platform.automation_blockers || []).slice(0, 2).join(" ");
     return `
       <article class="platform-card">
         <label><input type="checkbox" data-platform="${platform.key}" ${checked} /> ${escapeHtml(platform.name)}</label>
         <span class="${statusClass(mapping?.status || "draft")}">${escapeHtml(mapping?.status || platform.automation_mode)}</span>
+        <small class="muted">Official API: ${escapeHtml(platform.official_api_status || "not_configured")}</small>
+        ${requirementSummary ? `<small class="muted">${escapeHtml(requirementSummary)}</small>` : ""}
+        ${blockers ? `<small class="muted">${escapeHtml(blockers)}</small>` : ""}
         <textarea data-platform-description="${platform.key}" placeholder="Platform description variant">${escapeHtml(override)}</textarea>
         <small class="muted">${escapeHtml(errors)}</small>
       </article>

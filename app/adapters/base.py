@@ -31,6 +31,9 @@ class PlatformAdapter(ABC):
     name: str
     automation_mode: str
     posting_url: str
+    official_api_status: str = "not_configured"
+    credential_requirements: list[dict[str, str]] = []
+    automation_blockers: list[str] = []
 
     @abstractmethod
     def validate_listing(self, listing, overrides: dict[str, Any] | None = None) -> ValidationOutcome:

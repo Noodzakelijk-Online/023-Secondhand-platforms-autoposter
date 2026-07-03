@@ -10,6 +10,13 @@
 - Added tests for refusal defaults and SQLite/upload round-trip behavior.
 - Updated acceptance, security, runbook, completion, and verification docs.
 
+### Pass 6 - Provider Credential Reality
+
+- Added platform metadata for official API status, credential requirements, and automation blockers.
+- Marked eBay as eligible only when real OAuth/app/sandbox/secret-store prerequisites are configured.
+- Surfaced credential/compliance reality in platform cards without adding fake connect or publish actions.
+- Extended platform metadata tests and provider reality docs.
+
 ### Pass 3 - Platform Secret Boundary
 
 - Rechecked platform account security and provider credential boundaries.

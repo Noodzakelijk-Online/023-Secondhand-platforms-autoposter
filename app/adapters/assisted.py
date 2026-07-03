@@ -24,6 +24,18 @@ class AssistedPostingAdapter(PlatformAdapter):
     required_fields = ["title", "description", "price_cents", "condition", "category", "location"]
     supported_categories = COMMON_CATEGORIES
     extra_warnings: list[str] = []
+    official_api_status = "not_configured"
+    credential_requirements = [
+        {
+            "name": "Secret manager reference",
+            "status": "blocked",
+            "reason": "No production secret manager or provider OAuth credential reference is configured.",
+        }
+    ]
+    automation_blockers = [
+        "Human review and final submission are required for assisted posting.",
+        "The app must not bypass login, CAPTCHA, payment, verification, or marketplace anti-abuse controls.",
+    ]
 
     def get_required_fields(self) -> list[str]:
         return list(self.required_fields)
@@ -162,6 +174,32 @@ class EbayAdapter(AssistedPostingAdapter):
     extra_warnings = [
         "eBay can support official API integration later, but this build stays assisted "
         "until OAuth credentials and marketplace policies are configured."
+    ]
+    official_api_status = "eligible_when_configured"
+    credential_requirements = [
+        {
+            "name": "eBay developer application",
+            "status": "blocked",
+            "reason": "Requires an approved eBay developer account/application owned by the operator.",
+        },
+        {
+            "name": "OAuth scopes and redirect URI",
+            "status": "blocked",
+            "reason": "Requires provider-approved OAuth configuration and callback URL for the deployment.",
+        },
+        {
+            "name": "Token storage",
+            "status": "blocked",
+            "reason": "Requires managed secret storage; raw OAuth tokens are rejected from platform account metadata.",
+        },
+        {
+            "name": "Sandbox and policy test",
+            "status": "blocked",
+            "reason": "Requires sandbox credential verification plus marketplace policy review before production use.",
+        },
+    ]
+    automation_blockers = AssistedPostingAdapter.automation_blockers + [
+        "Official Sell API publishing is not enabled until real credentials, scopes, and marketplace policies are approved."
     ]
 
 
