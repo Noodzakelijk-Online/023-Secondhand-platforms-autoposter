@@ -37,7 +37,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/accounts` | Accounts list | `test_api.py` | Visible and tested. |
 | `POST` | `/api/accounts` | Account form | `test_api.py` | Visible and tested. |
-| `DELETE` | `/api/accounts/{account_id}` | Not yet visible | Not covered | Needs account delete UI and ownership test. |
+| `DELETE` | `/api/accounts/{account_id}` | Account list delete button | `test_api.py` | Visible and tested. |
 | `GET` | `/api/templates` | Settings template list | `test_api.py`, `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/templates` | Settings template form | `test_api.py`, `test_data_portability.py` | Visible and tested. |
 | `GET` | `/api/category-mappings` | Settings mapping list | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
@@ -49,6 +49,6 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 
 ## Required Follow-Up
 
-- Add frontend controls for diagnostics, account deletion, category mapping edit, image reorder, and job/list query filters.
-- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, `DELETE /api/accounts/{account_id}`, `PATCH /api/category-mappings/{mapping_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
+- Add frontend controls for diagnostics, category mapping edit, image reorder, and job/list query filters.
+- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, `PATCH /api/category-mappings/{mapping_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

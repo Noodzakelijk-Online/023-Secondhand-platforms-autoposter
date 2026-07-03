@@ -236,7 +236,10 @@ function renderAccounts() {
   $("#mappingPlatform").innerHTML = platformOptions;
   $("#accountList").innerHTML = state.accounts.map((account) => `
     <article class="list-item">
-      <strong>${escapeHtml(account.display_name)}</strong>
+      <div class="pane-head">
+        <strong>${escapeHtml(account.display_name)}</strong>
+        <button class="ghost" data-delete-account="${account.id}">Delete</button>
+      </div>
       <span class="muted">${escapeHtml(account.platform)} · ${escapeHtml(account.mode)}</span>
       <span class="${statusClass(account.status)}">${escapeHtml(account.status)}</span>
     </article>
@@ -576,6 +579,13 @@ $("#accountForm").addEventListener("submit", async (event) => {
     }),
   });
   $("#accountName").value = "";
+  await loadAll();
+});
+
+$("#accountList").addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-delete-account]");
+  if (!button) return;
+  await api(`/accounts/${button.dataset.deleteAccount}`, { method: "DELETE" });
   await loadAll();
 });
 

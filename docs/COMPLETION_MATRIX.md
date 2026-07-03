@@ -50,7 +50,7 @@ Legend:
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing API and UI support search, status filtering, sorting, bounded limit/offset paging, and pagination headers; broader screens still need query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
 | 30 | Privacy And Data Control | Partial | Auth isolation and sanitized user export exist; account/data deletion and audit features still need work. |
-| 31 | Platform Account Management | Partial | Accounts CRUD exists; secure token/account setup model needs work. |
+| 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
 | 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |

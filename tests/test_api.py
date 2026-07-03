@@ -111,3 +111,8 @@ def test_accounts_and_templates():
 
     assert client.get("/api/accounts", headers=headers).json()[0]["platform"] == "ebay"
     assert client.get("/api/templates", headers=headers).json()[0]["name"] == "Default"
+
+    account = client.get("/api/accounts", headers=headers).json()[0]
+    delete_response = client.delete(f"/api/accounts/{account['id']}", headers=headers)
+    assert delete_response.status_code == 204
+    assert client.get("/api/accounts", headers=headers).json() == []
