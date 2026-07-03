@@ -376,6 +376,17 @@ textarea {
   background: #e7edf2;
 }
 
+.image-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.image-actions button {
+  min-height: 32px;
+  padding: 0 8px;
+}
+
 .platform-card {
   padding: 12px;
   display: grid;

@@ -206,11 +206,16 @@ function renderListingTemplateOptions() {
 }
 
 function renderImages(listing) {
-  $("#imageList").innerHTML = (listing.images || []).map((image) => `
+  const images = listing.images || [];
+  $("#imageList").innerHTML = images.map((image, index) => `
     <article class="image-tile">
       <img src="/uploads/${listing.id}/${image.storage_path.split(/[\\\\/]/).pop()}" alt="${escapeHtml(image.filename)}" />
       <strong>${escapeHtml(image.filename)}</strong>
-      <button class="ghost" data-delete-image="${image.id}">Delete</button>
+      <div class="image-actions">
+        <button class="ghost" data-move-image="${image.id}" data-direction="-1" ${index === 0 ? "disabled" : ""}>Up</button>
+        <button class="ghost" data-move-image="${image.id}" data-direction="1" ${index === images.length - 1 ? "disabled" : ""}>Down</button>
+        <button class="ghost" data-delete-image="${image.id}">Delete</button>
+      </div>
     </article>
   `).join("") || `<p class="muted">No images uploaded.</p>`;
 }
@@ -552,10 +557,27 @@ $("#imageInput").addEventListener("change", async (event) => {
 });
 
 $("#imageList").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-delete-image]");
   const listing = selectedListing();
-  if (!button || !listing) return;
-  await api(`/listings/${listing.id}/images/${button.dataset.deleteImage}`, { method: "DELETE" });
+  if (!listing) return;
+  const moveButton = event.target.closest("[data-move-image]");
+  if (moveButton) {
+    const imageId = Number(moveButton.dataset.moveImage);
+    const direction = Number(moveButton.dataset.direction);
+    const imageIds = (listing.images || []).map((image) => image.id);
+    const index = imageIds.indexOf(imageId);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= imageIds.length) return;
+    [imageIds[index], imageIds[target]] = [imageIds[target], imageIds[index]];
+    await api(`/listings/${listing.id}/images/order`, {
+      method: "PATCH",
+      body: JSON.stringify({ image_ids: imageIds }),
+    });
+    await loadAll();
+    return;
+  }
+  const deleteButton = event.target.closest("[data-delete-image]");
+  if (!deleteButton) return;
+  await api(`/listings/${listing.id}/images/${deleteButton.dataset.deleteImage}`, { method: "DELETE" });
   await loadAll();
 });
 

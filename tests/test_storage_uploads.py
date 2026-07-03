@@ -9,6 +9,7 @@ PNG_BYTES = (
     b"\x00\x00\x00\x01\x00\x00\x00\x01"
     b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89"
 )
+PNG_BYTES_2 = PNG_BYTES + b"\x00"
 
 
 def auth_headers():
@@ -85,3 +86,33 @@ def test_upload_rejects_non_image_content():
 
     assert response.status_code == 415
     assert response.json()["error"]["code"] == "UNSUPPORTED_MEDIA_TYPE"
+
+
+def test_images_can_be_reordered():
+    headers = auth_headers()
+    listing_id = create_listing(headers)
+
+    first_response = client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=headers,
+        files={"file": ("first.png", PNG_BYTES, "image/png")},
+    )
+    assert first_response.status_code == 200, first_response.text
+    second_response = client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=headers,
+        files={"file": ("second.png", PNG_BYTES_2, "image/png")},
+    )
+    assert second_response.status_code == 200, second_response.text
+    image_ids = [image["id"] for image in second_response.json()["images"]]
+
+    reorder_response = client.patch(
+        f"/api/listings/{listing_id}/images/order",
+        headers=headers,
+        json={"image_ids": list(reversed(image_ids))},
+    )
+
+    assert reorder_response.status_code == 200, reorder_response.text
+    reordered = reorder_response.json()["images"]
+    assert [image["id"] for image in reordered] == list(reversed(image_ids))
+    assert [image["position"] for image in reordered] == [0, 1]
