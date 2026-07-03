@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.adapters import get_adapter, list_platforms
 from app.config import get_settings
 from app.database import SessionLocal, get_db
+from app.doctor import run_checks
 from app.models import (
     Listing,
     ListingDraft,
@@ -106,11 +107,13 @@ def health() -> dict:
 
 @router.get("/diagnostics")
 def diagnostics(db: Session = Depends(get_db)) -> dict:
+    doctor = run_checks()
     return {
-        "status": "ok",
+        "status": doctor["status"],
         "listings": db.query(Listing).count(),
         "jobs": db.query(PublishingJob).count(),
         "platforms": [platform["key"] for platform in list_platforms()],
+        "doctor": doctor,
     }
 
 

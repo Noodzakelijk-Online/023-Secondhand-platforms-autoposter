@@ -42,7 +42,7 @@ Legend:
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens and category mapping settings exist; exports, diagnostics/about, and richer package views missing. |
+| 23 | Frontend Product Completion | Partial | Core screens and category mapping settings exist; exports, frontend diagnostics/about, and richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Not started | Need route-by-route frontend usage map. |
 | 26 | Templates And Productivity Features | Partial | Templates and category mappings exist; applying templates and richer variants need work. |
@@ -55,8 +55,8 @@ Legend:
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
 | 34 | Frontend Error UX | Partial | Basic auth/editor messages exist; global error states needed. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
-| 36 | Self-Diagnostic Doctor Command | Not started | No doctor command yet. |
-| 37 | Verification Commands | Partial | README documents tests; broader command set needed. |
+| 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
+| 37 | Verification Commands | Partial | README documents tests, migrations, compile checks, and doctor command; full release verification script still needed. |
 | 38 | Demo Mode Without Fake Production | Partial | `DEV_AUTO_LOGIN` exists; stronger demo isolation needed. |
 | 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
 | 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |

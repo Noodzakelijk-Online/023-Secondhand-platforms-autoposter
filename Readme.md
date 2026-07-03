@@ -110,6 +110,17 @@ pytest
 
 The test suite uses an isolated temporary SQLite database and validates the core create-listing-to-publish-job flow, adapter validation, auth, and image upload.
 
+## Diagnostics
+
+Run the doctor command to verify local configuration, database connectivity, migration state, upload storage, platform adapters, and legacy-script isolation:
+
+```bash
+python -m app.doctor
+python -m app.doctor --json
+```
+
+The API also exposes `GET /api/diagnostics`, which includes the same doctor summary plus basic record counts.
+
 ## Image storage
 
 Image uploads are validated before storage:
@@ -154,6 +165,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `GET /api/jobs`
 - `POST /api/jobs/{id}/retry`
 - `GET /api/platforms`
+- `GET /api/diagnostics`
 - `POST /api/accounts`
 - `POST /api/templates`
 - `GET /api/category-mappings`
