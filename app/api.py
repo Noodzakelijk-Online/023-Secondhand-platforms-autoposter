@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.adapters import get_adapter, list_platforms
 from app.config import get_settings
 from app.database import SessionLocal, get_db
+from app.demo import demo_mode_enabled, ensure_demo_user
 from app.doctor import run_checks
 from app.models import (
     CategoryMapping,
@@ -70,16 +71,9 @@ def get_current_session(
 ) -> UserSession:
     settings = get_settings()
     if settings.dev_auto_login:
-        user = db.query(User).filter(User.email == "demo@example.com").one_or_none()
-        if not user:
-            user = User(
-                email="demo@example.com",
-                name="Demo User",
-                password_hash=hash_password("development-only"),
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+        if not demo_mode_enabled(settings):
+            raise HTTPException(status_code=403, detail="Demo auto-login is only allowed in development")
+        user = ensure_demo_user(db)
         return UserSession(
             user_id=user.id,
             token_hash="dev-auto-login",

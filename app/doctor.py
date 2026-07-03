@@ -10,6 +10,7 @@ from sqlalchemy import create_engine, text
 
 from app.adapters import list_platforms
 from app.config import Settings, get_settings, validate_startup_safety
+from app.demo import DEMO_USER_EMAIL, demo_mode_enabled
 from app.feature_flags import feature_flag_summary
 
 
@@ -45,6 +46,14 @@ def run_checks(settings: Settings | None = None) -> dict:
 
 
 def check_startup_safety(settings: Settings) -> DoctorCheck:
+    details = {
+        "app_env": settings.app_env,
+        "feature_flags": feature_flag_summary(settings),
+        "demo_mode": {
+            "enabled": demo_mode_enabled(settings),
+            "user_email": DEMO_USER_EMAIL if demo_mode_enabled(settings) else None,
+        },
+    }
     try:
         validate_startup_safety(settings)
     except RuntimeError as exc:
@@ -52,20 +61,20 @@ def check_startup_safety(settings: Settings) -> DoctorCheck:
             name="startup_safety",
             status="error",
             message=str(exc),
-            details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
+            details=details,
         )
     if not settings.is_production and settings.secret_key == "change-me-in-production":
         return DoctorCheck(
             name="startup_safety",
             status="warning",
             message="Development is using the default SECRET_KEY. Replace it before production.",
-            details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
+            details=details,
         )
     return DoctorCheck(
         name="startup_safety",
         status="ok",
         message="Startup safety checks passed.",
-        details={"app_env": settings.app_env, "feature_flags": feature_flag_summary(settings)},
+        details=details,
     )
 
 

@@ -57,7 +57,7 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `MAX_UPLOAD_SIZE_MB`: maximum image upload size.
 - `ALLOWED_IMAGE_TYPES`: comma-separated accepted image MIME types.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
-- `DEV_AUTO_LOGIN`: creates a demo session for local-only development when `true`.
+- `DEV_AUTO_LOGIN`: creates a reserved local demo session only when `APP_ENV=development`.
 - `LOGIN_RATE_LIMIT_ATTEMPTS`: failed login attempts allowed per email/IP window.
 - `LOGIN_RATE_LIMIT_WINDOW_SECONDS`: failed login throttle window.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
@@ -253,6 +253,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Supply chain and dependencies: `docs/SUPPLY_CHAIN.md`
 - State machines: `docs/STATE_MACHINES.md`
 - Feature flags: `docs/FEATURE_FLAGS.md`
+- Demo mode: `docs/DEMO_MODE.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes

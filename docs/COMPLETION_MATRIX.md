@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 22.
-- Partial: 47.
+- Done: 23.
+- Partial: 46.
 - Not started: 20.
 
 ## Phase Status
@@ -57,7 +57,7 @@ Legend:
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
 | 37 | Verification Commands | Done | `python scripts/verify.py` runs Ruff lint, compile checks, the full pytest suite, and doctor diagnostics. |
-| 38 | Demo Mode Without Fake Production | Partial | `DEV_AUTO_LOGIN` exists; stronger demo isolation needed. |
+| 38 | Demo Mode Without Fake Production | Done | `DEV_AUTO_LOGIN` is development-only, uses a reserved `.invalid` demo user, appears in doctor output, and is documented. |
 | 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
 | 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |
 | 41 | Testing Strategy | Done | See `docs/TESTING_STRATEGY.md`; remaining browser/concurrency/PostgreSQL gaps are tracked there. |
