@@ -18,6 +18,8 @@ The gate runs:
 
 Doctor warnings are allowed for local development defaults; doctor errors fail the gate.
 
+GitHub Actions runs the same command on pushes and pull requests to `main` via `.github/workflows/verify.yml`.
+
 ## Current Test Layers
 
 | Layer | Files | Purpose |

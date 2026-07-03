@@ -120,6 +120,8 @@ pytest
 
 The test suite uses an isolated temporary SQLite database and validates the core create-listing-to-publish-job flow, adapter validation, auth, and image upload.
 
+GitHub Actions runs the same verification gate on pushes and pull requests to `main`.
+
 ## Diagnostics
 
 Run the doctor command to verify local configuration, database connectivity, migration state, upload storage, platform adapters, and legacy-script isolation:

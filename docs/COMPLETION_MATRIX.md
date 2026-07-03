@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 11.
+- Done: 12.
 - Partial: 49.
-- Not started: 29.
+- Not started: 28.
 
 ## Phase Status
 
@@ -64,7 +64,7 @@ Legend:
 | 42 | Acceptance Tests | Partial | Smoke flow exists; full acceptance suite needed. |
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
 | 44 | Code Quality Tooling | Not started | No formatter/linter/type config yet. |
-| 45 | CI/CD Quality Gates | Not started | No CI workflow yet. |
+| 45 | CI/CD Quality Gates | Done | `.github/workflows/verify.yml` runs `python scripts/verify.py` on pushes and pull requests to `main`. |
 | 46 | Documentation Overhaul | Partial | README and docs exist; more runbooks and API docs needed. |
 | 47 | Completion Matrix | Done | This file. |
 | 48 | Final Verification Report | Not started | Needed near release. |
