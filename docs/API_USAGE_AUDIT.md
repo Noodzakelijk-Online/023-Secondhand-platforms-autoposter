@@ -42,13 +42,13 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/templates` | Settings template form | `test_api.py`, `test_data_portability.py` | Visible and tested. |
 | `GET` | `/api/category-mappings` | Settings mapping list | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/category-mappings` | Settings mapping form | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
-| `PATCH` | `/api/category-mappings/{mapping_id}` | Not yet visible | Not covered | Current UI uses upsert via `POST`; inline edit can use this route later. |
+| `PATCH` | `/api/category-mappings/{mapping_id}` | Settings mapping edit flow | `test_category_mappings.py` | Visible and tested. |
 | `DELETE` | `/api/category-mappings/{mapping_id}` | Settings mapping delete | `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/export` | Settings export JSON | `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/import` | Settings import JSON | `test_data_portability.py` | Visible and tested. |
 
 ## Required Follow-Up
 
-- Add frontend controls for category mapping edit, image reorder, and job/list query filters.
-- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, `PATCH /api/category-mappings/{mapping_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
+- Add frontend controls for image reorder and job/list query filters.
+- Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

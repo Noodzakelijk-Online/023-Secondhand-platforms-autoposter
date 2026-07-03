@@ -69,6 +69,14 @@ def test_category_mapping_crud_and_upsert():
     assert update_response.json()["id"] == mapping["id"]
     assert update_response.json()["platform_category"] == "Fietsen"
 
+    patch_response = client.patch(
+        f"/api/category-mappings/{mapping['id']}",
+        headers=headers,
+        json={"platform_category": "Fietsen en accessoires"},
+    )
+    assert patch_response.status_code == 200, patch_response.text
+    assert patch_response.json()["platform_category"] == "Fietsen en accessoires"
+
     list_response = client.get("/api/category-mappings?platform=marktplaats", headers=headers)
     assert list_response.status_code == 200, list_response.text
     assert list_response.headers["X-Total-Count"] == "1"

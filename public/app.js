@@ -267,7 +267,10 @@ function renderSettings() {
     <article class="list-item">
       <div class="pane-head">
         <strong>${escapeHtml(mapping.source_category)}</strong>
-        <button class="ghost" data-delete-category-mapping="${mapping.id}">Delete</button>
+        <div class="row compact-actions">
+          <button class="ghost" data-edit-category-mapping="${mapping.id}">Edit</button>
+          <button class="ghost" data-delete-category-mapping="${mapping.id}">Delete</button>
+        </div>
       </div>
       <span class="muted">${escapeHtml(mapping.platform)} -> ${escapeHtml(mapping.platform_category)}</span>
     </article>
@@ -647,23 +650,38 @@ $("#templateForm").addEventListener("submit", async (event) => {
 
 $("#categoryMappingForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  await api("/category-mappings", {
-    method: "POST",
-    body: JSON.stringify({
-      source_category: $("#mappingSourceCategory").value,
-      platform: $("#mappingPlatform").value,
-      platform_category: $("#mappingPlatformCategory").value,
-    }),
+  const mappingId = event.currentTarget.dataset.mappingId;
+  const payload = {
+    source_category: $("#mappingSourceCategory").value,
+    platform: $("#mappingPlatform").value,
+    platform_category: $("#mappingPlatformCategory").value,
+  };
+  await api(mappingId ? `/category-mappings/${mappingId}` : "/category-mappings", {
+    method: mappingId ? "PATCH" : "POST",
+    body: JSON.stringify(payload),
   });
   $("#mappingSourceCategory").value = "";
   $("#mappingPlatformCategory").value = "";
+  delete event.currentTarget.dataset.mappingId;
+  $("#categoryMappingForm button[type='submit']").textContent = "Save mapping";
   await loadAll();
 });
 
 $("#categoryMappingList").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-delete-category-mapping]");
-  if (!button) return;
-  await api(`/category-mappings/${button.dataset.deleteCategoryMapping}`, { method: "DELETE" });
+  const editButton = event.target.closest("[data-edit-category-mapping]");
+  if (editButton) {
+    const mapping = state.categoryMappings.find((candidate) => candidate.id === Number(editButton.dataset.editCategoryMapping));
+    if (!mapping) return;
+    $("#mappingSourceCategory").value = mapping.source_category;
+    $("#mappingPlatform").value = mapping.platform;
+    $("#mappingPlatformCategory").value = mapping.platform_category;
+    $("#categoryMappingForm").dataset.mappingId = mapping.id;
+    $("#categoryMappingForm button[type='submit']").textContent = "Update mapping";
+    return;
+  }
+  const deleteButton = event.target.closest("[data-delete-category-mapping]");
+  if (!deleteButton) return;
+  await api(`/category-mappings/${deleteButton.dataset.deleteCategoryMapping}`, { method: "DELETE" });
   await loadAll();
 });
 

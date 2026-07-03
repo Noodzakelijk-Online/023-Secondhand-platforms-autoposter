@@ -45,7 +45,7 @@ Legend:
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, and diagnostics panel exist; richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
-| 26 | Templates And Productivity Features | Partial | Templates can be saved and applied into listing descriptions; richer variants, edit/delete flows, and automation helpers still need work. |
+| 26 | Templates And Productivity Features | Partial | Templates can be saved/applied and category mappings can be created/edited/deleted; richer variants, template edit/delete flows, and automation helpers still need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing API and UI support search, status filtering, sorting, bounded limit/offset paging, and pagination headers; broader screens still need query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
