@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 19.
+- Done: 20.
 - Partial: 49.
-- Not started: 21.
+- Not started: 20.
 
 ## Phase Status
 
@@ -83,7 +83,7 @@ Legend:
 | 61 | Feature Flags | Partial | Environment toggles exist; formal feature flag system needed. |
 | 62 | State Machines | Partial | Status strings exist; explicit state machine needed. |
 | 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |
-| 64 | Data Invariants | Not started | Need invariant tests and constraints. |
+| 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Partial | Basic state object exists; deeper consistency rules needed. |
 | 66 | Prepublish Safety Review | Partial | Validation exists; safety checklist UI needed. |
 | 67 | Platform Compliance UI | Partial | Compliance notes exist in metadata; richer UI needed. |

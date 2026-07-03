@@ -1,7 +1,43 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+
+def _non_negative(value: int | None) -> int | None:
+    if value is not None and value < 0:
+        raise ValueError("must be greater than or equal to 0")
+    return value
+
+
+def _normalize_currency(value: str | None) -> str | None:
+    if value is None:
+        return value
+    normalized = value.strip().upper()
+    if len(normalized) != 3 or not normalized.isalpha():
+        raise ValueError("currency must be a 3-letter ISO code")
+    return normalized
+
+
+def _normalize_tags(value: list[str] | None) -> list[str] | None:
+    if value is None:
+        return value
+    normalized: list[str] = []
+    seen = set()
+    for raw_tag in value:
+        tag = raw_tag.strip()
+        if not tag:
+            continue
+        key = tag.casefold()
+        if key not in seen:
+            seen.add(key)
+            normalized.append(tag)
+    if len(normalized) > 20:
+        raise ValueError("tags cannot contain more than 20 values")
+    long_tags = [tag for tag in normalized if len(tag) > 40]
+    if long_tags:
+        raise ValueError("tags cannot be longer than 40 characters")
+    return normalized
 
 
 class AuthRegister(BaseModel):
@@ -51,6 +87,21 @@ class ListingBase(BaseModel):
     tags: list[str] = Field(default_factory=list)
     status: str = "draft"
 
+    @field_validator("price_cents", "shipping_cost_cents", "weight_grams")
+    @classmethod
+    def validate_non_negative_numbers(cls, value: int) -> int:
+        return _non_negative(value) or 0
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str) -> str:
+        return _normalize_currency(value) or "EUR"
+
+    @field_validator("tags")
+    @classmethod
+    def validate_tags(cls, value: list[str]) -> list[str]:
+        return _normalize_tags(value) or []
+
 
 class ListingCreate(ListingBase):
     pass
@@ -78,6 +129,21 @@ class ListingUpdate(BaseModel):
     internal_notes: str | None = None
     tags: list[str] | None = None
     status: str | None = None
+
+    @field_validator("price_cents", "shipping_cost_cents", "weight_grams")
+    @classmethod
+    def validate_non_negative_numbers(cls, value: int | None) -> int | None:
+        return _non_negative(value)
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str | None) -> str | None:
+        return _normalize_currency(value)
+
+    @field_validator("tags")
+    @classmethod
+    def validate_tags(cls, value: list[str] | None) -> list[str] | None:
+        return _normalize_tags(value)
 
 
 class ListingImageOut(BaseModel):
