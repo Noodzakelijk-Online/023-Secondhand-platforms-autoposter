@@ -50,6 +50,8 @@ The app is available at `http://127.0.0.1:8000`. SQLite data and uploads are sto
 - `ALLOWED_IMAGE_TYPES`: comma-separated accepted image MIME types.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
 - `DEV_AUTO_LOGIN`: creates a demo session for local-only development when `true`.
+- `LOGIN_RATE_LIMIT_ATTEMPTS`: failed login attempts allowed per email/IP window.
+- `LOGIN_RATE_LIMIT_WINDOW_SECONDS`: failed login throttle window.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
@@ -169,6 +171,10 @@ Every response includes `X-Request-ID`; callers may provide their own `X-Request
 ## Security and compliance
 
 - No raw platform passwords are stored by the web app.
+- New user passwords are hashed with Argon2.
+- Older PBKDF2 hashes are still accepted and upgraded on successful login.
+- Bearer sessions can be revoked with `POST /api/auth/logout`.
+- Failed login attempts are rate-limited per email/IP window.
 - External calls are isolated behind adapter interfaces.
 - The default integrations are assisted-only where official automation credentials are absent.
 - Jobs are idempotent per listing/platform and include platform cooldowns.

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     cors_origins: str = "*"
     log_level: str = "INFO"
     dev_auto_login: bool = False
+    login_rate_limit_attempts: int = 5
+    login_rate_limit_window_seconds: int = 300
     auto_create_tables: bool = True
     job_process_inline: bool = True
     platform_rate_limit_seconds: int = 60

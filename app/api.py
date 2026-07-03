@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, Response, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
 from sqlalchemy.orm import Session, selectinload
 
 from app.adapters import get_adapter, list_platforms
@@ -17,6 +17,7 @@ from app.models import (
     UserSession,
 )
 from app.query import apply_pagination, apply_sort, listing_search_filter
+from app.rate_limit import check_login_rate_limit, record_failed_login, record_successful_login
 from app.schemas import (
     AuthLogin,
     AuthRegister,
@@ -36,7 +37,7 @@ from app.schemas import (
     UserOut,
     ValidationResult,
 )
-from app.security import create_session, hash_password, hash_token, verify_password
+from app.security import create_session, hash_password, hash_token, password_needs_rehash, revoke_session, verify_password
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
 from app.storage import StoredFile, read_validated_image, store_validated_image
 
@@ -44,10 +45,10 @@ from app.storage import StoredFile, read_validated_image, store_validated_image
 router = APIRouter(prefix="/api")
 
 
-def get_current_user(
+def get_current_session(
     authorization: str | None = Header(default=None),
     db: Session = Depends(get_db),
-) -> User:
+) -> UserSession:
     settings = get_settings()
     if settings.dev_auto_login:
         user = db.query(User).filter(User.email == "demo@example.com").one_or_none()
@@ -60,7 +61,12 @@ def get_current_user(
             db.add(user)
             db.commit()
             db.refresh(user)
-        return user
+        return UserSession(
+            user_id=user.id,
+            token_hash="dev-auto-login",
+            expires_at=datetime.now(timezone.utc),
+            user=user,
+        )
 
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=401, detail="Missing bearer token")
@@ -73,6 +79,8 @@ def get_current_user(
     )
     if not session:
         raise HTTPException(status_code=401, detail="Invalid or expired session")
+    if session.revoked_at is not None:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
     expires_at = session.expires_at
     if expires_at and expires_at.tzinfo is None:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
@@ -80,6 +88,10 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid or expired session")
     if not session.user.is_active:
         raise HTTPException(status_code=403, detail="User is disabled")
+    return session
+
+
+def get_current_user(session: UserSession = Depends(get_current_session)) -> User:
     return session.user
 
 
@@ -116,12 +128,26 @@ def register(payload: AuthRegister, db: Session = Depends(get_db)) -> AuthToken:
 
 
 @router.post("/auth/login", response_model=AuthToken)
-def login(payload: AuthLogin, db: Session = Depends(get_db)) -> AuthToken:
+def login(payload: AuthLogin, request: Request, db: Session = Depends(get_db)) -> AuthToken:
+    identifier = f"{request.client.host if request.client else 'unknown'}:{payload.email.lower()}"
+    check_login_rate_limit(identifier)
     user = db.query(User).filter(User.email == payload.email.lower()).one_or_none()
     if not user or not verify_password(payload.password, user.password_hash):
+        record_failed_login(identifier)
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    if password_needs_rehash(user.password_hash):
+        user.password_hash = hash_password(payload.password)
+        db.commit()
+    record_successful_login(identifier)
     token = create_session(db, user)
     return AuthToken(token=token, user=UserOut.model_validate(user))
+
+
+@router.post("/auth/logout", status_code=204)
+def logout(session: UserSession = Depends(get_current_session), db: Session = Depends(get_db)):
+    if session.token_hash != "dev-auto-login":
+        revoke_session(db, session)
+    return None
 
 
 @router.get("/auth/me", response_model=UserOut)
@@ -259,6 +285,8 @@ def duplicate_listing(
                 filename=image.filename,
                 storage_path=image.storage_path,
                 content_type=image.content_type,
+                file_size=image.file_size,
+                checksum_sha256=image.checksum_sha256,
                 position=image.position,
             )
         )

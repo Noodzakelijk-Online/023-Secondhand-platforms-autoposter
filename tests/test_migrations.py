@@ -22,3 +22,5 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     image_columns = {column["name"] for column in inspect(engine).get_columns("listing_images")}
     assert "file_size" in image_columns
     assert "checksum_sha256" in image_columns
+    session_columns = {column["name"] for column in inspect(engine).get_columns("user_sessions")}
+    assert "revoked_at" in session_columns

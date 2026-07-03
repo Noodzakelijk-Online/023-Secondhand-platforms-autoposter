@@ -1,0 +1,91 @@
+import uuid
+
+from sqlalchemy.orm import Session
+
+from app.database import SessionLocal
+from app.models import User
+from app.rate_limit import login_buckets
+from app.security import hash_password_pbkdf2, verify_password
+from tests.test_api import client
+
+
+def unique_email() -> str:
+    return f"auth-{uuid.uuid4().hex}@example.com"
+
+
+def test_new_passwords_are_argon2_hashes():
+    email = unique_email()
+    response = client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "correct-password", "name": "Auth User"},
+    )
+    assert response.status_code == 200, response.text
+
+    db: Session = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == email).one()
+        assert user.password_hash.startswith("$argon2")
+        assert verify_password("correct-password", user.password_hash)
+    finally:
+        db.close()
+
+
+def test_logout_revokes_session_token():
+    email = unique_email()
+    register_response = client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "correct-password", "name": "Logout User"},
+    )
+    token = register_response.json()["token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    logout_response = client.post("/api/auth/logout", headers=headers)
+    assert logout_response.status_code == 204
+
+    me_response = client.get("/api/auth/me", headers=headers)
+    assert me_response.status_code == 401
+
+
+def test_legacy_pbkdf2_hash_upgrades_on_successful_login():
+    email = unique_email()
+    db: Session = SessionLocal()
+    try:
+        user = User(
+            email=email,
+            name="Legacy User",
+            password_hash=hash_password_pbkdf2("correct-password"),
+        )
+        db.add(user)
+        db.commit()
+    finally:
+        db.close()
+
+    response = client.post(
+        "/api/auth/login",
+        json={"email": email, "password": "correct-password"},
+    )
+    assert response.status_code == 200, response.text
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == email).one()
+        assert user.password_hash.startswith("$argon2")
+    finally:
+        db.close()
+
+
+def test_failed_login_attempts_are_rate_limited():
+    login_buckets.clear()
+    email = unique_email()
+    client.post(
+        "/api/auth/register",
+        json={"email": email, "password": "correct-password", "name": "Rate User"},
+    )
+
+    for _ in range(5):
+        response = client.post("/api/auth/login", json={"email": email, "password": "wrong-password"})
+        assert response.status_code == 401
+
+    response = client.post("/api/auth/login", json={"email": email, "password": "wrong-password"})
+    assert response.status_code == 429
+    assert response.json()["error"]["code"] == "RATE_LIMITED"

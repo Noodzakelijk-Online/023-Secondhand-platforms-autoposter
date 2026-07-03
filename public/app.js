@@ -267,8 +267,10 @@ $("#registerButton").addEventListener("click", async () => {
 });
 
 $("#logoutButton").addEventListener("click", () => {
-  localStorage.removeItem("autoposterToken");
-  window.location.reload();
+  api("/auth/logout", { method: "POST" }).finally(() => {
+    localStorage.removeItem("autoposterToken");
+    window.location.reload();
+  });
 });
 
 document.querySelectorAll(".nav").forEach((node) => node.addEventListener("click", () => show(node.dataset.view)));
