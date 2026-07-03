@@ -376,6 +376,27 @@ textarea {
   min-height: 72px;
 }
 
+.diagnostics-output {
+  display: grid;
+  gap: 10px;
+}
+
+.diagnostic-checks {
+  display: grid;
+  gap: 8px;
+}
+
+.diagnostic-check {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  background: #f9fbfc;
+}
+
+.diagnostic-check p {
+  margin: 8px 0 0;
+}
+
 .publish-row {
   margin-top: 14px;
 }

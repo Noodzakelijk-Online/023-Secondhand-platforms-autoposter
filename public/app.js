@@ -274,6 +274,29 @@ function renderSettings() {
   `).join("") || `<p class="muted">No category mappings saved.</p>`;
 }
 
+function renderDiagnostics(result) {
+  const checks = result.doctor?.checks || [];
+  $("#diagnosticsOutput").classList.remove("muted");
+  $("#diagnosticsOutput").innerHTML = `
+    <div class="pane-head">
+      <strong>Status: ${escapeHtml(result.status)}</strong>
+      <span class="${statusClass(result.status)}">${escapeHtml(result.doctor?.status || result.status)}</span>
+    </div>
+    <p class="muted">${Number(result.listings || 0)} listings · ${Number(result.jobs || 0)} jobs · ${(result.platforms || []).length} platforms</p>
+    <div class="diagnostic-checks">
+      ${checks.map((check) => `
+        <article class="diagnostic-check">
+          <div class="pane-head">
+            <strong>${escapeHtml(check.name)}</strong>
+            <span class="${statusClass(check.status)}">${escapeHtml(check.status)}</span>
+          </div>
+          <p>${escapeHtml(check.message)}</p>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
 function parseDeliveryOptions(value) {
   if (!value.trim()) return {};
   try {
@@ -670,6 +693,11 @@ $("#importDataInput").addEventListener("change", async (event) => {
   } finally {
     event.target.value = "";
   }
+});
+
+$("#runDiagnosticsButton").addEventListener("click", async () => {
+  const diagnostics = await api("/diagnostics");
+  renderDiagnostics(diagnostics);
 });
 
 boot();

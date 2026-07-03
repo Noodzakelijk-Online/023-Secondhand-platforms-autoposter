@@ -14,7 +14,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | Method | Route | Frontend usage | Test coverage | Notes |
 | --- | --- | --- | --- | --- |
 | `GET` | `/api/health` | Boot health badge | `test_api_hardening.py` | Public endpoint. |
-| `GET` | `/api/diagnostics` | Not yet visible | `test_doctor.py` | Candidate for Settings/About diagnostic panel. |
+| `GET` | `/api/diagnostics` | Settings diagnostics panel | `test_doctor.py` | Visible and tested through doctor coverage. |
 | `POST` | `/api/auth/register` | Auth form create account | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/login` | Auth form sign in | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
@@ -49,6 +49,6 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 
 ## Required Follow-Up
 
-- Add frontend controls for diagnostics, category mapping edit, image reorder, and job/list query filters.
+- Add frontend controls for category mapping edit, image reorder, and job/list query filters.
 - Add explicit tests for `GET /api/platforms`, `GET /api/listings/{listing_id}`, `DELETE /api/listings/{listing_id}`, `GET /api/jobs/{job_id}`, `PATCH /api/category-mappings/{mapping_id}`, and `PATCH /api/listings/{listing_id}/images/order`.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

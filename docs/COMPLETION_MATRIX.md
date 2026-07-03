@@ -42,7 +42,7 @@ Legend:
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, and data portability controls exist; frontend diagnostics/about and richer package views missing. |
+| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, and diagnostics panel exist; richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Partial | Templates can be saved and applied into listing descriptions; richer variants, edit/delete flows, and automation helpers still need work. |
