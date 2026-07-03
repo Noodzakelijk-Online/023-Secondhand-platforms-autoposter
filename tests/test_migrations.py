@@ -24,3 +24,13 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "checksum_sha256" in image_columns
     session_columns = {column["name"] for column in inspect(engine).get_columns("user_sessions")}
     assert "revoked_at" in session_columns
+    listing_columns = {column["name"] for column in inspect(engine).get_columns("listings")}
+    assert "revision" in listing_columns
+    assert "pickup_allowed" in listing_columns
+    assert "shipping_cost_cents" in listing_columns
+    assert "brand" in listing_columns
+    assert "internal_notes" in listing_columns
+    job_columns = {column["name"] for column in inspect(engine).get_columns("publishing_jobs")}
+    assert "listing_revision" in job_columns
+    assert "action_type" in job_columns
+    assert "operation_mode" in job_columns

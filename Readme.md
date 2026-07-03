@@ -159,6 +159,8 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
+Listings include revision tracking. Editing a listing increments its `revision`, and publishing job idempotency includes user, listing, revision, platform, action type, account, and operation mode. Re-queuing the same listing revision returns the existing job; editing the listing allows a fresh platform package/job.
+
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`.
 
 API errors use a consistent envelope:

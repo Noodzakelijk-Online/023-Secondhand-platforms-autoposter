@@ -37,6 +37,17 @@ class ListingBase(BaseModel):
     category: str = ""
     location: str = ""
     delivery_options: dict[str, Any] = Field(default_factory=dict)
+    pickup_allowed: bool = True
+    shipping_allowed: bool = False
+    shipping_cost_cents: int = 0
+    dimensions: dict[str, Any] = Field(default_factory=dict)
+    weight_grams: int = 0
+    brand: str = ""
+    model: str = ""
+    color: str = ""
+    material: str = ""
+    notes: str = ""
+    internal_notes: str = ""
     tags: list[str] = Field(default_factory=list)
     status: str = "draft"
 
@@ -54,6 +65,17 @@ class ListingUpdate(BaseModel):
     category: str | None = None
     location: str | None = None
     delivery_options: dict[str, Any] | None = None
+    pickup_allowed: bool | None = None
+    shipping_allowed: bool | None = None
+    shipping_cost_cents: int | None = None
+    dimensions: dict[str, Any] | None = None
+    weight_grams: int | None = None
+    brand: str | None = None
+    model: str | None = None
+    color: str | None = None
+    material: str | None = None
+    notes: str | None = None
+    internal_notes: str | None = None
     tags: list[str] | None = None
     status: str | None = None
 
@@ -89,6 +111,7 @@ class ListingOut(ListingBase):
 
     id: int
     owner_id: int
+    revision: int
     created_at: datetime
     updated_at: datetime
     images: list[ListingImageOut] = Field(default_factory=list)
@@ -145,6 +168,9 @@ class PublishingJobOut(BaseModel):
     listing_id: int
     platform: str
     account_id: int | None
+    listing_revision: int
+    action_type: str
+    operation_mode: str
     status: str
     attempts: int
     max_attempts: int

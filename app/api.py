@@ -240,6 +240,8 @@ def update_listing(
     data = payload.model_dump(exclude_unset=True)
     for key, value in data.items():
         setattr(listing, key, value)
+    if data:
+        listing.revision += 1
     db.add(ListingDraft(listing_id=listing.id, payload=data, source="manual_save"))
     db.commit()
     return _load_listing(db, user.id, listing_id)
@@ -273,6 +275,17 @@ def duplicate_listing(
         category=source.category,
         location=source.location,
         delivery_options=source.delivery_options,
+        pickup_allowed=source.pickup_allowed,
+        shipping_allowed=source.shipping_allowed,
+        shipping_cost_cents=source.shipping_cost_cents,
+        dimensions=source.dimensions,
+        weight_grams=source.weight_grams,
+        brand=source.brand,
+        model=source.model,
+        color=source.color,
+        material=source.material,
+        notes=source.notes,
+        internal_notes=source.internal_notes,
         tags=source.tags,
         status="draft",
     )

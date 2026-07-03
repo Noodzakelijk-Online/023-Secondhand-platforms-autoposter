@@ -19,8 +19,20 @@ from app.models import (
 TERMINAL_STATUSES = {"published", "failed", "needs_user_action", "skipped"}
 
 
-def idempotency_key(listing_id: int, platform: str) -> str:
-    raw = f"{listing_id}:{platform}".encode()
+def idempotency_key(
+    *,
+    user_id: int,
+    listing_id: int,
+    listing_revision: int,
+    platform: str,
+    action_type: str,
+    account_id: int | None,
+    operation_mode: str,
+) -> str:
+    raw = (
+        f"user={user_id}:listing={listing_id}:revision={listing_revision}:platform={platform}:"
+        f"action={action_type}:account={account_id or 'none'}:mode={operation_mode}"
+    ).encode()
     return hashlib.sha256(raw).hexdigest()
 
 
@@ -46,7 +58,18 @@ def get_or_create_mapping(db: Session, listing_id: int, platform: str) -> Platfo
 def enqueue_publish_job(
     db: Session, listing: Listing, platform: str, account_id: int | None = None
 ) -> PublishingJob:
-    key = idempotency_key(listing.id, platform)
+    adapter = get_adapter(platform)
+    action_type = "publish"
+    operation_mode = adapter.automation_mode
+    key = idempotency_key(
+        user_id=listing.owner_id,
+        listing_id=listing.id,
+        listing_revision=listing.revision,
+        platform=platform,
+        action_type=action_type,
+        account_id=account_id,
+        operation_mode=operation_mode,
+    )
     existing = (
         db.query(PublishingJob)
         .filter(PublishingJob.idempotency_key == key, PublishingJob.status.in_(["queued", "running", "published", "needs_user_action"]))
@@ -61,6 +84,9 @@ def enqueue_publish_job(
         account_id=account_id,
         status="queued",
         idempotency_key=key,
+        listing_revision=listing.revision,
+        action_type=action_type,
+        operation_mode=operation_mode,
     )
     db.add(job)
     db.flush()

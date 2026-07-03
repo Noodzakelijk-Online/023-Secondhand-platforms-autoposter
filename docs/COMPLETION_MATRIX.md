@@ -29,7 +29,7 @@ Legend:
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, and bounded list pagination/filtering exist; route tags and broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, and per-listing duplicate detection exist; S3 adapter and deeper image processing still needed. |
-| 10 | Listing Model Completion | Partial | Core fields exist; dimensions, weight, brand, model, internal notes, revisioning need work. |
+| 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, and revisioning; category mapping depth and condition invariants still need work. |
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
@@ -38,7 +38,7 @@ Legend:
 | 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
 | 18 | Real Job System | Partial | Persistent job records and separate database-backed worker entrypoint exist; more locking/concurrency controls and production scheduling polish still needed. |
-| 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Basic listing/platform key exists; revision/account/action/user not included yet. |
+| 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |

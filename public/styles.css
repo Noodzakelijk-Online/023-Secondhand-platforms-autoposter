@@ -330,6 +330,21 @@ textarea {
   margin-top: 14px;
 }
 
+.option-row {
+  justify-content: flex-start;
+  margin: 8px 0 12px;
+}
+
+.option-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-row input {
+  width: auto;
+}
+
 .error {
   min-height: 20px;
   color: var(--danger);

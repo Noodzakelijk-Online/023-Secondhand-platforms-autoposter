@@ -108,9 +108,21 @@ function renderListings() {
   form.condition.value = listing.condition || "used";
   form.category.value = listing.category || "";
   form.location.value = listing.location || "";
+  form.brand.value = listing.brand || "";
+  form.model.value = listing.model || "";
+  form.color.value = listing.color || "";
+  form.material.value = listing.material || "";
+  form.weight_grams.value = listing.weight_grams || 0;
+  form.shipping_cost.value = ((listing.shipping_cost_cents || 0) / 100).toFixed(2);
+  form.pickup_allowed.checked = Boolean(listing.pickup_allowed);
+  form.shipping_allowed.checked = Boolean(listing.shipping_allowed);
   form.tags.value = (listing.tags || []).join(", ");
   form.description.value = listing.description || "";
   form.delivery_options.value = JSON.stringify(listing.delivery_options || {}, null, 2);
+  form.dimensions.value = JSON.stringify(listing.dimensions || {}, null, 2);
+  form.notes.value = listing.notes || "";
+  form.internal_notes.value = listing.internal_notes || "";
+  $("#listingRevision").textContent = `Revision ${listing.revision || 1}`;
   renderImages(listing);
   renderPlatforms(listing);
 }
@@ -315,9 +327,20 @@ $("#listingForm").addEventListener("submit", async (event) => {
       condition: form.condition.value,
       category: form.category.value,
       location: form.location.value,
+      brand: form.brand.value,
+      model: form.model.value,
+      color: form.color.value,
+      material: form.material.value,
+      weight_grams: Math.round(Number(form.weight_grams.value || 0)),
+      shipping_cost_cents: Math.round(Number(form.shipping_cost.value || 0) * 100),
+      pickup_allowed: form.pickup_allowed.checked,
+      shipping_allowed: form.shipping_allowed.checked,
       tags: form.tags.value.split(",").map((tag) => tag.trim()).filter(Boolean),
       description: form.description.value,
       delivery_options: parseDeliveryOptions(form.delivery_options.value),
+      dimensions: parseDeliveryOptions(form.dimensions.value),
+      notes: form.notes.value,
+      internal_notes: form.internal_notes.value,
       status: "draft",
     }),
   });
