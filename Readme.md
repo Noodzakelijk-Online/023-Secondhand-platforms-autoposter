@@ -124,6 +124,14 @@ Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 - Use official APIs when converting an assisted adapter into a fully automated adapter.
 - Do not bypass CAPTCHAs, anti-bot protections, login protections, payment prompts, or platform rate limits.
 
+## Project phase documentation
+
+- Product definition: `docs/PRODUCT_DEFINITION.md`
+- Platform reality review: `docs/PLATFORM_REALITY_REVIEW.md`
+- Legacy script quarantine: `docs/LEGACY_SCRIPT_QUARANTINE.md`
+- Rate limits: `docs/RATE_LIMITS.md`
+- Completion matrix: `docs/COMPLETION_MATRIX.md`
+
 ## Production notes
 
 - Set a strong `SECRET_KEY`.
