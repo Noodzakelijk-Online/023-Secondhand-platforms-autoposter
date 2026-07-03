@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 12.
+- Done: 13.
 - Partial: 49.
-- Not started: 28.
+- Not started: 27.
 
 ## Phase Status
 
@@ -75,7 +75,7 @@ Legend:
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
 | 55 | Backup, Restore, And Data Reconciliation | Not started | Needed. |
-| 56 | Observability And Maintenance | Partial | Job logs exist; app logging/metrics/runbook needed. |
+| 56 | Observability And Maintenance | Partial | Job logs and operator runbook exist; app-level structured logging/metrics still needed. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |
@@ -92,7 +92,7 @@ Legend:
 | 70 | Release Readiness | Not started | Needed. |
 | 71 | Supply Chain And Dependencies | Partial | Requirements split exists; vulnerability tooling needed. |
 | 72 | Backup/Restore And Disaster Recovery | Not started | Needed. |
-| 73 | Operator Runbook | Not started | Needed. |
+| 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
 | 74 | Real Non-Technical User Simulation | Not started | Needed. |
 | 75 | Autonomy-First Design | Not started | Needs product walkthrough. |
 | 76 | Product Value Review | Not started | Needed. |
