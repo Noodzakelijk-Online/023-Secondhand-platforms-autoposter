@@ -81,13 +81,38 @@ class Settings(BaseSettings):
 
 
 def validate_startup_safety(settings: Settings) -> None:
+    problems: list[str] = []
     if settings.auth_transport.lower() != "bearer":
-        raise RuntimeError("Unsupported auth transport: AUTH_TRANSPORT must be bearer")
+        problems.append("AUTH_TRANSPORT must be bearer")
+    if settings.storage_backend.lower() != "local":
+        problems.append("STORAGE_BACKEND must be local")
+    if settings.log_format.lower() not in {"text", "json"}:
+        problems.append("LOG_FORMAT must be text or json")
+    if settings.max_upload_size_mb <= 0:
+        problems.append("MAX_UPLOAD_SIZE_MB must be positive")
+    if settings.login_rate_limit_attempts <= 0:
+        problems.append("LOGIN_RATE_LIMIT_ATTEMPTS must be positive")
+    if settings.login_rate_limit_window_seconds <= 0:
+        problems.append("LOGIN_RATE_LIMIT_WINDOW_SECONDS must be positive")
+    if settings.job_worker_poll_seconds <= 0:
+        problems.append("JOB_WORKER_POLL_SECONDS must be positive")
+    if settings.job_worker_batch_size <= 0:
+        problems.append("JOB_WORKER_BATCH_SIZE must be positive")
+    if settings.job_stale_running_seconds < 0:
+        problems.append("JOB_STALE_RUNNING_SECONDS must be non-negative")
+    if settings.platform_rate_limit_seconds < 0:
+        problems.append("PLATFORM_RATE_LIMIT_SECONDS must be non-negative")
+    if settings.session_expire_hours <= 0:
+        problems.append("SESSION_EXPIRE_HOURS must be positive")
+
+    if problems:
+        detail = "; ".join(problems)
+        raise RuntimeError(f"Invalid configuration: {detail}")
 
     if not settings.is_production:
         return
 
-    problems: list[str] = []
+    problems = []
     if settings.secret_key in {"", "change-me-in-production"}:
         problems.append("SECRET_KEY must be set to a strong non-default value")
     for flag in unsafe_production_feature_flags(settings):

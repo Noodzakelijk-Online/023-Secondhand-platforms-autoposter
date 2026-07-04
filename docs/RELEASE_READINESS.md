@@ -16,6 +16,7 @@ The app has a working core, tests, migrations, Docker setup, assisted posting, j
 - Replace development secrets and disable unsafe development defaults.
 - Confirm `APP_ENV=production` startup passes without default `SECRET_KEY`.
 - Confirm `AUTH_TRANSPORT=bearer` and restrictive `CORS_ORIGINS`.
+- Confirm startup rejects unsupported storage/log/auth modes and invalid worker, upload, session, and rate-limit values.
 - Confirm `JOB_PROCESS_INLINE=false` if background workers are expected.
 - Run the worker process with the same environment as the API.
 - Confirm upload storage path or object storage is backed up.

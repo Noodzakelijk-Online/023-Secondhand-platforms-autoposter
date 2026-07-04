@@ -24,7 +24,7 @@ Legend:
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
 | 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
-| 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
+| 5 | Configuration And Startup Safety | Partial | `.env.example`, production startup guards, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and basic failed-login throttling exist; persistent distributed rate limits still need work. |
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
