@@ -18,7 +18,7 @@ This register tracks known debt that remains after the current implementation sl
 | TD-012 | Medium | Accessibility/browser QA | 52, 53, 54 | Basic semantic HTML exists, but there is no browser/a11y audit report. | Add manual QA checklist and automated accessibility smoke checks. |
 | TD-013 | Low | Legacy scripts | 17 | Legacy scripts are quarantined by docs/guards, but not physically separated from the main root. | Move legacy scripts into a clearly marked folder after confirming user workflows. |
 | TD-014 | Low | Internationalization | 60 | UI text is English-only and hardcoded. | Add copy catalog decision once product language requirements are settled. |
-| TD-015 | Low | Release evidence | 48, 70, 84, 85, 86, 87, 88 | Final verification, fresh-clone dry run, and release checklist are not complete. | Create final verification report after remaining high/medium debt is reduced. |
+| TD-015 | Low | Release evidence | 70, 84, 85, 86, 87, 88 | Local final verification report exists, but fresh-clone dry run, browser evidence, and deployment-specific launch evidence are not complete. | Run a fresh-clone dry run and capture production-target launch evidence when environment details are available. |
 
 ## Maintenance Rules
 

@@ -6,11 +6,12 @@ This document defines the gate for calling the project release-ready. It is inte
 
 Status: not release-ready yet.
 
-The app has a working core, tests, migrations, Docker setup, assisted posting, job tracking, diagnostics, backup guidance, and production-safety documentation. It still needs final security, browser, deployment, and credential checks before a real client launch.
+The app has a working core, tests, migrations, Docker setup, assisted posting, job tracking, diagnostics, backup guidance, production-safety documentation, and a local verification report in `docs/FINAL_VERIFICATION_REPORT.md`. It still needs final browser, deployment, and credential evidence before a real client launch.
 
 ## Required Before Client Launch
 
 - Run `python scripts/verify.py` from a clean checkout.
+- Review `docs/FINAL_VERIFICATION_REPORT.md` and refresh it after release-blocking changes.
 - Run Alembic migrations against the target database.
 - Replace development secrets and disable unsafe development defaults.
 - Confirm `APP_ENV=production` startup passes without default `SECRET_KEY`.
