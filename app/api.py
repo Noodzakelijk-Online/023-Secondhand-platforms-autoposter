@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
+from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from app.adapters import get_adapter, list_platforms
@@ -124,6 +125,22 @@ def diagnostics(db: Session = Depends(get_db)) -> dict:
         "jobs": db.query(PublishingJob).count(),
         "platforms": [platform["key"] for platform in list_platforms()],
         "doctor": doctor,
+    }
+
+
+@router.get("/metrics", tags=["Diagnostics"])
+def metrics(db: Session = Depends(get_db)) -> dict:
+    listing_statuses = dict(db.query(Listing.status, func.count(Listing.id)).group_by(Listing.status).all())
+    job_statuses = dict(
+        db.query(PublishingJob.status, func.count(PublishingJob.id)).group_by(PublishingJob.status).all()
+    )
+    return {
+        "listings_total": db.query(Listing).count(),
+        "publishing_jobs_total": db.query(PublishingJob).count(),
+        "users_total": db.query(User).count(),
+        "platform_accounts_total": db.query(PlatformAccount).count(),
+        "listing_statuses": listing_statuses,
+        "publishing_job_statuses": job_statuses,
     }
 
 

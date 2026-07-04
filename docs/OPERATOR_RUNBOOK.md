@@ -54,6 +54,7 @@ docker compose up --build
 
 - App health: `GET /api/health`
 - Diagnostics: `GET /api/diagnostics`
+- Metrics snapshot: `GET /api/metrics`
 - CLI diagnostics: `python -m app.doctor --json`
 
 Expected production status is `ok`. A warning requires operator review. An error requires rollback or repair.
@@ -64,6 +65,7 @@ Expected production status is `ok`. A warning requires operator review. An error
 - Worker lifecycle and batch activity are logged on `autoposter.worker`.
 - Set `LOG_FORMAT=json` in production when the process manager or hosting platform collects stdout.
 - Use the `X-Request-ID` response header to connect API errors, browser reports, and server logs.
+- Poll `GET /api/metrics` for lightweight JSON counters covering users, listings, platform accounts, publishing jobs, listing statuses, and publishing job statuses.
 
 ## Auth And CSRF
 

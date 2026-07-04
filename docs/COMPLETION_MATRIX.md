@@ -75,7 +75,7 @@ Legend:
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
-| 56 | Observability And Maintenance | Partial | Job logs, request logs, JSON/text log formatting, and operator runbook guidance exist; metrics still need a production decision. |
+| 56 | Observability And Maintenance | Done | Job logs, request logs, JSON/text log formatting, a lightweight `/api/metrics` snapshot, and operator runbook guidance exist. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |

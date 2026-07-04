@@ -52,6 +52,7 @@ def test_openapi_routes_are_grouped_with_tags():
 
     assert response.status_code == 200
     paths = response.json()["paths"]
+    assert paths["/api/metrics"]["get"]["tags"] == ["Diagnostics"]
     assert paths["/api/auth/login"]["post"]["tags"] == ["Auth"]
     assert paths["/api/listings"]["get"]["tags"] == ["Listings"]
     assert paths["/api/listings/{listing_id}/images"]["post"]["tags"] == ["Images"]
@@ -59,6 +60,25 @@ def test_openapi_routes_are_grouped_with_tags():
     assert paths["/api/jobs"]["get"]["tags"] == ["Jobs"]
     assert paths["/api/templates/{template_id}"]["patch"]["tags"] == ["Templates"]
     assert paths["/api/export"]["get"]["tags"] == ["Data portability"]
+
+
+def test_metrics_returns_operational_counts():
+    before = client.get("/api/metrics").json()
+    headers = auth_headers()
+    client.post("/api/listings", headers=headers, json={"title": "Draft metrics", "status": "draft"})
+    client.post("/api/listings", headers=headers, json={"title": "Ready metrics", "status": "ready"})
+
+    response = client.get("/api/metrics")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["users_total"] == before["users_total"] + 1
+    assert payload["listings_total"] == before["listings_total"] + 2
+    assert payload["publishing_jobs_total"] == before["publishing_jobs_total"]
+    assert payload["platform_accounts_total"] == 0
+    assert payload["listing_statuses"]["draft"] == before["listing_statuses"].get("draft", 0) + 1
+    assert payload["listing_statuses"]["ready"] == before["listing_statuses"].get("ready", 0) + 1
+    assert payload["publishing_job_statuses"] == before["publishing_job_statuses"]
 
 
 def test_listings_support_pagination_filtering_and_sorting():
