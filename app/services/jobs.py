@@ -139,7 +139,8 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         db.refresh(job)
         return job
 
-    transition_job(job, RUNNING)
+    if job.status != RUNNING:
+        transition_job(job, RUNNING)
     job.started_at = datetime.now(UTC)
     job.attempts += 1
     add_log(db, job, "info", "Publishing job started.")
@@ -257,7 +258,7 @@ def requeue_stale_running_jobs(db: Session, timeout_seconds: int) -> int:
     if timeout_seconds <= 0:
         return 0
 
-    cutoff = datetime.now(timezone.utc) - timedelta(seconds=timeout_seconds)
+    cutoff = datetime.now(UTC) - timedelta(seconds=timeout_seconds)
     jobs = (
         db.query(PublishingJob)
         .filter(PublishingJob.status == "running")

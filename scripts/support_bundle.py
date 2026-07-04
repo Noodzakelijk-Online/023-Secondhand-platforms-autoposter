@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import subprocess
 import sys
 import zipfile
-
+from datetime import UTC, datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.config import get_settings
-from app.doctor import run_checks
+from app.config import get_settings  # noqa: E402
+from app.doctor import run_checks  # noqa: E402
 
 DEFAULT_DOCS = [
     "Readme.md",
@@ -59,7 +58,7 @@ def safe_environment_summary() -> dict:
 
 def build_manifest() -> dict:
     return {
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "purpose": "Secondhand Autoposter support/debug bundle",
         "exclusions": [
             ".env files",
@@ -83,7 +82,7 @@ def build_manifest() -> dict:
 
 def create_support_bundle(output_dir: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     bundle_path = output_dir / f"secondhand-autoposter-support-{stamp}.zip"
     manifest = build_manifest()
 

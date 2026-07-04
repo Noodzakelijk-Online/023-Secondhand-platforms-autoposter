@@ -20,13 +20,13 @@ Verification command run:
 Result: passed.
 
 - Compile check: passed for `app`, `tests`, and `migrations`.
-- Pytest: 46 passed.
+- Pytest: 56 passed.
 - Targeted backup/restore tests: 3 passed.
 - Targeted platform metadata test: 1 passed.
 - Targeted worker tests: 6 passed.
 - Doctor: completed with warning status for local development defaults:
   - default development `SECRET_KEY`
-  - local SQLite database not yet at latest Alembic revision (`head_revision`: `20260703_0005`)
+  - local SQLite database not yet at latest Alembic revision (`head_revision`: `20260703_0006`)
 
 The doctor warnings are operational warnings for the current local environment, not test failures.
 

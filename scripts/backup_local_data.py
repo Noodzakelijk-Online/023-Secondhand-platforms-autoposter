@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import sqlite3
 import sys
 import tempfile
@@ -11,7 +10,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from app.config import get_settings
-
 
 PURPOSE = "Secondhand Autoposter private operator backup"
 

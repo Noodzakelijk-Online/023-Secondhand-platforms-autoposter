@@ -1,8 +1,7 @@
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from app.database import Base, engine
-from app.database import SessionLocal
+from app.database import Base, SessionLocal, engine
 from app.models import PublishingJob, PublishingJobLog
 from app.services.jobs import claim_due_queued_jobs, requeue_stale_running_jobs
 from app.worker import run_once
@@ -179,7 +178,7 @@ def test_stale_running_jobs_are_requeued(monkeypatch):
     try:
         job = db.get(PublishingJob, job_id)
         job.status = "running"
-        job.started_at = datetime.now(timezone.utc) - timedelta(seconds=3600)
+        job.started_at = datetime.now(UTC) - timedelta(seconds=3600)
         db.commit()
 
         recovered = requeue_stale_running_jobs(db, timeout_seconds=900)
@@ -216,7 +215,7 @@ def test_fresh_running_jobs_are_not_requeued(monkeypatch):
     try:
         job = db.get(PublishingJob, job_id)
         job.status = "running"
-        job.started_at = datetime.now(timezone.utc)
+        job.started_at = datetime.now(UTC)
         db.commit()
 
         recovered = requeue_stale_running_jobs(db, timeout_seconds=900)

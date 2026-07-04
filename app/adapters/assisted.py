@@ -199,7 +199,10 @@ class EbayAdapter(AssistedPostingAdapter):
         },
     ]
     automation_blockers = AssistedPostingAdapter.automation_blockers + [
-        "Official Sell API publishing is not enabled until real credentials, scopes, and marketplace policies are approved."
+        (
+            "Official Sell API publishing is not enabled until real credentials, scopes, "
+            "and marketplace policies are approved."
+        )
     ]
 
 

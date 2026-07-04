@@ -27,10 +27,10 @@ from app.models import (
 from app.query import apply_pagination, apply_sort, listing_search_filter
 from app.rate_limit import check_login_rate_limit, record_failed_login, record_successful_login
 from app.schemas import (
+    AuditEventOut,
     AuthLogin,
     AuthRegister,
     AuthToken,
-    AuditEventOut,
     CategoryMappingCreate,
     CategoryMappingOut,
     CategoryMappingUpdate,
@@ -808,7 +808,7 @@ def confirm_manual_completion(
     if job.status != "needs_user_action":
         raise HTTPException(status_code=409, detail="Job is not waiting for manual completion")
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     platform_url = str(payload.platform_url)
     mapping = get_or_create_mapping(db, job.listing_id, job.platform)
     mapping.status = "published"
