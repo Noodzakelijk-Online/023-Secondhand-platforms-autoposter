@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     platform_rate_limit_seconds: int = 60
     platform_rate_limit_overrides: str = ""
     session_expire_hours: int = 168
+    audit_retention_days: int = 365
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
@@ -104,6 +105,8 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("PLATFORM_RATE_LIMIT_SECONDS must be non-negative")
     if settings.session_expire_hours <= 0:
         problems.append("SESSION_EXPIRE_HOURS must be positive")
+    if settings.audit_retention_days < 0:
+        problems.append("AUDIT_RETENTION_DAYS must be non-negative")
 
     if problems:
         detail = "; ".join(problems)

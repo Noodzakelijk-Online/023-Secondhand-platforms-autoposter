@@ -1,9 +1,11 @@
 import json
 import uuid
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from app.database import Base, SessionLocal, engine
 from app.models import AuditEvent, CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
+from app.services.audit import purge_expired_audit_events, record_audit_event
 from tests.test_api import PNG_BYTES, client
 
 
@@ -221,3 +223,42 @@ def test_delete_me_purges_owned_data_and_revokes_session():
     finally:
         db.close()
     assert not Path(image_path).exists()
+
+
+def test_audit_retention_purges_only_expired_events():
+    headers = auth_headers("audit-retention")
+    client.get("/api/export", headers=headers)
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email.like("audit-retention-%")).one()
+        old_event = record_audit_event(db, user, "old_event", {"count": 1})
+        old_event.created_at = datetime.now(UTC) - timedelta(days=400)
+        recent_event = record_audit_event(db, user, "recent_event", {"count": 1})
+        recent_event.created_at = datetime.now(UTC)
+        db.commit()
+
+        assert purge_expired_audit_events(db, retention_days=365) == 1
+        actions = {event.action for event in db.query(AuditEvent).all()}
+        assert "old_event" not in actions
+        assert "recent_event" in actions
+        assert "data_exported" in actions
+    finally:
+        db.close()
+
+
+def test_audit_retention_can_be_disabled():
+    headers = auth_headers("audit-retention-disabled")
+    client.get("/api/export", headers=headers)
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email.like("audit-retention-disabled-%")).one()
+        event = record_audit_event(db, user, "very_old_event", {})
+        event.created_at = datetime.now(UTC) - timedelta(days=4000)
+        db.commit()
+
+        assert purge_expired_audit_events(db, retention_days=0) == 0
+        assert db.query(AuditEvent).filter(AuditEvent.action == "very_old_event").count() == 1
+    finally:
+        db.close()

@@ -54,6 +54,7 @@ def test_invalid_runtime_configuration_values_are_rejected():
         job_stale_running_seconds=-1,
         platform_rate_limit_seconds=-1,
         session_expire_hours=0,
+        audit_retention_days=-1,
     )
 
     with pytest.raises(RuntimeError) as exc:
@@ -70,6 +71,7 @@ def test_invalid_runtime_configuration_values_are_rejected():
     assert "JOB_STALE_RUNNING_SECONDS must be non-negative" in message
     assert "PLATFORM_RATE_LIMIT_SECONDS must be non-negative" in message
     assert "SESSION_EXPIRE_HOURS must be positive" in message
+    assert "AUDIT_RETENTION_DAYS must be non-negative" in message
 
 
 def test_feature_flags_are_reported_from_settings():

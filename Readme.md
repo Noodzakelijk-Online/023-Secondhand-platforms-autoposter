@@ -69,6 +69,7 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
 - `PLATFORM_RATE_LIMIT_OVERRIDES`: optional comma-separated per-platform cooldowns such as `marktplaats=120,ebay=300`.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
+- `AUDIT_RETENTION_DAYS`: age after which sanitized audit events can be purged by `python -m app.audit_retention`; `0` disables purging.
 - `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
 - `LOG_LEVEL`: desired logging verbosity for deployment.
 - `LOG_FORMAT`: `text` for local logs or `json` for production log aggregation.

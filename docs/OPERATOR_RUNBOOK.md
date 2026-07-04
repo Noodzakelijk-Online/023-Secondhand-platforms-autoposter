@@ -81,6 +81,7 @@ Expected production status is `ok`. A warning requires operator review. An error
 - Investigate repeated stale-running recovery logs; they can indicate worker crashes, timeouts, or deployment restarts during publishing work.
 - Keep uploads on persistent storage and include them in backups.
 - Keep database backups separate from application deploy artifacts.
+- Run `python -m app.audit_retention` on the chosen retention schedule to purge audit events older than `AUDIT_RETENTION_DAYS`.
 - Do not run legacy Selenium scripts inside the web or worker process.
 
 ## Backup And Restore

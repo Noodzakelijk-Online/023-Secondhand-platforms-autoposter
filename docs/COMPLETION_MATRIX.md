@@ -49,7 +49,7 @@ Legend:
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing and job API/UI support focused filtering, sorting, bounded limit/offset paging, and pagination headers; account/template/mapping screens still need deeper query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
-| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, and sanitized audit events exist; audit retention/admin review still need work. |
+| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, sanitized audit events, and audit retention purging exist; admin review UI still needs work. |
 | 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware and documented bearer-only CSRF posture exist; broader deployment security review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
