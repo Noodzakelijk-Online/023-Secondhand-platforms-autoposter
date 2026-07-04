@@ -1,6 +1,6 @@
 # Technical Audit
 
-Audit date: 2026-07-03.
+Audit date: 2026-07-04.
 
 ## Repository State
 
@@ -22,6 +22,7 @@ Implemented foundations:
 - Persistent owner-scoped audit events for state-changing and privacy-sensitive actions.
 - Redacted support/debug bundle generation for operator handoff.
 - Guarded local SQLite/upload private backup and restore scripts.
+- Static UI accessibility audit for the app shell.
 - Local validated image storage.
 - API error envelope, request IDs, and security headers.
 
@@ -29,7 +30,7 @@ Known gaps:
 
 - No official marketplace API/OAuth publishing integration is enabled.
 - eBay is only marked eligible when configured; provider OAuth/app/sandbox/secret-store prerequisites remain external blockers.
-- No browser E2E suite or accessibility automation yet.
+- Static accessibility automation exists; no browser E2E suite, contrast audit, or keyboard traversal signoff yet.
 - Local filesystem storage only.
 - Production backup/restore still needs provider-native drills for PostgreSQL/object storage.
 - Worker claiming and stale requeue exist; distributed rate limits and database-specific lock drills need production hardening.

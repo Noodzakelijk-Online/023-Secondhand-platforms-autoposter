@@ -9,6 +9,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 - Current UI coverage: dashboard, listings, queue, accounts, settings, export/import
 - Current test coverage: API smoke flow, hardening, auth, storage, worker, revisions, category mappings, data portability, diagnostics
 - Operator-only local backup/restore is intentionally implemented as scripts, not API routes, because private backup archives include database rows and uploaded media.
+- Static UI accessibility is intentionally checked by `scripts/audit_static_ui.py`, not an API route.
 
 ## Route Map
 
@@ -56,4 +57,5 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 - Keep query controls aligned as additional list screens are added.
 - Keep image reorder coverage aligned if drag-and-drop replaces the current up/down controls.
 - Keep backup/restore outside the user API unless a future admin role, encryption design, and production storage policy are implemented.
+- Keep static UI accessibility checks aligned with any new visible frontend controls; browser E2E remains a separate follow-up.
 - Keep this audit updated whenever a route is added, removed, or made visible in the UI.

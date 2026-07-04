@@ -12,8 +12,8 @@ Legend:
 
 - Total phases: 89.
 - Done: 23.
-- Partial: 46.
-- Not started: 20.
+- Partial: 47.
+- Not started: 19.
 - Giant Prompt phases: 116, numbered 000 through 115.
 
 This matrix was already present and tracks the repository's existing implementation program. It has not yet been expanded to every named phase in the 2026-07-03 Giant Prompt; unmapped phases should be treated as missing until explicitly audited.
@@ -74,9 +74,9 @@ This matrix was already present and tracks the repository's existing implementat
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
 | 50 | Red Team Review | Not started | Needed. |
 | 51 | Adversarial Test Report | Not started | Needed. |
-| 52 | UI/UX Debugging Rounds | Not started | Needs manual/browser audit. |
-| 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
-| 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
+| 52 | UI/UX Debugging Rounds | Partial | Static UI audit exists in `scripts/audit_static_ui.py`; real manual/browser audit still needed. |
+| 53 | Accessibility | Partial | Static audit/test now covers landmarks, labels, button names, image alt text, live region, and positive tabindex; keyboard traversal, contrast, and assistive-tech browser checks still needed. |
+| 54 | Responsive And Browser Compatibility | Partial | CSS is responsive and static UI audit exists; browser matrix and viewport screenshots not tested. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks; guarded local SQLite/upload scripts provide tested local backup/restore tooling. |
 | 56 | Observability And Maintenance | Partial | Job logs, user-visible audit events, doctor diagnostics, redacted support bundles, and operator runbook exist; app metrics and structured production logging still need work. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |

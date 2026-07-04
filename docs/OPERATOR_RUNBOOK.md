@@ -27,6 +27,14 @@ python scripts/verify.py
 
 Doctor warnings must be understood before release; doctor errors block release.
 
+5. For frontend changes, run the static UI accessibility audit:
+
+```bash
+python scripts/audit_static_ui.py
+```
+
+This catches missing labels/landmarks in the static app shell. It does not replace browser keyboard, contrast, or assistive-technology review.
+
 ## Start Services
 
 Web process:

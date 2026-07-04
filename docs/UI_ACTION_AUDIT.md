@@ -20,3 +20,5 @@ No visible action is intended to claim automatic platform publishing in assisted
 Platform cards show official API status, blocked credential requirements, and automation blockers from `/api/platforms`. They do not offer a fake OAuth connection or fake production publish action.
 
 Local backup/restore has no visible UI action. It is operator-only through `scripts/backup_local_data.py` and `scripts/restore_local_data.py` because the archives contain private database and upload data.
+
+Static UI accessibility is checked by `scripts/audit_static_ui.py`. The audit currently verifies that visible form controls, including the image upload and manual completion controls, have accessible names.

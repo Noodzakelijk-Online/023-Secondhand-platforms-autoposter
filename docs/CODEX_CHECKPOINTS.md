@@ -2,6 +2,15 @@
 
 ## Checkpoint 2026-07-03
 
+### After Static-UI-Accessibility Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `1415836`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added static UI accessibility audit script/test and labelled the image upload control.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: browser E2E, keyboard/contrast/accessibility signoff, actual OAuth/secret-manager implementation, distributed rate limits, production database lock drills, and final release dry run.
+
 ### After Platform-Secret-Boundary Pass
 
 - Current branch: `main`.

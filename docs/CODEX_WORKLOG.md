@@ -1,5 +1,15 @@
 # Codex Worklog
 
+## 2026-07-04
+
+### Pass 9 - Static UI Accessibility Baseline
+
+- Added `scripts/audit_static_ui.py` to check the static app shell for document language/title, landmarks, labelled controls, named buttons, image alt coverage, live region presence, and positive-tabindex regressions.
+- Added `tests/test_static_ui_audit.py` so the pytest/verification gate covers the audit.
+- Fixed the image upload input by giving it a programmatic label.
+- Added `docs/ACCESSIBILITY_BROWSER_AUDIT.md` and updated testing, acceptance, critical-path, completion, runbook, security, API/UI audit, and task-graph docs.
+- Kept browser E2E, keyboard traversal, contrast checks, responsive screenshots, and assistive-technology signoff marked as remaining work.
+
 ## 2026-07-03
 
 ### Pass 5 - Local Backup And Restore

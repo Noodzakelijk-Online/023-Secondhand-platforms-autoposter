@@ -15,6 +15,7 @@
 - New platform account metadata requests reject raw secret-like keys in `connection_data`; use an external secret manager for real credentials.
 - Private local backup/restore scripts require explicit confirmation flags and are separate from redacted support bundles.
 - Provider credential readiness is exposed as metadata only; no raw OAuth tokens or provider credentials are accepted through the UI/API.
+- Static UI accessibility checks guard against unlabeled critical-path form controls that could hide security/privacy actions from assistive technology users.
 
 ## Operational Requirements
 
@@ -33,3 +34,4 @@
 - Formal threat model and penetration test are not complete.
 - Audit events are application-level records, not immutable append-only ledger storage.
 - Production backup retention, encryption custody, and restore drills are not complete.
+- Browser-based accessibility, contrast, and keyboard audits are not complete.

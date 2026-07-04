@@ -22,3 +22,5 @@ The only path from `needs_user_action` to `published` for assisted jobs is expli
 Audit events are recorded for listing changes, image changes, publish queue actions, manual completion, export/import, and account deletion. They provide user-owned operational history without storing raw credentials or full exported payloads.
 
 Local backup/restore is an operator recovery path and does not change the user critical path. Backup archives contain private database and upload data, so they are intentionally separate from user-facing JSON export/import and redacted support bundles.
+
+Static UI accessibility checks now guard the critical path shell against missing control labels and landmark regressions, including image upload and manual completion controls. They do not replace a browser keyboard or assistive-technology pass.

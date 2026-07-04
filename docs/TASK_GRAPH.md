@@ -18,6 +18,7 @@ Operational hardening branches:
 - Diagnostics: `python -m app.doctor`, `/api/diagnostics`, redacted support bundles.
 - Auditability: owner-scoped `audit_events` for privacy and state-changing actions.
 - Recovery: guarded local SQLite/upload backup and restore scripts.
+- UI quality: static accessibility audit for landmarks, labels, button names, image alt coverage, and live-region presence.
 
 Blocked production branches:
 
@@ -47,3 +48,4 @@ flowchart TD
 
 - Official API publishing requires provider credentials, OAuth/app approval, quota review, and platform-specific compliance work.
 - Assisted workflows require the user to complete external login, CAPTCHA, payment, confirmation, and final submit steps.
+- Browser E2E, responsive screenshots, contrast checks, and assistive-technology signoff require a real browser/manual QA pass.
