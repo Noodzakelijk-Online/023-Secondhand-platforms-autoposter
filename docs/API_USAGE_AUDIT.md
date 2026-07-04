@@ -15,6 +15,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | --- | --- | --- | --- | --- |
 | `GET` | `/api/health` | Boot health badge | `test_api_hardening.py` | Public endpoint. |
 | `GET` | `/api/diagnostics` | Settings diagnostics panel | `test_doctor.py` | Visible and tested through doctor coverage. |
+| `GET` | `/api/metrics` | Operator/runbook endpoint | `test_api_hardening.py` | Lightweight JSON counters for local/operator monitoring. |
 | `POST` | `/api/auth/register` | Auth form create account | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/login` | Auth form sign in | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
