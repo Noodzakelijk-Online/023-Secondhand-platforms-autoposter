@@ -64,6 +64,7 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `JOB_WORKER_POLL_SECONDS`: worker polling interval.
 - `JOB_WORKER_BATCH_SIZE`: maximum queued jobs processed per worker pass.
+- `JOB_RUNNING_TIMEOUT_SECONDS`: requeue timeout for jobs left `running` by an interrupted worker.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
 - `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
@@ -252,7 +253,7 @@ Publishing jobs are persisted in the database. The worker command processes due 
 python -m app.worker
 ```
 
-Jobs with `next_retry_at` in the future remain queued until their retry time. This keeps assisted posting preparation and future official API publishing out of fragile blocking requests.
+Jobs with `next_retry_at` in the future remain queued until their retry time. Workers claim due jobs before processing, and jobs left `running` longer than `JOB_RUNNING_TIMEOUT_SECONDS` are returned to the queue on a later worker pass. This keeps assisted posting preparation and future official API publishing out of fragile blocking requests.
 
 ## Security and compliance
 

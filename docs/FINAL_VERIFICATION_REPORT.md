@@ -4,7 +4,7 @@ This report describes the current implementation pass, not a full production rel
 
 ## Result
 
-Partial production hardening. The assisted posting critical path now includes user-confirmed final URL recording and history, owner-scoped audit events, redacted support bundles, raw platform-secret rejection, guarded local private-data backup/restore scripts, provider credential reality metadata, and worker due-job claiming. Full official API publishing remains blocked by marketplace credentials, account approval, OAuth setup, secret storage, and provider policy work.
+Partial production hardening. The assisted posting critical path now includes user-confirmed final URL recording and history, owner-scoped audit events, redacted support bundles, raw platform-secret rejection, guarded local private-data backup/restore scripts, provider credential reality metadata, worker due-job claiming, and stale running-job requeue. Full official API publishing remains blocked by marketplace credentials, account approval, OAuth setup, secret storage, and provider policy work.
 
 ## Commands
 
@@ -20,10 +20,10 @@ Verification command run:
 Result: passed.
 
 - Compile check: passed for `app`, `tests`, and `migrations`.
-- Pytest: 44 passed.
+- Pytest: 46 passed.
 - Targeted backup/restore tests: 3 passed.
 - Targeted platform metadata test: 1 passed.
-- Targeted worker tests: 4 passed.
+- Targeted worker tests: 6 passed.
 - Doctor: completed with warning status for local development defaults:
   - default development `SECRET_KEY`
   - local SQLite database not yet at latest Alembic revision (`head_revision`: `20260703_0005`)
@@ -41,4 +41,4 @@ The doctor warnings are operational warnings for the current local environment, 
 - Support/debug bundles are redacted and exclude `.env`, databases, uploads, caches, virtual environments, and raw credentials.
 - Private backup archives are separate from support bundles, require explicit confirmation, include local SQLite/uploads, and must be handled as sensitive user data.
 - Platform metadata/UI now states official API credential blockers instead of presenting fake OAuth or fake production publishing.
-- Worker processing now claims due jobs before processing; stale running-job recovery remains a known production hardening gap.
+- Worker processing now claims due jobs before processing and requeues stale running jobs after `JOB_RUNNING_TIMEOUT_SECONDS`; production database lock drills remain a known hardening gap.

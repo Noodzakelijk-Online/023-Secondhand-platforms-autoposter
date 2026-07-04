@@ -22,7 +22,13 @@
 - Added a due-job claim step before processing queued jobs.
 - Prevented a second worker session from claiming a job already moved out of `queued`.
 - Added worker test coverage for claim-once behavior.
-- Kept stale running-job recovery as an explicit production hardening gap.
+
+### Pass 8 - Stale Worker Recovery
+
+- Added `JOB_RUNNING_TIMEOUT_SECONDS`.
+- Requeued jobs left `running` beyond the timeout on later worker passes.
+- Logged stale recovery events for operator visibility.
+- Added tests for stale and fresh running-job handling.
 
 ### Pass 3 - Platform Secret Boundary
 

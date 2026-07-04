@@ -14,7 +14,7 @@ Core acceptance coverage currently includes:
 | Listing CRUD and owner isolation | `tests/test_api.py`, `tests/test_api_hardening.py` |
 | Image upload safety | `tests/test_storage_uploads.py` |
 | Platform validation and assisted publish package | `tests/test_api.py`, `tests/test_category_mappings.py` |
-| Worker/job processing and claim-once behavior | `tests/test_worker.py` |
+| Worker/job processing, claim-once behavior, and stale recovery | `tests/test_worker.py` |
 | Manual completion/final URL/history | `tests/test_api.py::test_manual_completion_records_final_url_and_history` |
 | Privacy audit events | `tests/test_data_portability.py` |
 | Platform account secret rejection | `tests/test_api_hardening.py::test_platform_account_rejects_raw_secret_connection_data` |

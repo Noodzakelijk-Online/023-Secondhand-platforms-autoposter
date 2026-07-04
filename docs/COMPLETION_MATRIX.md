@@ -40,7 +40,7 @@ This matrix was already present and tracks the repository's existing implementat
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
 | 16 | Official API Foundations | Partial | Platform metadata now declares eBay as eligible when configured and lists OAuth/app/sandbox/secret-store blockers; no real OAuth flow or Sell API client is implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
-| 18 | Real Job System | Partial | Persistent job records, separate database-backed worker entrypoint, and due-job claiming exist; stale running-job recovery and production scheduling polish still need work. |
+| 18 | Real Job System | Partial | Persistent job records, separate database-backed worker entrypoint, due-job claiming, and stale running-job requeue exist; database-specific lock drills and production scheduling polish still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |

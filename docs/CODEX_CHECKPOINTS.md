@@ -38,6 +38,15 @@
 - Verification target: `.venv/bin/python scripts/verify.py`.
 - Remaining high-value next work: stale running-job recovery, browser E2E, accessibility audit, actual OAuth/secret-manager implementation, distributed rate limits, and final release dry run.
 
+### After Stale-Worker-Recovery Pass
+
+- Current branch: `main`.
+- Starting commit for this pass: `2fc5a18`.
+- PR: `https://github.com/Noodzakelijk-Online/023-Secondhand-platforms-autoposter/pull/1`.
+- Added configurable stale running-job timeout/requeue and worker tests.
+- Verification target: `.venv/bin/python scripts/verify.py`.
+- Remaining high-value next work: browser E2E, accessibility audit, actual OAuth/secret-manager implementation, distributed rate limits, production database lock drills, and final release dry run.
+
 ### After Support-Bundle Pass
 
 - Current branch: `main`.

@@ -18,7 +18,7 @@ Implemented foundations:
 - Owner-scoped listings, images, platform mappings, jobs, accounts, templates, category mappings, export/import, and deletion.
 - Assisted platform adapters for Marktplaats, Koopplein, Nextdoor, eBay, and Tweedehands.
 - Platform metadata that exposes official API status, credential requirements, and automation blockers.
-- Persistent jobs, job logs, publication attempts, idempotency keys, cooldowns, worker entrypoint, and due-job claiming.
+- Persistent jobs, job logs, publication attempts, idempotency keys, cooldowns, worker entrypoint, due-job claiming, and stale running-job requeue.
 - Persistent owner-scoped audit events for state-changing and privacy-sensitive actions.
 - Redacted support/debug bundle generation for operator handoff.
 - Guarded local SQLite/upload private backup and restore scripts.
@@ -32,6 +32,6 @@ Known gaps:
 - No browser E2E suite or accessibility automation yet.
 - Local filesystem storage only.
 - Production backup/restore still needs provider-native drills for PostgreSQL/object storage.
-- Worker claiming exists, but stale running-job recovery and distributed rate limits need production hardening.
+- Worker claiming and stale requeue exist; distributed rate limits and database-specific lock drills need production hardening.
 - The legacy script folder remains in the repo for reference and should stay out of default runtime paths.
 - Audit events are summary records and are not tamper-proof immutable ledger entries.

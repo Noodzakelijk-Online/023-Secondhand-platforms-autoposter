@@ -253,7 +253,35 @@ def claim_due_queued_jobs(db: Session, limit: int) -> list[int]:
     return claimed_ids
 
 
+def requeue_stale_running_jobs(db: Session, timeout_seconds: int) -> int:
+    if timeout_seconds <= 0:
+        return 0
+
+    cutoff = datetime.now(timezone.utc) - timedelta(seconds=timeout_seconds)
+    jobs = (
+        db.query(PublishingJob)
+        .filter(PublishingJob.status == "running")
+        .filter(PublishingJob.started_at.is_not(None))
+        .filter(PublishingJob.started_at < cutoff)
+        .all()
+    )
+    for job in jobs:
+        job.status = "queued"
+        job.next_retry_at = None
+        add_log(
+            db,
+            job,
+            "warning",
+            "Stale running job requeued after worker timeout.",
+            {"timeout_seconds": timeout_seconds, "previous_started_at": job.started_at.isoformat()},
+        )
+    db.commit()
+    return len(jobs)
+
+
 def process_due_jobs(db: Session, limit: int) -> int:
+    settings = get_settings()
+    requeue_stale_running_jobs(db, settings.job_running_timeout_seconds)
     job_ids = claim_due_queued_jobs(db, limit)
     processed = 0
     for job_id in job_ids:

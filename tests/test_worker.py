@@ -1,8 +1,10 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 
 from app.database import Base, engine
 from app.database import SessionLocal
-from app.services.jobs import claim_due_queued_jobs
+from app.models import PublishingJob, PublishingJobLog
+from app.services.jobs import claim_due_queued_jobs, requeue_stale_running_jobs
 from app.worker import run_once
 from tests.test_api import PNG_BYTES, client
 
@@ -152,6 +154,78 @@ def test_due_jobs_are_claimed_once(monkeypatch):
 
     assert len(first_claim) == 1
     assert second_claim == []
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    get_settings.cache_clear()
+
+
+def test_stale_running_jobs_are_requeued(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+    job_id = publish_response.json()[0]["id"]
+
+    db = SessionLocal()
+    try:
+        job = db.get(PublishingJob, job_id)
+        job.status = "running"
+        job.started_at = datetime.now(timezone.utc) - timedelta(seconds=3600)
+        db.commit()
+
+        recovered = requeue_stale_running_jobs(db, timeout_seconds=900)
+        db.refresh(job)
+        logs = db.query(PublishingJobLog).filter(PublishingJobLog.job_id == job_id).all()
+    finally:
+        db.close()
+
+    assert recovered == 1
+    assert job.status == "queued"
+    assert any("Stale running job requeued" in log.message for log in logs)
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    get_settings.cache_clear()
+
+
+def test_fresh_running_jobs_are_not_requeued(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+    job_id = publish_response.json()[0]["id"]
+
+    db = SessionLocal()
+    try:
+        job = db.get(PublishingJob, job_id)
+        job.status = "running"
+        job.started_at = datetime.now(timezone.utc)
+        db.commit()
+
+        recovered = requeue_stale_running_jobs(db, timeout_seconds=900)
+        db.refresh(job)
+    finally:
+        db.close()
+
+    assert recovered == 0
+    assert job.status == "running"
 
     monkeypatch.delenv("JOB_PROCESS_INLINE")
     get_settings.cache_clear()

@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     job_process_inline: bool = True
     job_worker_poll_seconds: int = 5
     job_worker_batch_size: int = 10
+    job_running_timeout_seconds: int = 900
     platform_rate_limit_seconds: int = 60
     session_expire_hours: int = 168
 
