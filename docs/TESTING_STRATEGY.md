@@ -26,6 +26,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Layer | Files | Purpose |
 | --- | --- | --- |
 | API smoke and route contract | `tests/test_api.py`, `tests/test_api_hardening.py` | Core listing/account/template flow, platform metadata, direct detail/delete routes, request IDs, pagination, filters, and structured errors. |
+| Owner isolation | `tests/test_owner_isolation.py` | Cross-user visibility and mutation boundaries for owned listings, jobs, accounts, templates, and category mappings. |
 | Auth/security | `tests/test_auth_security.py` | Password hashing, login/logout/session behavior, token revocation, bearer-only auth posture, and failed-login throttling. |
 | Storage | `tests/test_storage_uploads.py` | Filename sanitization, MIME/signature validation, duplicate detection, delete/reorder behavior, and metadata persistence. |
 | Category mappings | `tests/test_category_mappings.py` | Mapping CRUD/upsert/patch behavior and mapping use in validation/publish output. |
@@ -46,11 +47,10 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 
 ## Coverage Priorities
 
-1. Owner isolation for every resource mutation and detail route.
-2. Idempotency, retries, and worker concurrency for publishing jobs.
-3. File safety: upload validation, storage paths, duplicate handling, ordering, and deletion.
-4. Data portability and privacy: no password/session/platform secrets in exports.
-5. Assisted-posting honesty: tests should verify prepared packages and user-action states instead of fake automated success.
+1. Idempotency, retries, and worker concurrency for publishing jobs.
+2. File safety: upload validation, storage paths, duplicate handling, ordering, and deletion.
+3. Data portability and privacy: no password/session/platform secrets in exports.
+4. Assisted-posting honesty: tests should verify prepared packages and user-action states instead of fake automated success.
 
 ## Remaining Gaps
 

@@ -26,7 +26,7 @@ Legend:
 | 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
 | 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and basic failed-login throttling exist; persistent distributed rate limits still need work. |
-| 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
+| 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
 | 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, revisioning, and condition/status invariants; category mapping depth still needs work. |
