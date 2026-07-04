@@ -62,6 +62,25 @@ def test_listing_normalizes_currency_and_tags():
     assert data["tags"] == ["Lamp", "Desk"]
 
 
+def test_listing_normalizes_condition_and_status():
+    headers = auth_headers()
+
+    response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Choice listing",
+            "condition": " Good ",
+            "status": " Ready ",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["condition"] == "good"
+    assert data["status"] == "ready"
+
+
 def test_listing_update_rejects_invalid_currency():
     headers = auth_headers()
     listing_response = client.post("/api/listings", headers=headers, json={"title": "Currency test"})
@@ -75,3 +94,32 @@ def test_listing_update_rejects_invalid_currency():
 
     assert response.status_code == 422
     assert "currency" in response.json()["error"]["field_errors"]
+
+
+def test_listing_rejects_unknown_condition_and_status():
+    headers = auth_headers()
+
+    create_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={"title": "Invalid choices", "condition": "mint-ish", "status": "teleported"},
+    )
+
+    assert create_response.status_code == 422
+    create_errors = create_response.json()["error"]["field_errors"]
+    assert "condition" in create_errors
+    assert "status" in create_errors
+
+    listing_response = client.post("/api/listings", headers=headers, json={"title": "Choice update"})
+    assert listing_response.status_code == 200, listing_response.text
+
+    update_response = client.patch(
+        f"/api/listings/{listing_response.json()['id']}",
+        headers=headers,
+        json={"condition": "mint-ish", "status": "teleported"},
+    )
+
+    assert update_response.status_code == 422
+    update_errors = update_response.json()["error"]["field_errors"]
+    assert "condition" in update_errors
+    assert "status" in update_errors

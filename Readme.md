@@ -58,16 +58,20 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `ALLOWED_IMAGE_TYPES`: comma-separated accepted image MIME types.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
 - `DEV_AUTO_LOGIN`: creates a reserved local demo session only when `APP_ENV=development`.
+- `AUTH_TRANSPORT`: supported value is `bearer`; cookie sessions are not enabled.
 - `LOGIN_RATE_LIMIT_ATTEMPTS`: failed login attempts allowed per email/IP window.
 - `LOGIN_RATE_LIMIT_WINDOW_SECONDS`: failed login throttle window.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `JOB_WORKER_POLL_SECONDS`: worker polling interval.
 - `JOB_WORKER_BATCH_SIZE`: maximum queued jobs processed per worker pass.
+- `JOB_STALE_RUNNING_SECONDS`: age after which a stuck running job is returned to the queue.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
+- `PLATFORM_RATE_LIMIT_OVERRIDES`: optional comma-separated per-platform cooldowns such as `marktplaats=120,ebay=300`.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
 - `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
 - `LOG_LEVEL`: desired logging verbosity for deployment.
+- `LOG_FORMAT`: `text` for local logs or `json` for production log aggregation.
 
 Legacy Selenium variables are documented in `.env.example` and should only be filled locally.
 
@@ -161,7 +165,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 1. Add a class implementing `PlatformAdapter` in `app/adapters/`.
 2. Implement `validate_listing`, `map_listing_to_platform_fields`, `publish_listing`, `get_required_fields`, and `get_supported_categories`.
 3. Register it in `app/adapters/registry.py`.
-4. Add adapter tests with mocked external behavior.
+4. Add adapter tests that prove assisted adapters do not fake external success; use fake local API responses only for future official API test suites.
 5. Document the automation mode and compliance limits here.
 
 ## API highlights
@@ -196,6 +200,8 @@ List endpoints support bounded pagination with `limit` and `offset`. Core list e
 
 Data portability is available through Settings and the API. `GET /api/export` returns a JSON bundle with listings, platform override drafts, templates, category mappings, and sanitized platform account metadata. `POST /api/import` recreates that business data for the authenticated user. `DELETE /api/auth/me` removes the authenticated user's account, sessions, owned listings, jobs, templates, mappings, platform accounts, and uploaded image files. Password hashes, sessions, job history, platform secret references, and image binaries are not included in the JSON export.
 
+Export, import, and account deletion write sanitized local audit events with aggregate counts only. Account deletion keeps a hashed-email audit record after the user row is removed.
+
 API errors use a consistent envelope:
 
 ```json
@@ -229,6 +235,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - New user passwords are hashed with Argon2.
 - Older PBKDF2 hashes are still accepted and upgraded on successful login.
 - Bearer sessions can be revoked with `POST /api/auth/logout`.
+- Authentication is bearer-only: send tokens in the `Authorization` header. The app does not set session cookies.
 - Failed login attempts are rate-limited per email/IP window.
 - External calls are isolated behind adapter interfaces.
 - The default integrations are assisted-only where official automation credentials are absent.
@@ -248,12 +255,16 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
+- Auth deployment posture: `docs/AUTH_SECURITY_POSTURE.md`
 - Performance and scale basics: `docs/PERFORMANCE_SCALE_BASICS.md`
 - Release readiness: `docs/RELEASE_READINESS.md`
 - Supply chain and dependencies: `docs/SUPPLY_CHAIN.md`
 - State machines: `docs/STATE_MACHINES.md`
 - Feature flags: `docs/FEATURE_FLAGS.md`
 - Demo mode: `docs/DEMO_MODE.md`
+- Fake provider lab: `docs/FAKE_PROVIDER_LAB.md`
+- No mocks in production audit: `docs/NO_MOCKS_PRODUCTION_AUDIT.md`
+- Privacy audit events: `docs/PRIVACY_AUDIT_EVENTS.md`
 - Completion matrix: `docs/COMPLETION_MATRIX.md`
 
 ## Production notes

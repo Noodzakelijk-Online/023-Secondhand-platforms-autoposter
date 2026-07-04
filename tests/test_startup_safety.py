@@ -27,6 +27,15 @@ def test_production_accepts_safe_startup_configuration():
     validate_startup_safety(settings)
 
 
+def test_unsupported_auth_transport_is_rejected():
+    settings = Settings(auth_transport="cookie")
+
+    with pytest.raises(RuntimeError) as exc:
+        validate_startup_safety(settings)
+
+    assert "AUTH_TRANSPORT must be bearer" in str(exc.value)
+
+
 def test_feature_flags_are_reported_from_settings():
     settings = Settings(dev_auto_login=True, auto_create_tables=False, job_process_inline=False)
 

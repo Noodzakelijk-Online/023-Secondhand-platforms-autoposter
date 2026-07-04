@@ -26,20 +26,22 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Layer | Files | Purpose |
 | --- | --- | --- |
 | API smoke and route contract | `tests/test_api.py`, `tests/test_api_hardening.py` | Core listing/account/template flow, platform metadata, direct detail/delete routes, request IDs, pagination, filters, and structured errors. |
-| Auth/security | `tests/test_auth_security.py` | Password hashing, login/logout/session behavior, token revocation, and failed-login throttling. |
+| Auth/security | `tests/test_auth_security.py` | Password hashing, login/logout/session behavior, token revocation, bearer-only auth posture, and failed-login throttling. |
 | Storage | `tests/test_storage_uploads.py` | Filename sanitization, MIME/signature validation, duplicate detection, delete/reorder behavior, and metadata persistence. |
 | Category mappings | `tests/test_category_mappings.py` | Mapping CRUD/upsert/patch behavior and mapping use in validation/publish output. |
-| Jobs/worker | `tests/test_worker.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, and job filtering/sorting/pagination. |
+| Jobs/worker | `tests/test_worker.py`, `tests/test_job_state.py`, `tests/test_config.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, filtering/sorting/pagination, atomic claims, stale-running recovery, state transitions, and platform cooldown overrides. |
 | Listing revisions/idempotency | `tests/test_listing_revisions.py` | Revision increments and publish idempotency boundaries. |
+| Data invariants | `tests/test_data_invariants.py` | Money/weight validation, currency/tag normalization, and listing condition/status choices. |
 | Data portability | `tests/test_data_portability.py` | Sanitized export/import for listings, settings, mappings, and account metadata. |
 | Diagnostics/startup/migrations | `tests/test_doctor.py`, `tests/test_startup_safety.py`, `tests/test_migrations.py` | Doctor checks, startup safety guards, and migration availability. |
+| Observability | `tests/test_observability.py` | Structured JSON log formatting and request log metadata. |
 | Legacy isolation | `tests/test_legacy_quarantine.py` | Ensures legacy browser automation imports do not leak into the web app path. |
 
 ## Data And Isolation
 
 - Tests use SQLite via `sqlite:///./data/test_autoposter.db`.
 - Test modules reset the SQLAlchemy metadata for isolation.
-- Platform cooldowns are disabled for tests with `PLATFORM_RATE_LIMIT_SECONDS=0`.
+- Platform cooldown tests either disable cooldowns with `PLATFORM_RATE_LIMIT_SECONDS=0` or use `PLATFORM_RATE_LIMIT_OVERRIDES` for platform-specific behavior.
 - Tests do not require browser automation, external marketplace credentials, or real platform network calls.
 
 ## Coverage Priorities

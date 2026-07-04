@@ -41,6 +41,8 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `DELETE` | `/api/accounts/{account_id}` | Account list delete button | `test_api.py` | Visible and tested. |
 | `GET` | `/api/templates` | Settings template list | `test_api.py`, `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/templates` | Settings template form | `test_api.py`, `test_data_portability.py` | Visible and tested. |
+| `PATCH` | `/api/templates/{template_id}` | Settings template edit flow | `test_api.py` | Visible and tested. |
+| `DELETE` | `/api/templates/{template_id}` | Settings template delete button | `test_api.py` | Visible and tested. |
 | `GET` | `/api/category-mappings` | Settings mapping list | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/category-mappings` | Settings mapping form | `test_category_mappings.py`, `test_data_portability.py` | Visible and tested. |
 | `PATCH` | `/api/category-mappings/{mapping_id}` | Settings mapping edit flow | `test_category_mappings.py` | Visible and tested. |

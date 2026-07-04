@@ -1,7 +1,7 @@
 import hashlib
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import desc
+from sqlalchemy import and_, desc, or_
 from sqlalchemy.orm import Session, selectinload
 
 from app.adapters import get_adapter
@@ -109,15 +109,29 @@ def enqueue_publish_job(
 def process_job(db: Session, job_id: int) -> PublishingJob:
     job = (
         db.query(PublishingJob)
-        .options(selectinload(PublishingJob.listing).selectinload(Listing.images), selectinload(PublishingJob.logs))
         .filter(PublishingJob.id == job_id)
         .one()
     )
     if is_terminal_status(job.status) and job.status != FAILED:
         return job
+    if job.status == QUEUED and not claim_job_for_processing(db, job.id):
+        return db.get(PublishingJob, job.id)
+    if job.status == FAILED:
+        transition_job(job, RUNNING)
+        db.commit()
+    elif job.status != RUNNING:
+        return job
+
+    job = (
+        db.query(PublishingJob)
+        .options(selectinload(PublishingJob.listing).selectinload(Listing.images), selectinload(PublishingJob.logs))
+        .filter(PublishingJob.id == job_id)
+        .one()
+    )
 
     settings = get_settings()
-    cooldown_cutoff = datetime.now(UTC) - timedelta(seconds=settings.platform_rate_limit_seconds)
+    cooldown_seconds = settings.platform_rate_limit_for(job.platform)
+    cooldown_cutoff = datetime.now(UTC) - timedelta(seconds=cooldown_seconds)
     recent_job = (
         db.query(PublishingJob)
         .filter(
@@ -133,13 +147,13 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
         recent_started_at = recent_started_at.replace(tzinfo=UTC)
     if recent_job and recent_started_at and recent_started_at > cooldown_cutoff:
         transition_job(job, QUEUED)
-        job.next_retry_at = datetime.now(UTC) + timedelta(seconds=settings.platform_rate_limit_seconds)
+        job.started_at = None
+        job.next_retry_at = datetime.now(UTC) + timedelta(seconds=cooldown_seconds)
         add_log(db, job, "info", "Rate limit cooldown applied.", {"next_retry_at": job.next_retry_at.isoformat()})
         db.commit()
         db.refresh(job)
         return job
 
-    transition_job(job, RUNNING)
     job.started_at = datetime.now(UTC)
     job.attempts += 1
     add_log(db, job, "info", "Publishing job started.")
@@ -195,6 +209,19 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     return job
 
 
+def claim_job_for_processing(db: Session, job_id: int, due_only: bool = False) -> bool:
+    now = datetime.now(UTC)
+    query = db.query(PublishingJob).filter(PublishingJob.id == job_id, PublishingJob.status == QUEUED)
+    if due_only:
+        query = (
+            query.filter(PublishingJob.scheduled_at <= now)
+            .filter((PublishingJob.next_retry_at.is_(None)) | (PublishingJob.next_retry_at <= now))
+        )
+    claimed = query.update({PublishingJob.status: RUNNING, PublishingJob.updated_at: now}, synchronize_session=False)
+    db.commit()
+    return claimed == 1
+
+
 def retry_job(db: Session, job: PublishingJob) -> PublishingJob:
     if job.attempts >= job.max_attempts:
         job.max_attempts += 1
@@ -238,10 +265,51 @@ def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
     )
 
 
+def claim_due_queued_job_ids(db: Session, limit: int) -> list[int]:
+    due_job_ids = [job.id for job in get_due_queued_jobs(db, limit)]
+    claimed_job_ids = []
+    for job_id in due_job_ids:
+        if claim_job_for_processing(db, job_id, due_only=True):
+            claimed_job_ids.append(job_id)
+    return claimed_job_ids
+
+
+def recover_stale_running_jobs(db: Session, stale_after_seconds: int) -> int:
+    if stale_after_seconds <= 0:
+        return 0
+    cutoff = datetime.now(UTC) - timedelta(seconds=stale_after_seconds)
+    stale_jobs = (
+        db.query(PublishingJob)
+        .filter(PublishingJob.status == RUNNING)
+        .filter(
+            or_(
+                and_(PublishingJob.started_at.is_not(None), PublishingJob.started_at < cutoff),
+                and_(PublishingJob.started_at.is_(None), PublishingJob.updated_at < cutoff),
+            )
+        )
+        .order_by(PublishingJob.updated_at.asc(), PublishingJob.id.asc())
+        .all()
+    )
+    for job in stale_jobs:
+        transition_job(job, QUEUED)
+        job.next_retry_at = None
+        add_log(
+            db,
+            job,
+            "warning",
+            "Recovered stale running job and returned it to the queue.",
+            {"stale_after_seconds": stale_after_seconds},
+        )
+    if stale_jobs:
+        db.commit()
+    return len(stale_jobs)
+
+
 def process_due_jobs(db: Session, limit: int) -> int:
-    jobs = get_due_queued_jobs(db, limit)
+    recover_stale_running_jobs(db, get_settings().job_stale_running_seconds)
+    job_ids = claim_due_queued_job_ids(db, limit)
     processed = 0
-    for job in jobs:
-        process_job(db, job.id)
+    for job_id in job_ids:
+        process_job(db, job_id)
         processed += 1
     return processed

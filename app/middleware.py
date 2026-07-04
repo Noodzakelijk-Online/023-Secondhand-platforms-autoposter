@@ -1,3 +1,5 @@
+import logging
+import time
 import uuid
 from collections.abc import Callable
 
@@ -5,6 +7,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
+
+request_logger = logging.getLogger("autoposter.requests")
 
 
 def error_response(
@@ -39,7 +43,23 @@ def setup_middleware(app: FastAPI) -> None:
     ) -> Response:
         request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
         request.state.request_id = request_id
-        response = await call_next(request)
+        started_at = time.perf_counter()
+        status_code = 500
+        try:
+            response = await call_next(request)
+            status_code = response.status_code
+        finally:
+            duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+            request_logger.info(
+                "HTTP request completed",
+                extra={
+                    "request_id": request_id,
+                    "method": request.method,
+                    "path": request.url.path,
+                    "status_code": status_code,
+                    "duration_ms": duration_ms,
+                },
+            )
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"

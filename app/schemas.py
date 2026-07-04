@@ -3,6 +3,9 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
+LISTING_CONDITIONS = frozenset({"new", "as_new", "good", "used", "fair", "damaged", "for_parts", "other"})
+LISTING_STATUSES = frozenset({"draft", "ready", "published", "archived"})
+
 
 def _non_negative(value: int | None) -> int | None:
     if value is not None and value < 0:
@@ -16,6 +19,16 @@ def _normalize_currency(value: str | None) -> str | None:
     normalized = value.strip().upper()
     if len(normalized) != 3 or not normalized.isalpha():
         raise ValueError("currency must be a 3-letter ISO code")
+    return normalized
+
+
+def _normalize_choice(value: str | None, allowed: frozenset[str], field_name: str) -> str | None:
+    if value is None:
+        return value
+    normalized = value.strip().lower()
+    if normalized not in allowed:
+        allowed_values = ", ".join(sorted(allowed))
+        raise ValueError(f"{field_name} must be one of: {allowed_values}")
     return normalized
 
 
@@ -97,6 +110,16 @@ class ListingBase(BaseModel):
     def validate_currency(cls, value: str) -> str:
         return _normalize_currency(value) or "EUR"
 
+    @field_validator("condition")
+    @classmethod
+    def validate_condition(cls, value: str) -> str:
+        return _normalize_choice(value, LISTING_CONDITIONS, "condition") or "used"
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, value: str) -> str:
+        return _normalize_choice(value, LISTING_STATUSES, "status") or "draft"
+
     @field_validator("tags")
     @classmethod
     def validate_tags(cls, value: list[str]) -> list[str]:
@@ -139,6 +162,16 @@ class ListingUpdate(BaseModel):
     @classmethod
     def validate_currency(cls, value: str | None) -> str | None:
         return _normalize_currency(value)
+
+    @field_validator("condition")
+    @classmethod
+    def validate_condition(cls, value: str | None) -> str | None:
+        return _normalize_choice(value, LISTING_CONDITIONS, "condition")
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, value: str | None) -> str | None:
+        return _normalize_choice(value, LISTING_STATUSES, "status")
 
     @field_validator("tags")
     @classmethod
@@ -252,6 +285,12 @@ class PublishingJobOut(BaseModel):
 class TemplateCreate(BaseModel):
     name: str
     body: str
+    platform: str | None = None
+
+
+class TemplateUpdate(BaseModel):
+    name: str | None = None
+    body: str | None = None
     platform: str | None = None
 
 

@@ -135,6 +135,46 @@ def test_accounts_and_templates():
     assert client.get("/api/accounts", headers=headers).json() == []
 
 
+def test_templates_can_be_updated_deleted_and_are_owner_scoped():
+    owner_headers = auth_headers()
+    template_response = client.post(
+        "/api/templates",
+        headers=owner_headers,
+        json={"name": "Pickup", "platform": None, "body": "Pickup only."},
+    )
+    assert template_response.status_code == 200, template_response.text
+    template_id = template_response.json()["id"]
+
+    update_response = client.patch(
+        f"/api/templates/{template_id}",
+        headers=owner_headers,
+        json={"name": "Shipping", "platform": "ebay", "body": "Shipping available."},
+    )
+    assert update_response.status_code == 200, update_response.text
+    assert update_response.json()["name"] == "Shipping"
+    assert update_response.json()["platform"] == "ebay"
+    assert update_response.json()["body"] == "Shipping available."
+
+    other_headers = {
+        "Authorization": "Bearer "
+        + client.post(
+            "/api/auth/register",
+            json={"email": "other@example.com", "password": "correct-password", "name": "Other"},
+        ).json()["token"]
+    }
+    other_update_response = client.patch(
+        f"/api/templates/{template_id}",
+        headers=other_headers,
+        json={"name": "Stolen"},
+    )
+    assert other_update_response.status_code == 404
+    assert client.delete(f"/api/templates/{template_id}", headers=other_headers).status_code == 404
+
+    delete_response = client.delete(f"/api/templates/{template_id}", headers=owner_headers)
+    assert delete_response.status_code == 204
+    assert client.get("/api/templates", headers=owner_headers).json() == []
+
+
 def test_listing_detail_and_delete_are_owner_scoped():
     headers = auth_headers()
     listing_response = client.post(

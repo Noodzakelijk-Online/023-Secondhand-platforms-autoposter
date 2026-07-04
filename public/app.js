@@ -293,7 +293,13 @@ function renderAccounts() {
 function renderSettings() {
   $("#templateList").innerHTML = state.templates.map((template) => `
     <article class="list-item">
-      <strong>${escapeHtml(template.name)}</strong>
+      <div class="pane-head">
+        <strong>${escapeHtml(template.name)}</strong>
+        <div class="row compact-actions">
+          <button class="ghost" data-edit-template="${template.id}">Edit</button>
+          <button class="ghost" data-delete-template="${template.id}">Delete</button>
+        </div>
+      </div>
       <span class="muted">${escapeHtml(template.platform || "All platforms")}</span>
       <p>${escapeHtml(template.body.slice(0, 160))}</p>
     </article>
@@ -720,8 +726,9 @@ $("#accountList").addEventListener("click", async (event) => {
 
 $("#templateForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  await api("/templates", {
-    method: "POST",
+  const templateId = event.currentTarget.dataset.templateId;
+  await api(templateId ? `/templates/${templateId}` : "/templates", {
+    method: templateId ? "PATCH" : "POST",
     body: JSON.stringify({
       name: $("#templateName").value,
       platform: $("#templatePlatform").value || null,
@@ -730,6 +737,38 @@ $("#templateForm").addEventListener("submit", async (event) => {
   });
   $("#templateName").value = "";
   $("#templateBody").value = "";
+  $("#templatePlatform").value = "";
+  delete event.currentTarget.dataset.templateId;
+  $("#templateForm button[type='submit']").textContent = "Save template";
+  $("#cancelTemplateEditButton").classList.add("hidden");
+  await loadAll();
+});
+
+$("#cancelTemplateEditButton").addEventListener("click", () => {
+  $("#templateName").value = "";
+  $("#templateBody").value = "";
+  $("#templatePlatform").value = "";
+  delete $("#templateForm").dataset.templateId;
+  $("#templateForm button[type='submit']").textContent = "Save template";
+  $("#cancelTemplateEditButton").classList.add("hidden");
+});
+
+$("#templateList").addEventListener("click", async (event) => {
+  const editButton = event.target.closest("[data-edit-template]");
+  if (editButton) {
+    const template = state.templates.find((candidate) => candidate.id === Number(editButton.dataset.editTemplate));
+    if (!template) return;
+    $("#templateName").value = template.name;
+    $("#templatePlatform").value = template.platform || "";
+    $("#templateBody").value = template.body;
+    $("#templateForm").dataset.templateId = template.id;
+    $("#templateForm button[type='submit']").textContent = "Update template";
+    $("#cancelTemplateEditButton").classList.remove("hidden");
+    return;
+  }
+  const deleteButton = event.target.closest("[data-delete-template]");
+  if (!deleteButton) return;
+  await api(`/templates/${deleteButton.dataset.deleteTemplate}`, { method: "DELETE" });
   await loadAll();
 });
 

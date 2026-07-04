@@ -38,4 +38,11 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "ix_listings_owner_updated_at" in listing_indexes
     job_indexes = {index["name"] for index in inspect(engine).get_indexes("publishing_jobs")}
     assert "ix_publishing_jobs_due_queue" in job_indexes
+    assert "audit_events" in tables
+    audit_columns = {column["name"] for column in inspect(engine).get_columns("audit_events")}
+    assert "user_email_hash" in audit_columns
+    assert "event_data" in audit_columns
+    audit_indexes = {index["name"] for index in inspect(engine).get_indexes("audit_events")}
+    assert "ix_audit_events_user_created_at" in audit_indexes
+    assert "ix_audit_events_action_created_at" in audit_indexes
     assert "ix_publishing_jobs_listing_platform_status" in job_indexes

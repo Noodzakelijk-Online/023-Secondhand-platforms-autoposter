@@ -18,4 +18,12 @@ The app stores status values as strings in the database, but the job lifecycle i
 - Terminal statuses can only return to `queued` through an explicit retry path.
 - Unknown statuses and invalid transitions raise an error instead of silently mutating the job.
 
-The state-machine tests live in `tests/test_job_state.py`, and worker/API coverage verifies the normal queue-to-assisted flow.
+## Worker Claiming
+
+Workers claim due jobs with a conditional `queued -> running` database update before adapter execution. If two worker sessions race for the same queued job, only the session that updates the row processes it; the other sees no claimed work. Cooldown checks can move a claimed job back to `queued` with `next_retry_at` set before any adapter attempt is counted.
+
+## Stale Running Recovery
+
+Before claiming due jobs, the worker returns `running` jobs older than `JOB_STALE_RUNNING_SECONDS` to `queued` and writes a warning log. This handles worker crashes or process exits that leave a job claimed but unfinished. Fresh `running` jobs remain untouched.
+
+The state-machine tests live in `tests/test_job_state.py`, and worker/API coverage verifies the normal queue-to-assisted flow, atomic due-job claims, cooldowns, and stale-running recovery.

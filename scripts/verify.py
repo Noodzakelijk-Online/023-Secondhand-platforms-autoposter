@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -20,9 +22,14 @@ CHECKS = [
 
 
 def main() -> int:
+    temp_dir = Path(".tmp/verify").resolve()
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    env.update({"TMP": str(temp_dir), "TEMP": str(temp_dir), "TMPDIR": str(temp_dir)})
+
     for check in CHECKS:
         print(f"==> {check.name}: {' '.join(check.command)}", flush=True)
-        result = subprocess.run(check.command, check=False)
+        result = subprocess.run(check.command, check=False, env=env)
         if result.returncode != 0:
             print(f"Verification failed during {check.name}.", file=sys.stderr)
             return result.returncode

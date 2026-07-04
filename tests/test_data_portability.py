@@ -3,7 +3,7 @@ import uuid
 from pathlib import Path
 
 from app.database import Base, SessionLocal, engine
-from app.models import CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
+from app.models import AuditEvent, CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
 from tests.test_api import PNG_BYTES, client
 
 
@@ -117,6 +117,20 @@ def test_export_omits_private_and_secret_fields():
     assert "vault://secret/platform-token" not in serialized
     assert "do-not-export" not in serialized
 
+    db = SessionLocal()
+    try:
+        event = db.query(AuditEvent).filter(AuditEvent.action == "data_exported").one()
+        assert event.user_email_hash
+        assert event.event_data == {
+            "listings": 1,
+            "platform_accounts": 1,
+            "templates": 1,
+            "category_mappings": 1,
+        }
+        assert "export-" not in json.dumps(event.event_data)
+    finally:
+        db.close()
+
 
 def test_import_recreates_user_owned_business_data():
     source_headers = auth_headers("source")
@@ -149,6 +163,15 @@ def test_import_recreates_user_owned_business_data():
 
     mappings = client.get("/api/category-mappings", headers=target_headers).json()
     assert mappings[0]["platform_category"] == "Huis en Inrichting"
+
+    db = SessionLocal()
+    try:
+        event = db.query(AuditEvent).filter(AuditEvent.action == "data_imported").one()
+        assert event.event_data["listings_created"] == 1
+        assert event.event_data["platform_accounts_created"] == 1
+        assert event.event_data["skipped"] == 0
+    finally:
+        db.close()
 
 
 def test_delete_me_purges_owned_data_and_revokes_session():
@@ -187,6 +210,14 @@ def test_delete_me_purges_owned_data_and_revokes_session():
         assert db.query(PlatformAccount).filter(PlatformAccount.display_name == "Portable eBay").count() == 0
         assert db.query(ListingTemplate).filter(ListingTemplate.name == "Pickup").count() == 0
         assert db.query(CategoryMapping).filter(CategoryMapping.source_category == "Furniture").count() == 0
+        event = db.query(AuditEvent).filter(AuditEvent.action == "account_deleted").one()
+        assert event.user_id is not None
+        assert event.user_email_hash
+        assert event.event_data["listings_deleted"] == 1
+        assert event.event_data["jobs_deleted"] == 1
+        assert event.event_data["images_deleted"] == 1
+        assert event.event_data["platform_accounts_deleted"] == 1
+        assert "delete-" not in json.dumps(event.event_data)
     finally:
         db.close()
     assert not Path(image_path).exists()

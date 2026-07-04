@@ -1,6 +1,9 @@
 import uuid
+from datetime import UTC, datetime, timedelta
 
-from app.database import Base, engine
+from app.database import Base, SessionLocal, engine
+from app.models import PublishingJob
+from app.services.jobs import claim_due_queued_job_ids, recover_stale_running_jobs
 from app.worker import run_once
 from tests.test_api import PNG_BYTES, client
 
@@ -118,6 +121,142 @@ def test_jobs_support_pagination_filtering_and_sorting(monkeypatch):
 
     monkeypatch.delenv("JOB_PROCESS_INLINE")
     get_settings.cache_clear()
+
+
+def test_due_job_claims_are_atomic_across_worker_sessions(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+    job_id = publish_response.json()[0]["id"]
+
+    first_worker_db = SessionLocal()
+    second_worker_db = SessionLocal()
+    try:
+        assert claim_due_queued_job_ids(first_worker_db, limit=10) == [job_id]
+        assert claim_due_queued_job_ids(second_worker_db, limit=10) == []
+    finally:
+        first_worker_db.close()
+        second_worker_db.close()
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    get_settings.cache_clear()
+
+
+def test_platform_rate_limit_overrides_delay_same_platform_jobs(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    monkeypatch.setenv("PLATFORM_RATE_LIMIT_SECONDS", "0")
+    monkeypatch.setenv("PLATFORM_RATE_LIMIT_OVERRIDES", "marktplaats=3600")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    first_listing_id = create_ready_listing(headers)
+    second_listing_id = create_ready_listing(headers)
+
+    for listing_id in [first_listing_id, second_listing_id]:
+        publish_response = client.post(
+            f"/api/listings/{listing_id}/publish",
+            headers=headers,
+            json={"platforms": ["marktplaats"], "process_now": True},
+        )
+        assert publish_response.status_code == 200, publish_response.text
+
+    assert run_once() == 2
+
+    db = SessionLocal()
+    try:
+        jobs = (
+            db.query(PublishingJob)
+            .filter(PublishingJob.platform == "marktplaats")
+            .order_by(PublishingJob.id.asc())
+            .all()
+        )
+        assert jobs[0].status == "needs_user_action"
+        assert jobs[0].attempts == 1
+        assert jobs[1].status == "queued"
+        assert jobs[1].attempts == 0
+        assert jobs[1].next_retry_at is not None
+        next_retry_at = jobs[1].next_retry_at
+        if next_retry_at.tzinfo is None:
+            next_retry_at = next_retry_at.replace(tzinfo=UTC)
+        assert (next_retry_at - datetime.now(UTC)).total_seconds() > 3500
+    finally:
+        db.close()
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    monkeypatch.delenv("PLATFORM_RATE_LIMIT_SECONDS")
+    monkeypatch.delenv("PLATFORM_RATE_LIMIT_OVERRIDES")
+    get_settings.cache_clear()
+
+
+def test_worker_recovers_stale_running_jobs(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    monkeypatch.setenv("JOB_STALE_RUNNING_SECONDS", "60")
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+    job_id = publish_response.json()[0]["id"]
+
+    db = SessionLocal()
+    try:
+        job = db.get(PublishingJob, job_id)
+        job.status = "running"
+        job.started_at = datetime.now(UTC) - timedelta(seconds=120)
+        db.commit()
+    finally:
+        db.close()
+
+    assert run_once() == 1
+
+    db = SessionLocal()
+    try:
+        job = db.get(PublishingJob, job_id)
+        assert job.status == "needs_user_action"
+        assert job.attempts == 1
+        assert any("Recovered stale running job" in log.message for log in job.logs)
+    finally:
+        db.close()
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    monkeypatch.delenv("JOB_STALE_RUNNING_SECONDS")
+    get_settings.cache_clear()
+
+
+def test_fresh_running_jobs_are_not_recovered():
+    db = SessionLocal()
+    try:
+        job = PublishingJob(
+            listing_id=1,
+            platform="marktplaats",
+            status="running",
+            idempotency_key=f"fresh-running-{uuid.uuid4().hex}",
+            started_at=datetime.now(UTC),
+        )
+        db.add(job)
+        db.commit()
+
+        assert recover_stale_running_jobs(db, stale_after_seconds=60) == 0
+        db.refresh(job)
+        assert job.status == "running"
+    finally:
+        db.close()
 
 
 def test_worker_ignores_empty_queue():

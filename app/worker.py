@@ -3,6 +3,7 @@ import time
 
 from app.config import get_settings
 from app.database import SessionLocal, init_db
+from app.observability import configure_logging
 from app.services.jobs import process_due_jobs
 
 logger = logging.getLogger("autoposter.worker")
@@ -19,7 +20,7 @@ def run_once() -> int:
 
 def run_forever() -> None:
     settings = get_settings()
-    logging.basicConfig(level=settings.log_level)
+    configure_logging(settings.log_level, settings.log_format)
     if settings.auto_create_tables:
         init_db()
     logger.info("Worker started")

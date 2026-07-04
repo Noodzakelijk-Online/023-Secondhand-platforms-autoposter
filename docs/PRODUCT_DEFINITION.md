@@ -6,6 +6,8 @@ Secondhand Platforms Autoposter is a central listing manager for people who sell
 
 The user creates one reusable master listing with title, description, price, category, condition, location, delivery options, tags, and images. The app validates that listing for each selected platform, stores platform-specific overrides, creates publishing jobs, tracks job logs, and prepares platform-ready posting packages.
 
+Master listing condition values are normalized to `new`, `as_new`, `good`, `used`, `fair`, `damaged`, `for_parts`, or `other`. Master listing status values are normalized to `draft`, `ready`, `published`, or `archived`.
+
 ## Target User
 
 The primary user is a non-technical seller or small operator who wants to avoid rewriting the same listing repeatedly for Marktplaats, Koopplein, Nextdoor, eBay, and Tweedehands.

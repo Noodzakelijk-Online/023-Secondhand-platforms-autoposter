@@ -47,6 +47,7 @@ from app.schemas import (
     PublishRequest,
     TemplateCreate,
     TemplateOut,
+    TemplateUpdate,
     UserOut,
     ValidationResult,
 )
@@ -58,6 +59,7 @@ from app.security import (
     revoke_session,
     verify_password,
 )
+from app.services.audit import record_audit_event
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
 from app.storage import StoredFile, read_validated_image, store_validated_image
 
@@ -108,12 +110,12 @@ def get_current_user(session: UserSession = Depends(get_current_session)) -> Use
     return session.user
 
 
-@router.get("/health")
+@router.get("/health", tags=["Health"])
 def health() -> dict:
     return {"status": "ok", "time": datetime.now(UTC).isoformat()}
 
 
-@router.get("/diagnostics")
+@router.get("/diagnostics", tags=["Diagnostics"])
 def diagnostics(db: Session = Depends(get_db)) -> dict:
     doctor = run_checks()
     return {
@@ -125,7 +127,7 @@ def diagnostics(db: Session = Depends(get_db)) -> dict:
     }
 
 
-@router.post("/auth/register", response_model=AuthToken)
+@router.post("/auth/register", response_model=AuthToken, tags=["Auth"])
 def register(payload: AuthRegister, db: Session = Depends(get_db)) -> AuthToken:
     existing = db.query(User).filter(User.email == payload.email.lower()).one_or_none()
     if existing:
@@ -142,7 +144,7 @@ def register(payload: AuthRegister, db: Session = Depends(get_db)) -> AuthToken:
     return AuthToken(token=token, user=UserOut.model_validate(user))
 
 
-@router.post("/auth/login", response_model=AuthToken)
+@router.post("/auth/login", response_model=AuthToken, tags=["Auth"])
 def login(payload: AuthLogin, request: Request, db: Session = Depends(get_db)) -> AuthToken:
     identifier = f"{request.client.host if request.client else 'unknown'}:{payload.email.lower()}"
     check_login_rate_limit(identifier)
@@ -158,27 +160,29 @@ def login(payload: AuthLogin, request: Request, db: Session = Depends(get_db)) -
     return AuthToken(token=token, user=UserOut.model_validate(user))
 
 
-@router.post("/auth/logout", status_code=204)
+@router.post("/auth/logout", status_code=204, tags=["Auth"])
 def logout(session: UserSession = Depends(get_current_session), db: Session = Depends(get_db)):
     if session.token_hash != "dev-auto-login":
         revoke_session(db, session)
     return None
 
 
-@router.get("/auth/me", response_model=UserOut)
+@router.get("/auth/me", response_model=UserOut, tags=["Auth"])
 def me(user: User = Depends(get_current_user)) -> User:
     return user
 
 
-@router.delete("/auth/me", status_code=204)
+@router.delete("/auth/me", status_code=204, tags=["Auth"])
 def delete_me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    delete_user_data(db, user.id)
+    delete_user_data(db, user)
     return None
 
 
-def delete_user_data(db: Session, user_id: int) -> None:
+def delete_user_data(db: Session, user: User) -> None:
+    user_id = user.id
     listing_ids = [id_ for (id_,) in db.query(Listing.id).filter(Listing.owner_id == user_id).all()]
     job_ids = []
+    image_paths = []
     if listing_ids:
         job_ids = [id_ for (id_,) in db.query(PublishingJob.id).filter(PublishingJob.listing_id.in_(listing_ids)).all()]
         image_paths = [
@@ -187,6 +191,20 @@ def delete_user_data(db: Session, user_id: int) -> None:
             .filter(ListingImage.listing_id.in_(listing_ids))
             .all()
         ]
+    record_audit_event(
+        db,
+        user,
+        "account_deleted",
+        {
+            "listings_deleted": len(listing_ids),
+            "jobs_deleted": len(job_ids),
+            "images_deleted": len(image_paths),
+            "templates_deleted": db.query(ListingTemplate).filter(ListingTemplate.owner_id == user_id).count(),
+            "category_mappings_deleted": db.query(CategoryMapping).filter(CategoryMapping.owner_id == user_id).count(),
+            "platform_accounts_deleted": db.query(PlatformAccount).filter(PlatformAccount.owner_id == user_id).count(),
+        },
+    )
+    if listing_ids:
         if job_ids:
             db.query(PublicationAttempt).filter(PublicationAttempt.job_id.in_(job_ids)).delete(synchronize_session=False)
             db.query(PublishingJobLog).filter(PublishingJobLog.job_id.in_(job_ids)).delete(synchronize_session=False)
@@ -220,12 +238,12 @@ def remove_local_file(path: str) -> None:
         return
 
 
-@router.get("/platforms")
+@router.get("/platforms", tags=["Platforms"])
 def platforms() -> list[dict]:
     return list_platforms()
 
 
-@router.get("/listings", response_model=list[ListingOut])
+@router.get("/listings", response_model=list[ListingOut], tags=["Listings"])
 def list_listings(
     response: Response,
     limit: int = Query(default=50, ge=1, le=100),
@@ -260,7 +278,7 @@ def list_listings(
     return apply_pagination(query, response, limit, offset).all()
 
 
-@router.post("/listings", response_model=ListingOut)
+@router.post("/listings", response_model=ListingOut, tags=["Listings"])
 def create_listing(
     payload: ListingCreate,
     user: User = Depends(get_current_user),
@@ -285,7 +303,7 @@ def _load_listing(db: Session, owner_id: int, listing_id: int) -> Listing:
     return listing
 
 
-@router.get("/listings/{listing_id}", response_model=ListingOut)
+@router.get("/listings/{listing_id}", response_model=ListingOut, tags=["Listings"])
 def get_listing(
     listing_id: int,
     user: User = Depends(get_current_user),
@@ -294,7 +312,7 @@ def get_listing(
     return _load_listing(db, user.id, listing_id)
 
 
-@router.patch("/listings/{listing_id}", response_model=ListingOut)
+@router.patch("/listings/{listing_id}", response_model=ListingOut, tags=["Listings"])
 def update_listing(
     listing_id: int,
     payload: ListingUpdate,
@@ -312,7 +330,7 @@ def update_listing(
     return _load_listing(db, user.id, listing_id)
 
 
-@router.delete("/listings/{listing_id}", status_code=204)
+@router.delete("/listings/{listing_id}", status_code=204, tags=["Listings"])
 def delete_listing(
     listing_id: int,
     user: User = Depends(get_current_user),
@@ -323,7 +341,7 @@ def delete_listing(
     db.commit()
 
 
-@router.post("/listings/{listing_id}/duplicate", response_model=ListingOut)
+@router.post("/listings/{listing_id}/duplicate", response_model=ListingOut, tags=["Listings"])
 def duplicate_listing(
     listing_id: int,
     user: User = Depends(get_current_user),
@@ -372,7 +390,7 @@ def duplicate_listing(
     return _load_listing(db, user.id, clone.id)
 
 
-@router.post("/listings/{listing_id}/images", response_model=ListingOut)
+@router.post("/listings/{listing_id}/images", response_model=ListingOut, tags=["Images"])
 async def upload_image(
     listing_id: int,
     file: UploadFile = File(...),
@@ -415,7 +433,7 @@ async def upload_image(
     return _load_listing(db, user.id, listing.id)
 
 
-@router.patch("/listings/{listing_id}/images/order", response_model=ListingOut)
+@router.patch("/listings/{listing_id}/images/order", response_model=ListingOut, tags=["Images"])
 def reorder_images(
     listing_id: int,
     payload: ImageOrderUpdate,
@@ -431,7 +449,7 @@ def reorder_images(
     return _load_listing(db, user.id, listing.id)
 
 
-@router.delete("/listings/{listing_id}/images/{image_id}", response_model=ListingOut)
+@router.delete("/listings/{listing_id}/images/{image_id}", response_model=ListingOut, tags=["Images"])
 def delete_image(
     listing_id: int,
     image_id: int,
@@ -447,7 +465,7 @@ def delete_image(
     return _load_listing(db, user.id, listing.id)
 
 
-@router.post("/listings/{listing_id}/platforms", response_model=PlatformMappingOut)
+@router.post("/listings/{listing_id}/platforms", response_model=PlatformMappingOut, tags=["Platform mappings"])
 def save_platform_override(
     listing_id: int,
     payload: PlatformOverrideUpdate,
@@ -464,7 +482,7 @@ def save_platform_override(
     return mapping
 
 
-@router.get("/listings/{listing_id}/validate", response_model=list[ValidationResult])
+@router.get("/listings/{listing_id}/validate", response_model=list[ValidationResult], tags=["Publishing"])
 def validate_listing(
     listing_id: int,
     platform: str | None = None,
@@ -518,7 +536,7 @@ def effective_platform_overrides(
     return effective
 
 
-@router.post("/listings/{listing_id}/publish", response_model=list[PublishingJobOut])
+@router.post("/listings/{listing_id}/publish", response_model=list[PublishingJobOut], tags=["Publishing"])
 def publish_listing(
     listing_id: int,
     payload: PublishRequest,
@@ -545,7 +563,7 @@ def process_job_task(job_id: int) -> None:
         db.close()
 
 
-@router.get("/jobs", response_model=list[PublishingJobOut])
+@router.get("/jobs", response_model=list[PublishingJobOut], tags=["Jobs"])
 def list_jobs(
     response: Response,
     limit: int = Query(default=50, ge=1, le=100),
@@ -582,7 +600,7 @@ def list_jobs(
     return apply_pagination(query, response, limit, offset).all()
 
 
-@router.get("/jobs/{job_id}", response_model=PublishingJobOut)
+@router.get("/jobs/{job_id}", response_model=PublishingJobOut, tags=["Jobs"])
 def get_job(job_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     job = (
         db.query(PublishingJob)
@@ -595,7 +613,7 @@ def get_job(job_id: int, user: User = Depends(get_current_user), db: Session = D
     return job
 
 
-@router.post("/jobs/{job_id}/retry", response_model=PublishingJobOut)
+@router.post("/jobs/{job_id}/retry", response_model=PublishingJobOut, tags=["Jobs"])
 def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     job = (
         db.query(PublishingJob)
@@ -608,7 +626,7 @@ def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: S
     return retry_job(db, job)
 
 
-@router.get("/accounts", response_model=list[PlatformAccountOut])
+@router.get("/accounts", response_model=list[PlatformAccountOut], tags=["Accounts"])
 def list_accounts(
     response: Response,
     limit: int = Query(default=50, ge=1, le=100),
@@ -627,7 +645,7 @@ def list_accounts(
     return apply_pagination(query, response, limit, offset).all()
 
 
-@router.post("/accounts", response_model=PlatformAccountOut)
+@router.post("/accounts", response_model=PlatformAccountOut, tags=["Accounts"])
 def create_account(
     payload: PlatformAccountCreate,
     user: User = Depends(get_current_user),
@@ -641,7 +659,7 @@ def create_account(
     return account
 
 
-@router.delete("/accounts/{account_id}", status_code=204)
+@router.delete("/accounts/{account_id}", status_code=204, tags=["Accounts"])
 def delete_account(account_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     account = (
         db.query(PlatformAccount)
@@ -654,7 +672,7 @@ def delete_account(account_id: int, user: User = Depends(get_current_user), db: 
     db.commit()
 
 
-@router.get("/templates", response_model=list[TemplateOut])
+@router.get("/templates", response_model=list[TemplateOut], tags=["Templates"])
 def list_templates(
     response: Response,
     limit: int = Query(default=50, ge=1, le=100),
@@ -673,7 +691,7 @@ def list_templates(
     return apply_pagination(query, response, limit, offset).all()
 
 
-@router.post("/templates", response_model=TemplateOut)
+@router.post("/templates", response_model=TemplateOut, tags=["Templates"])
 def create_template(
     payload: TemplateCreate,
     user: User = Depends(get_current_user),
@@ -686,7 +704,41 @@ def create_template(
     return template
 
 
-@router.get("/category-mappings", response_model=list[CategoryMappingOut])
+@router.patch("/templates/{template_id}", response_model=TemplateOut, tags=["Templates"])
+def update_template(
+    template_id: int,
+    payload: TemplateUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    template = (
+        db.query(ListingTemplate)
+        .filter(ListingTemplate.id == template_id, ListingTemplate.owner_id == user.id)
+        .one_or_none()
+    )
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    for field_name, value in payload.model_dump(exclude_unset=True).items():
+        setattr(template, field_name, value)
+    db.commit()
+    db.refresh(template)
+    return template
+
+
+@router.delete("/templates/{template_id}", status_code=204, tags=["Templates"])
+def delete_template(template_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    template = (
+        db.query(ListingTemplate)
+        .filter(ListingTemplate.id == template_id, ListingTemplate.owner_id == user.id)
+        .one_or_none()
+    )
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    db.delete(template)
+    db.commit()
+
+
+@router.get("/category-mappings", response_model=list[CategoryMappingOut], tags=["Category mappings"])
 def list_category_mappings(
     response: Response,
     limit: int = Query(default=50, ge=1, le=100),
@@ -705,7 +757,7 @@ def list_category_mappings(
     return apply_pagination(query, response, limit, offset).all()
 
 
-@router.post("/category-mappings", response_model=CategoryMappingOut)
+@router.post("/category-mappings", response_model=CategoryMappingOut, tags=["Category mappings"])
 def create_category_mapping(
     payload: CategoryMappingCreate,
     user: User = Depends(get_current_user),
@@ -733,7 +785,7 @@ def create_category_mapping(
     return category_mapping
 
 
-@router.patch("/category-mappings/{mapping_id}", response_model=CategoryMappingOut)
+@router.patch("/category-mappings/{mapping_id}", response_model=CategoryMappingOut, tags=["Category mappings"])
 def update_category_mapping(
     mapping_id: int,
     payload: CategoryMappingUpdate,
@@ -757,7 +809,7 @@ def update_category_mapping(
     return category_mapping
 
 
-@router.delete("/category-mappings/{mapping_id}", status_code=204)
+@router.delete("/category-mappings/{mapping_id}", status_code=204, tags=["Category mappings"])
 def delete_category_mapping(
     mapping_id: int,
     user: User = Depends(get_current_user),
@@ -825,7 +877,7 @@ def _export_listing(listing: Listing) -> dict:
     return payload
 
 
-@router.get("/export", response_model=DataExportBundle)
+@router.get("/export", response_model=DataExportBundle, tags=["Data portability"])
 def export_data(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     listings = (
         db.query(Listing)
@@ -839,7 +891,7 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
     category_mappings = (
         db.query(CategoryMapping).filter(CategoryMapping.owner_id == user.id).order_by(CategoryMapping.id).all()
     )
-    return {
+    bundle = {
         "version": "1",
         "exported_at": datetime.now(UTC),
         "user": user,
@@ -867,9 +919,22 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
             for category_mapping in category_mappings
         ],
     }
+    record_audit_event(
+        db,
+        user,
+        "data_exported",
+        {
+            "listings": len(listings),
+            "platform_accounts": len(accounts),
+            "templates": len(templates),
+            "category_mappings": len(category_mappings),
+        },
+    )
+    db.commit()
+    return bundle
 
 
-@router.post("/import", response_model=DataImportResult)
+@router.post("/import", response_model=DataImportResult, tags=["Data portability"])
 def import_data(
     payload: DataImportBundle,
     user: User = Depends(get_current_user),
@@ -959,5 +1024,11 @@ def import_data(
             )
             result.platform_mappings_created += 1
 
+    record_audit_event(
+        db,
+        user,
+        "data_imported",
+        result.model_dump(),
+    )
     db.commit()
     return result

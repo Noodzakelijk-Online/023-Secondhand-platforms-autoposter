@@ -274,7 +274,10 @@
                   <label>Name<input id="templateName" required /></label>
                   <label>Platform<select id="templatePlatform"><option value="">All platforms</option></select></label>
                   <label>Body<textarea id="templateBody" rows="8" required></textarea></label>
-                  <button type="submit">Save template</button>
+                  <div class="row compact-actions">
+                    <button type="submit">Save template</button>
+                    <button type="button" id="cancelTemplateEditButton" class="ghost hidden">Cancel</button>
+                  </div>
                 </form>
                 <div class="section-line"></div>
                 <form id="categoryMappingForm">

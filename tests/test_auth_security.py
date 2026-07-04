@@ -46,6 +46,24 @@ def test_logout_revokes_session_token():
     assert me_response.status_code == 401
 
 
+def test_auth_tokens_are_not_set_as_cookies():
+    response = client.post(
+        "/api/auth/register",
+        json={"email": unique_email(), "password": "correct-password", "name": "Cookie Free User"},
+    )
+
+    assert response.status_code == 200, response.text
+    assert "token" in response.json()
+    assert "set-cookie" not in response.headers
+
+
+def test_session_cookie_alone_does_not_authenticate():
+    response = client.get("/api/auth/me", headers={"Cookie": "session=not-a-supported-auth-mode"})
+
+    assert response.status_code == 401
+    assert response.json()["error"]["message"] == "Missing bearer token"
+
+
 def test_legacy_pbkdf2_hash_upgrades_on_successful_login():
     email = unique_email()
     db: Session = SessionLocal()

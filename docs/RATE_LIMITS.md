@@ -4,14 +4,14 @@ The app includes a conservative per-platform cooldown for publishing jobs. This 
 
 ## Current Configuration
 
-- Environment variable: `PLATFORM_RATE_LIMIT_SECONDS`
+- Environment variables: `PLATFORM_RATE_LIMIT_SECONDS`, `PLATFORM_RATE_LIMIT_OVERRIDES`
 - Default: `60`
 - Scope: shared per platform across jobs
+- Override format: comma-separated `platform=seconds`, for example `marktplaats=120,ebay=300`
 - Behavior: if another job for the same platform started within the cooldown window, the next job remains queued and receives `next_retry_at`.
 
 ## Current Limitations
 
-- There are no per-platform override variables yet.
 - The worker loop is still simple; delayed jobs are persisted but not automatically resumed by a separate production worker process.
 - The frontend can show queued job state and logs, but does not yet show a dedicated countdown.
 - Official API-specific rate-limit headers are not consumed because official API integrations are not implemented yet.

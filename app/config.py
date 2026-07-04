@@ -18,14 +18,18 @@ class Settings(BaseSettings):
     allowed_image_types: str = "image/jpeg,image/png,image/gif,image/webp"
     cors_origins: str = "*"
     log_level: str = "INFO"
+    log_format: str = "text"
     dev_auto_login: bool = False
+    auth_transport: str = "bearer"
     login_rate_limit_attempts: int = 5
     login_rate_limit_window_seconds: int = 300
     auto_create_tables: bool = True
     job_process_inline: bool = True
     job_worker_poll_seconds: int = 5
     job_worker_batch_size: int = 10
+    job_stale_running_seconds: int = 1800
     platform_rate_limit_seconds: int = 60
+    platform_rate_limit_overrides: str = ""
     session_expire_hours: int = 168
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
@@ -43,6 +47,31 @@ class Settings(BaseSettings):
         return {item.strip().lower() for item in self.allowed_image_types.split(",") if item.strip()}
 
     @property
+    def platform_rate_limit_seconds_by_platform(self) -> dict[str, int]:
+        overrides: dict[str, int] = {}
+        for raw_item in self.platform_rate_limit_overrides.split(","):
+            item = raw_item.strip()
+            if not item:
+                continue
+            if "=" not in item:
+                raise ValueError("PLATFORM_RATE_LIMIT_OVERRIDES entries must use platform=seconds")
+            platform, raw_seconds = item.split("=", 1)
+            platform_key = platform.strip().lower()
+            if not platform_key:
+                raise ValueError("PLATFORM_RATE_LIMIT_OVERRIDES platform cannot be empty")
+            try:
+                seconds = int(raw_seconds.strip())
+            except ValueError as exc:
+                raise ValueError("PLATFORM_RATE_LIMIT_OVERRIDES seconds must be integers") from exc
+            if seconds < 0:
+                raise ValueError("PLATFORM_RATE_LIMIT_OVERRIDES seconds must be non-negative")
+            overrides[platform_key] = seconds
+        return overrides
+
+    def platform_rate_limit_for(self, platform: str) -> int:
+        return self.platform_rate_limit_seconds_by_platform.get(platform.lower(), self.platform_rate_limit_seconds)
+
+    @property
     def is_production(self) -> bool:
         return self.app_env.lower() == "production"
 
@@ -52,6 +81,9 @@ class Settings(BaseSettings):
 
 
 def validate_startup_safety(settings: Settings) -> None:
+    if settings.auth_transport.lower() != "bearer":
+        raise RuntimeError("Unsupported auth transport: AUTH_TRANSPORT must be bearer")
+
     if not settings.is_production:
         return
 

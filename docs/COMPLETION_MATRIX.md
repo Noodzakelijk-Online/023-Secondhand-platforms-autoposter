@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 23.
-- Partial: 46.
-- Not started: 20.
+- Done: 25.
+- Partial: 45.
+- Not started: 19.
 
 ## Phase Status
 
@@ -25,11 +25,11 @@ Legend:
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
 | 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
 | 5 | Configuration And Startup Safety | Partial | `.env.example` and production startup guards exist; more environment coverage and deployment checks still needed. |
-| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, and basic failed-login throttling exist; cookie mode and persistent distributed rate limits still need work. |
+| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and basic failed-login throttling exist; persistent distributed rate limits still need work. |
 | 7 | Authorization And Ownership | Partial | Core listing/job/account/template ownership checks exist; audit every resource. |
-| 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, and bounded list pagination/filtering exist; route tags and broader rate limiting still needed. |
+| 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
-| 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, and revisioning; category mapping depth and condition invariants still need work. |
+| 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, revisioning, and condition/status invariants; category mapping depth still needs work. |
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
@@ -37,29 +37,29 @@ Legend:
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
 | 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
 | 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
-| 18 | Real Job System | Partial | Persistent job records and separate database-backed worker entrypoint exist; more locking/concurrency controls and production scheduling polish still needed. |
+| 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
-| 20 | Platform Rate Limiting And Cooldowns | Partial | Basic cooldown exists; see `docs/RATE_LIMITS.md`; per-platform overrides/tests needed. |
+| 20 | Platform Rate Limiting And Cooldowns | Partial | Global and per-platform cooldowns exist with worker tests; see `docs/RATE_LIMITS.md`. Official API quota-header handling is still future work. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, and diagnostics panel exist; richer package views missing. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
-| 26 | Templates And Productivity Features | Partial | Templates can be saved/applied and category mappings can be created/edited/deleted; richer variants, template edit/delete flows, and automation helpers still need work. |
+| 26 | Templates And Productivity Features | Partial | Templates can be saved, applied, edited, and deleted; category mappings can be created/edited/deleted. Richer variants and automation helpers still need work. |
 | 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing and job API/UI support focused filtering, sorting, bounded limit/offset paging, and pagination headers; account/template/mapping screens still need deeper query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
-| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export, import, and self-service account/data deletion exist; audit event features still need work. |
+| 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, and sanitized audit events exist; audit retention/admin review still need work. |
 | 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
-| 32 | Security Headers And Web Security | Partial | Security headers middleware exists; CSRF/cookie hardening and deployment review still needed. |
+| 32 | Security Headers And Web Security | Partial | Security headers middleware and documented bearer-only CSRF posture exist; broader deployment security review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
 | 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
 | 37 | Verification Commands | Done | `python scripts/verify.py` runs Ruff lint, compile checks, the full pytest suite, and doctor diagnostics. |
 | 38 | Demo Mode Without Fake Production | Done | `DEV_AUTO_LOGIN` is development-only, uses a reserved `.invalid` demo user, appears in doctor output, and is documented. |
-| 39 | Fake Provider Lab For Testing Only | Not started | No fake provider lab yet. |
-| 40 | No Mocks In Production Audit | Partial | Assisted adapters are explicit; formal audit needed. |
+| 39 | Fake Provider Lab For Testing Only | Done | See `docs/FAKE_PROVIDER_LAB.md`; the fake official API provider lives under `tests/` and is not registered in production adapters. |
+| 40 | No Mocks In Production Audit | Done | See `docs/NO_MOCKS_PRODUCTION_AUDIT.md`; tests ensure registered adapters do not fake published success. |
 | 41 | Testing Strategy | Done | See `docs/TESTING_STRATEGY.md`; remaining browser/concurrency/PostgreSQL gaps are tracked there. |
 | 42 | Acceptance Tests | Partial | Smoke flow exists; full acceptance suite needed. |
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
@@ -75,7 +75,7 @@ Legend:
 | 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
 | 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
-| 56 | Observability And Maintenance | Partial | Job logs and operator runbook exist; app-level structured logging/metrics still needed. |
+| 56 | Observability And Maintenance | Partial | Job logs, request logs, JSON/text log formatting, and operator runbook guidance exist; metrics still need a production decision. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |
