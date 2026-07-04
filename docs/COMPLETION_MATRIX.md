@@ -12,8 +12,8 @@ Legend:
 
 - Total phases: 89.
 - Done: 28.
-- Partial: 42.
-- Not started: 19.
+- Partial: 43.
+- Not started: 18.
 
 ## Phase Status
 
@@ -71,9 +71,9 @@ Legend:
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
 | 50 | Red Team Review | Not started | Needed. |
 | 51 | Adversarial Test Report | Not started | Needed. |
-| 52 | UI/UX Debugging Rounds | Not started | Needs manual/browser audit. |
-| 53 | Accessibility | Partial | Basic semantic HTML; no accessibility audit/tests. |
-| 54 | Responsive And Browser Compatibility | Partial | CSS is responsive; browser matrix not tested. |
+| 52 | UI/UX Debugging Rounds | Partial | Manual browser QA checklist exists in `docs/BROWSER_ACCESSIBILITY_QA.md`; executed walkthrough evidence still needed. |
+| 53 | Accessibility | Partial | Checklist covers labels, focus, keyboard, contrast, zoom, and status semantics; automated or executed audit evidence still needed. |
+| 54 | Responsive And Browser Compatibility | Partial | Responsive checklist covers mobile/tablet/desktop viewport checks; browser matrix execution still needed. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
 | 56 | Observability And Maintenance | Done | Job logs, request logs, JSON/text log formatting, a lightweight `/api/metrics` snapshot, and operator runbook guidance exist. |
 | 57 | Product Analytics Local-First | Not started | Needed if desired. |

@@ -252,6 +252,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - API usage audit: `docs/API_USAGE_AUDIT.md`
 - Technical debt register: `docs/TECHNICAL_DEBT_REGISTER.md`
 - Testing strategy: `docs/TESTING_STRATEGY.md`
+- Browser and accessibility QA: `docs/BROWSER_ACCESSIBILITY_QA.md`
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`

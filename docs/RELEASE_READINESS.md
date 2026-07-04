@@ -25,8 +25,7 @@ The app has a working core, tests, migrations, Docker setup, assisted posting, j
 - Confirm no platform is described as fully automated without official API evidence.
 - Confirm every client-visible platform limitation is documented.
 - Run a non-technical user walkthrough with a fresh account.
-- Run responsive checks on desktop and mobile viewport sizes.
-- Run accessibility checks for form labels, focus order, contrast, and keyboard use.
+- Run the browser, responsive, and accessibility checklist in `docs/BROWSER_ACCESSIBILITY_QA.md`.
 - Confirm no credentials, tokens, cookies, platform passwords, or image binaries are included in exports or logs.
 - Confirm production rate-limit, retry, and job cooldown settings.
 - Confirm legal/platform compliance for every enabled marketplace.
