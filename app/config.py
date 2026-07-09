@@ -116,7 +116,7 @@ def validate_startup_safety(settings: Settings) -> None:
         return
 
     problems = []
-    if settings.secret_key in {"", "change-me-in-production"}:
+    if settings.secret_key in {"", "change-me-in-production", "replace-with-a-long-random-value"}:
         problems.append("SECRET_KEY must be set to a strong non-default value")
     for flag in unsafe_production_feature_flags(settings):
         problems.append(flag.production_error)

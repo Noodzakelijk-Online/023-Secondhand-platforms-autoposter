@@ -22,7 +22,8 @@ CHECKS = [
 
 
 def main() -> int:
-    temp_dir = Path(".tmp/verify").resolve()
+    temp_dir = Path(".tmp/verify") / f"run-{os.getpid()}"
+    temp_dir = temp_dir.resolve()
     temp_dir.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
     env.update({"TMP": str(temp_dir), "TEMP": str(temp_dir), "TMPDIR": str(temp_dir)})

@@ -56,6 +56,21 @@ class UserSession(Base):
     user: Mapped[User] = relationship(back_populates="sessions")
 
 
+class LoginThrottle(Base):
+    __tablename__ = "login_throttles"
+    __table_args__ = (
+        UniqueConstraint("identifier_hash"),
+        Index("ix_login_throttles_identifier_hash", "identifier_hash"),
+        Index("ix_login_throttles_window_started_at", "window_started_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    identifier_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    window_started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    last_failed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+
 class Listing(Base, TimestampMixin):
     __tablename__ = "listings"
     __table_args__ = (

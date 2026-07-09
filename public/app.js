@@ -7,6 +7,7 @@ const state = {
   accounts: [],
   templates: [],
   categoryMappings: [],
+  validationResults: {},
   selectedListingId: null,
   selectedPlatforms: new Set(),
   listingQuery: {
@@ -115,6 +116,10 @@ function selectedListing() {
   return state.listings.find((listing) => listing.id === state.selectedListingId) || null;
 }
 
+function platformByKey(key) {
+  return state.platforms.find((platform) => platform.key === key) || { key, name: key, compliance_notes: [] };
+}
+
 async function loadAll() {
   const [platforms, listingResult, jobResult, accounts, templates, categoryMappings] = await Promise.all([
     api("/platforms"),
@@ -134,6 +139,7 @@ async function loadAll() {
   state.categoryMappings = categoryMappings;
   if (state.selectedListingId && !state.listings.some((listing) => listing.id === state.selectedListingId)) {
     state.selectedListingId = null;
+    state.validationResults = {};
   }
   if (!state.selectedListingId && state.listings.length) state.selectedListingId = state.listings[0].id;
   render();
@@ -257,6 +263,168 @@ function renderPlatforms(listing) {
       </article>
     `;
   }).join("");
+  renderPrepublishReview(listing);
+}
+
+function renderPrepublishReview(listing) {
+  const selectedKeys = state.platforms
+    .map((platform) => platform.key)
+    .filter((platformKey) => state.selectedPlatforms.has(platformKey));
+  const review = $("#prepublishReview");
+  if (!selectedKeys.length) {
+    review.classList.add("hidden");
+    review.innerHTML = "";
+    return;
+  }
+
+  review.classList.remove("hidden");
+  review.innerHTML = `
+    <div class="pane-head">
+      <h3>Prepublish review</h3>
+      <span class="muted">Listing #${listing.id} - revision ${listing.revision || 1}</span>
+    </div>
+    <div class="review-grid">
+      ${selectedKeys.map((platformKey) => reviewCardHtml(platformKey)).join("")}
+    </div>
+  `;
+}
+
+function reviewCardHtml(platformKey) {
+  const platform = platformByKey(platformKey);
+  const validation = state.validationResults[platformKey];
+  const notes = platform.compliance_notes || [];
+  if (!validation) {
+    return `
+      <article class="review-card">
+        <div class="pane-head">
+          <strong>${escapeHtml(platform.name)}</strong>
+          <span class="status">not checked</span>
+        </div>
+        <p class="muted">Run validation to build the copy-ready posting package.</p>
+        ${platform.posting_url ? `<a href="${escapeHtml(platform.posting_url)}" target="_blank" rel="noreferrer">Open platform</a>` : ""}
+        ${notes.length ? `<ul class="review-notes">${notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>` : ""}
+      </article>
+    `;
+  }
+
+  const fields = Object.entries(validation.mapped_fields || {});
+  const missing = validation.missing_fields || [];
+  const warnings = validation.warnings || [];
+  return `
+    <article class="review-card">
+      <div class="pane-head">
+        <strong>${escapeHtml(platform.name)}</strong>
+        <span class="${statusClass(validation.ready ? "ready" : "needs_user_action")}">${validation.ready ? "ready" : "needs action"}</span>
+      </div>
+      ${platform.posting_url ? `<a href="${escapeHtml(platform.posting_url)}" target="_blank" rel="noreferrer">Open platform</a>` : ""}
+      ${missing.length ? `
+        <p class="review-alert">Missing: ${escapeHtml(missing.join(", "))}</p>
+        <div class="recovery-list">
+          ${missing.map((field) => missingFieldRecoveryHtml(field)).join("")}
+        </div>
+      ` : `<p class="muted">Required fields are present.</p>`}
+      ${warnings.length ? `<ul class="review-notes">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>` : ""}
+      ${notes.length ? `<ul class="review-notes">${notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>` : ""}
+      <div class="review-actions">
+        <button type="button" class="ghost" data-copy-package="${platformKey}">Copy package</button>
+      </div>
+      <div class="field-list">
+        ${fields.map(([field, value]) => `
+          <div class="field-row">
+            <div>
+              <strong>${escapeHtml(formatFieldLabel(field))}</strong>
+              <span>${escapeHtml(formatFieldValue(value))}</span>
+            </div>
+            <button type="button" class="ghost" data-copy-field="${platformKey}" data-copy-name="${escapeHtml(field)}">Copy</button>
+          </div>
+        `).join("") || `<p class="muted">No mapped fields returned.</p>`}
+      </div>
+    </article>
+  `;
+}
+
+function formatFieldLabel(value) {
+  return String(value).replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatFieldValue(value) {
+  if (value === null || value === undefined || value === "") return "";
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object") return JSON.stringify(value, null, 2);
+  return String(value);
+}
+
+function missingFieldRecoveryHtml(field) {
+  return `
+    <div class="recovery-row">
+      <span>${escapeHtml(missingFieldHint(field))}</span>
+      <button type="button" class="ghost" data-focus-missing="${escapeHtml(field)}">Fix</button>
+    </div>
+  `;
+}
+
+function missingFieldHint(field) {
+  const hints = {
+    title: "Add a title that identifies the item clearly.",
+    description: "Add the buyer-facing description.",
+    price_cents: "Set a price above zero.",
+    condition: "Choose the item condition.",
+    category: "Choose the source category or add a platform mapping.",
+    location: "Add the pickup or shipping location.",
+    delivery_options: "Fill delivery options or pickup/shipping flags.",
+    images: "Upload at least one item image.",
+  };
+  return hints[field] || `Review ${formatFieldLabel(field)}.`;
+}
+
+function focusRecoveryTarget(field) {
+  const fieldMap = {
+    price_cents: "price",
+    images: "imageInput",
+  };
+  if (field === "images") {
+    $("#imageInput")?.focus();
+    return;
+  }
+  const targetName = fieldMap[field] || field;
+  const target = document.querySelector(`#listingForm [name="${targetName}"]`);
+  if (!target) return;
+  target.focus();
+  target.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
+function packageText(platformKey) {
+  const platform = platformByKey(platformKey);
+  const validation = state.validationResults[platformKey];
+  if (!validation) return "";
+  const lines = [
+    platform.name,
+    platform.posting_url ? `Posting URL: ${platform.posting_url}` : "",
+    `Ready: ${validation.ready ? "yes" : "no"}`,
+    (validation.missing_fields || []).length ? `Missing: ${validation.missing_fields.join(", ")}` : "",
+    "",
+    ...Object.entries(validation.mapped_fields || {}).map(
+      ([field, value]) => `${formatFieldLabel(field)}: ${formatFieldValue(value)}`
+    ),
+  ];
+  return lines.filter((line, index) => line || index > 3).join("\n").trim();
+}
+
+async function copyText(text) {
+  if (!text) return;
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
 }
 
 function renderJobs() {
@@ -541,6 +709,7 @@ $("#listingList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");
   if (!item) return;
   state.selectedListingId = Number(item.dataset.listingId);
+  state.validationResults = {};
   renderListings();
 });
 
@@ -548,6 +717,7 @@ $("#recentListings").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");
   if (!item) return;
   state.selectedListingId = Number(item.dataset.listingId);
+  state.validationResults = {};
   show("listings");
   renderListings();
 });
@@ -654,8 +824,30 @@ $("#validateButton").addEventListener("click", async () => {
   if (!listing) return;
   await savePlatformOverrides();
   const results = await api(`/listings/${listing.id}/validate`);
+  state.validationResults = Object.fromEntries(results.map((result) => [result.platform, result]));
   $("#editorMessage").textContent = `${results.filter((item) => item.ready).length}/${results.length} ready`;
   await loadAll();
+});
+
+$("#prepublishReview").addEventListener("click", async (event) => {
+  const packageButton = event.target.closest("[data-copy-package]");
+  if (packageButton) {
+    await copyText(packageText(packageButton.dataset.copyPackage));
+    $("#editorMessage").textContent = "Package copied";
+    return;
+  }
+  const fieldButton = event.target.closest("[data-copy-field]");
+  if (fieldButton) {
+    const validation = state.validationResults[fieldButton.dataset.copyField];
+    const value = validation?.mapped_fields?.[fieldButton.dataset.copyName];
+    await copyText(formatFieldValue(value));
+    $("#editorMessage").textContent = "Field copied";
+    return;
+  }
+  const fixButton = event.target.closest("[data-focus-missing]");
+  if (!fixButton) return;
+  focusRecoveryTarget(fixButton.dataset.focusMissing);
+  $("#editorMessage").textContent = `Review ${formatFieldLabel(fixButton.dataset.focusMissing)}`;
 });
 
 $("#publishButton").addEventListener("click", async () => {
@@ -673,6 +865,7 @@ $("#publishButton").addEventListener("click", async () => {
     method: "POST",
     body: JSON.stringify({ platforms, process_now: true }),
   });
+  state.validationResults = {};
   state.jobQuery.offset = 0;
   $("#editorMessage").textContent = "Queued";
   show("queue");

@@ -1,9 +1,13 @@
+import hashlib
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.models import LoginThrottle
 
 
 @dataclass
@@ -15,26 +19,66 @@ class LoginBucket:
 login_buckets: dict[str, LoginBucket] = {}
 
 
-def check_login_rate_limit(identifier: str) -> None:
+def _identifier_hash(identifier: str) -> str:
+    return hashlib.sha256(identifier.encode("utf-8")).hexdigest()
+
+
+def _active_bucket(db: Session, identifier: str) -> LoginThrottle | None:
     settings = get_settings()
     now = datetime.now(UTC)
     window = timedelta(seconds=settings.login_rate_limit_window_seconds)
-    bucket = login_buckets.get(identifier)
-    if not bucket or now - bucket.window_started_at > window:
-        login_buckets[identifier] = LoginBucket(attempts=0, window_started_at=now)
+    bucket = (
+        db.query(LoginThrottle)
+        .filter(LoginThrottle.identifier_hash == _identifier_hash(identifier))
+        .with_for_update()
+        .one_or_none()
+    )
+    if not bucket:
+        return None
+    started_at = bucket.window_started_at
+    if started_at.tzinfo is None:
+        started_at = started_at.replace(tzinfo=UTC)
+    if now - started_at > window:
+        db.delete(bucket)
+        db.commit()
+        return None
+    return bucket
+
+
+def check_login_rate_limit(db: Session, identifier: str) -> None:
+    settings = get_settings()
+    bucket = _active_bucket(db, identifier)
+    if not bucket:
         return
     if bucket.attempts >= settings.login_rate_limit_attempts:
         raise HTTPException(status_code=429, detail="Too many login attempts. Please try again later.")
 
 
-def record_failed_login(identifier: str) -> None:
+def record_failed_login(db: Session, identifier: str) -> None:
     now = datetime.now(UTC)
-    bucket = login_buckets.get(identifier)
+    bucket = _active_bucket(db, identifier)
     if not bucket:
-        login_buckets[identifier] = LoginBucket(attempts=1, window_started_at=now)
+        db.add(
+            LoginThrottle(
+                identifier_hash=_identifier_hash(identifier),
+                attempts=1,
+                window_started_at=now,
+                last_failed_at=now,
+            )
+        )
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            record_failed_login(db, identifier)
         return
     bucket.attempts += 1
+    bucket.last_failed_at = now
+    db.commit()
 
 
-def record_successful_login(identifier: str) -> None:
-    login_buckets.pop(identifier, None)
+def record_successful_login(db: Session, identifier: str) -> None:
+    bucket = _active_bucket(db, identifier)
+    if bucket:
+        db.delete(bucket)
+        db.commit()

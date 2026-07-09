@@ -1,6 +1,6 @@
 # Legacy Script Quarantine
 
-The repository still contains pre-existing Selenium/browser automation scripts. They are not imported by the FastAPI app, not run at startup, and not required by `requirements.txt`.
+The repository still retains pre-existing Selenium/browser automation scripts under `legacy/selenium/`. They are not imported by the FastAPI app, not run at startup, and not required by `requirements.txt`.
 
 Optional dependencies for these scripts live in `requirements-legacy.txt`.
 
@@ -12,27 +12,28 @@ Optional dependencies for these scripts live in `requirements-legacy.txt`.
 - Run only in a user-controlled local browser session when platform terms and account permissions allow it.
 - Prefer official APIs for future production automation.
 
-## Root Legacy Files
+## Quarantined Legacy Files
 
 | File | Purpose | Risk | Current Status |
 | --- | --- | --- | --- |
-| `main.py` | Old orchestrator for scraping Tweedehands and posting elsewhere through Selenium/LastPass. | High: credentials, browser automation, platform controls. | Legacy reference only. Not used by web app. |
-| `scrape_second_hand.py` | Old Tweedehands scraping flow. | High: authenticated scraping and local CSV/images. | Legacy reference only. |
-| `markplaats.py` | Old Marktplaats Selenium login/posting helper. | High: login, cookies, 2FA, paid/free placement choices. | Legacy reference only. Current app uses assisted adapter. |
-| `post_koopplein.py` | Old Koopplein Selenium posting helper. | Medium/high: account login and posting. | Legacy reference only. Current app uses assisted adapter. |
-| `post_nextdoor.py` | Old Nextdoor Selenium posting helper. | High: neighborhood/account controls and anti-abuse flows. | Legacy reference only. Current app uses assisted adapter. |
-| `post_ebay.py` | Old eBay Selenium posting helper. | High: CAPTCHA, SMS, marketplace policy, paid/shipping setup. | Legacy reference only. Current app uses assisted adapter. |
-| `nlp_hanlder.py` | Old spaCy category matching helper. | Low runtime risk, but has a typo in filename and requires heavy model dependency. | Legacy reference only. |
-| `test.py` | Old standalone spaCy test script. | Low, but not part of app tests. | Legacy reference only. |
-| `setup.sh`, `start.desktop`, `stop.desktop`, `stop.sh`, `main.spec` | Old packaging/startup helpers. | Medium: unclear relation to new app. | Needs future cleanup or replacement. |
+| `legacy/selenium/main.py` | Old orchestrator for scraping Tweedehands and posting elsewhere through Selenium/LastPass. | High: credentials, browser automation, platform controls. | Legacy reference only. Not used by web app. |
+| `legacy/selenium/scrape_second_hand.py` | Old Tweedehands scraping flow. | High: authenticated scraping and local CSV/images. | Legacy reference only. |
+| `legacy/selenium/markplaats.py` | Old Marktplaats Selenium login/posting helper. | High: login, cookies, 2FA, paid/free placement choices. | Legacy reference only. Current app uses assisted adapter. |
+| `legacy/selenium/post_koopplein.py` | Old Koopplein Selenium posting helper. | Medium/high: account login and posting. | Legacy reference only. Current app uses assisted adapter. |
+| `legacy/selenium/post_nextdoor.py` | Old Nextdoor Selenium posting helper. | High: neighborhood/account controls and anti-abuse flows. | Legacy reference only. Current app uses assisted adapter. |
+| `legacy/selenium/post_ebay.py` | Old eBay Selenium posting helper. | High: CAPTCHA, SMS, marketplace policy, paid/shipping setup. | Legacy reference only. Current app uses assisted adapter. |
+| `legacy/selenium/nlp_hanlder.py` | Old spaCy category matching helper. | Low runtime risk, but has a typo in filename and requires heavy model dependency. | Legacy reference only. |
+| `legacy/selenium/test.py` | Old standalone spaCy test script. | Low, but not part of app tests. | Legacy reference only. |
+| `legacy/selenium/setup.sh`, `legacy/selenium/start.desktop`, `legacy/selenium/stop.desktop`, `legacy/selenium/stop.sh`, `legacy/selenium/main.spec` | Old packaging/startup helpers. | Medium: unclear relation to new app. | Legacy reference only. |
 
 ## Duplicate Nested Folder
 
-The folder `023-Secondhand-platforms-autoposter-main/` appears to be a duplicate copy of the old repository source. It is not used by the FastAPI app. Future cleanup should either move it under `legacy/archive/` or remove it after confirming no unique code remains.
+The old duplicate source folder was moved to `legacy/archive/023-Secondhand-platforms-autoposter-main/`.
+
+The runtime script files in that archive were hash-checked against the quarantined `legacy/selenium/` copies and matched. The remaining archive-only files are old context files: `.env.example`, `.gitignore`, `Readme.md`, and `requirements.txt`.
 
 ## Future Quarantine Work
 
-1. Move legacy runtime scripts into `legacy/selenium/`.
-2. Add a root-level compatibility note for users who still expect the old scripts.
-3. Remove the duplicate nested source folder after comparison.
-4. Add tests proving `app.main` does not import Selenium, LastPass, spaCy, or legacy modules.
+1. Keep `LEGACY_SCRIPTS.md` current for users who still expect the old scripts.
+2. Keep tests proving root legacy entrypoints stay quarantined and `app.main` does not import Selenium, LastPass, spaCy, or legacy modules.
+3. Remove the archive only after an explicit product decision that the old reference source is no longer useful.

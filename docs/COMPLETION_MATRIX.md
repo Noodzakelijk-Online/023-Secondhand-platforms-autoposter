@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 28.
-- Partial: 43.
-- Not started: 18.
+- Done: 31.
+- Partial: 42.
+- Not started: 16.
 
 ## Phase Status
 
@@ -25,7 +25,7 @@ Legend:
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
 | 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
 | 5 | Configuration And Startup Safety | Partial | `.env.example`, production startup guards, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
-| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and basic failed-login throttling exist; persistent distributed rate limits still need work. |
+| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed failed-login throttling exist; external edge rate limits still need deployment-specific evidence. |
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
@@ -33,16 +33,16 @@ Legend:
 | 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
 | 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
-| 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields; richer UI package/copy buttons/manual completion still needed. |
+| 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields, and the listing editor now shows a prepublish review with copy-ready mapped fields; deeper manual completion workflows still need browser evidence. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
 | 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
-| 17 | Legacy Script Quarantine | Partial | See `docs/LEGACY_SCRIPT_QUARANTINE.md`; physical move still pending. |
+| 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Global and per-platform cooldowns exist with worker tests; see `docs/RATE_LIMITS.md`. Official API quota-header handling is still future work. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, and diagnostics panel exist; richer package views missing. |
+| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, and validation recovery shortcuts exist; browser evidence still needs work. |
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Partial | Templates can be saved, applied, edited, and deleted; category mappings can be created/edited/deleted. Richer variants and automation helpers still need work. |
@@ -53,7 +53,7 @@ Legend:
 | 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware and documented bearer-only CSRF posture exist; broader deployment security review still needed. |
 | 33 | Error Message Quality | Partial | Basic messages exist; structured envelope and UX copy need work. |
-| 34 | Frontend Error UX | Partial | Auth/editor messages plus a global API/network error banner and busy state exist; field-level recovery and retry UX still need depth. |
+| 34 | Frontend Error UX | Partial | Auth/editor messages, a global API/network error banner, busy state, and validation-to-field recovery actions exist; retry UX still needs depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
 | 37 | Verification Commands | Done | `python scripts/verify.py` runs Ruff lint, compile checks, the full pytest suite, and doctor diagnostics. |
@@ -69,8 +69,8 @@ Legend:
 | 47 | Completion Matrix | Done | This file. |
 | 48 | Final Verification Report | Done | See `docs/FINAL_VERIFICATION_REPORT.md`; local verification passed at commit `7de54a4` with 69 tests. |
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
-| 50 | Red Team Review | Not started | Needed. |
-| 51 | Adversarial Test Report | Not started | Needed. |
+| 50 | Red Team Review | Done | See `docs/RED_TEAM_REVIEW.md`. |
+| 51 | Adversarial Test Report | Done | See `docs/ADVERSARIAL_TEST_REPORT.md`. |
 | 52 | UI/UX Debugging Rounds | Partial | Manual browser QA checklist exists in `docs/BROWSER_ACCESSIBILITY_QA.md`; executed walkthrough evidence still needed. |
 | 53 | Accessibility | Partial | Checklist covers labels, focus, keyboard, contrast, zoom, and status semantics; automated or executed audit evidence still needed. |
 | 54 | Responsive And Browser Compatibility | Partial | Responsive checklist covers mobile/tablet/desktop viewport checks; browser matrix execution still needed. |
@@ -85,7 +85,7 @@ Legend:
 | 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Partial | Basic state object exists; deeper consistency rules needed. |
-| 66 | Prepublish Safety Review | Partial | Validation exists; safety checklist UI needed. |
+| 66 | Prepublish Safety Review | Partial | Validation now feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, and mapped-field copy buttons; executed walkthrough evidence still needed. |
 | 67 | Platform Compliance UI | Partial | Compliance notes exist in metadata; richer UI needed. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |

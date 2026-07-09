@@ -39,6 +39,7 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     job_indexes = {index["name"] for index in inspect(engine).get_indexes("publishing_jobs")}
     assert "ix_publishing_jobs_due_queue" in job_indexes
     assert "audit_events" in tables
+    assert "login_throttles" in tables
     audit_columns = {column["name"] for column in inspect(engine).get_columns("audit_events")}
     assert "user_email_hash" in audit_columns
     assert "event_data" in audit_columns
@@ -46,3 +47,8 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "ix_audit_events_user_created_at" in audit_indexes
     assert "ix_audit_events_action_created_at" in audit_indexes
     assert "ix_publishing_jobs_listing_platform_status" in job_indexes
+    throttle_columns = {column["name"] for column in inspect(engine).get_columns("login_throttles")}
+    assert "identifier_hash" in throttle_columns
+    assert "attempts" in throttle_columns
+    throttle_indexes = {index["name"] for index in inspect(engine).get_indexes("login_throttles")}
+    assert "ix_login_throttles_identifier_hash" in throttle_indexes

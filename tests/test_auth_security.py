@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
-from app.models import User
+from app.models import LoginThrottle, User
 from app.rate_limit import login_buckets
 from app.security import hash_password_pbkdf2, verify_password
 from tests.test_api import client
@@ -94,6 +94,12 @@ def test_legacy_pbkdf2_hash_upgrades_on_successful_login():
 
 def test_failed_login_attempts_are_rate_limited():
     login_buckets.clear()
+    db: Session = SessionLocal()
+    try:
+        db.query(LoginThrottle).delete()
+        db.commit()
+    finally:
+        db.close()
     email = unique_email()
     client.post(
         "/api/auth/register",
@@ -107,3 +113,12 @@ def test_failed_login_attempts_are_rate_limited():
     response = client.post("/api/auth/login", json={"email": email, "password": "wrong-password"})
     assert response.status_code == 429
     assert response.json()["error"]["code"] == "RATE_LIMITED"
+
+    db = SessionLocal()
+    try:
+        throttle = db.query(LoginThrottle).one()
+        assert throttle.attempts == 5
+        assert len(throttle.identifier_hash) == 64
+        assert email not in throttle.identifier_hash
+    finally:
+        db.close()

@@ -12,6 +12,7 @@ The app has a working core, tests, migrations, Docker setup, assisted posting, j
 
 - Run `python scripts/verify.py` from a clean checkout.
 - Review `docs/FINAL_VERIFICATION_REPORT.md` and refresh it after release-blocking changes.
+- Review `docs/RED_TEAM_REVIEW.md` and `docs/ADVERSARIAL_TEST_REPORT.md` after security-sensitive changes.
 - Run Alembic migrations against the target database.
 - Replace development secrets and disable unsafe development defaults.
 - Confirm `APP_ENV=production` startup passes without default `SECRET_KEY`.
