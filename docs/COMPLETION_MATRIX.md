@@ -12,8 +12,8 @@ Legend:
 
 - Total phases: 89.
 - Done: 38.
-- Partial: 44.
-- Not started: 7.
+- Partial: 45.
+- Not started: 6.
 
 ## Phase Status
 
@@ -79,7 +79,7 @@ Legend:
 | 57 | Product Analytics Local-First | Done | User-scoped local analytics endpoint and dashboard insights derive aggregates from listings, mappings, jobs, and quality checks without external tracking; see `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Done | See `docs/WORKSPACES_OPTIONAL_REVIEW.md`; workspaces are explicitly deferred, with future model/role/export/audit requirements captured. |
-| 60 | Internationalization | Not started | Needed. |
+| 60 | Internationalization | Partial | Locale configuration, startup validation, `/api/localization`, and `docs/INTERNATIONALIZATION.md` exist; visible UI copy is still mostly English and full locale catalogs are future work. |
 | 61 | Feature Flags | Done | `app.feature_flags` centralizes runtime flags, production safety checks, doctor output, and docs. |
 | 62 | State Machines | Done | Publishing job transitions are centralized in `app.services.job_state` with tests and docs. |
 | 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |

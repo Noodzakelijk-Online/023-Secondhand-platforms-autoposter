@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     platform_rate_limit_overrides: str = ""
     session_expire_hours: int = 168
     audit_retention_days: int = 365
+    default_locale: str = "en"
+    supported_locales: str = "en,nl"
     ebay_oauth_client_id: str = ""
     ebay_oauth_redirect_uri: str = ""
     ebay_oauth_environment: str = "sandbox"
@@ -90,6 +92,10 @@ class Settings(BaseSettings):
         return build_feature_flags(self)
 
     @property
+    def supported_locale_list(self) -> list[str]:
+        return [locale.strip().lower() for locale in self.supported_locales.split(",") if locale.strip()]
+
+    @property
     def ebay_oauth_scope_list(self) -> list[str]:
         return [scope.strip() for scope in self.ebay_oauth_scopes.split() if scope.strip()]
 
@@ -130,6 +136,12 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("SESSION_EXPIRE_HOURS must be positive")
     if settings.audit_retention_days < 0:
         problems.append("AUDIT_RETENTION_DAYS must be non-negative")
+    if not settings.default_locale.strip():
+        problems.append("DEFAULT_LOCALE must not be empty")
+    if not settings.supported_locale_list:
+        problems.append("SUPPORTED_LOCALES must contain at least one locale")
+    if settings.default_locale.lower() not in settings.supported_locale_list:
+        problems.append("DEFAULT_LOCALE must be included in SUPPORTED_LOCALES")
     if settings.ebay_oauth_environment.lower() not in {"sandbox", "production"}:
         problems.append("EBAY_OAUTH_ENVIRONMENT must be sandbox or production")
     if settings.ebay_oauth_state_ttl_seconds <= 0:

@@ -53,6 +53,7 @@ def test_openapi_routes_are_grouped_with_tags():
     assert response.status_code == 200
     paths = response.json()["paths"]
     assert paths["/api/metrics"]["get"]["tags"] == ["Diagnostics"]
+    assert paths["/api/localization"]["get"]["tags"] == ["Diagnostics"]
     assert paths["/api/analytics"]["get"]["tags"] == ["Diagnostics"]
     assert paths["/api/auth/login"]["post"]["tags"] == ["Auth"]
     assert paths["/api/listings"]["get"]["tags"] == ["Listings"]
@@ -80,6 +81,18 @@ def test_metrics_returns_operational_counts():
     assert payload["listing_statuses"]["draft"] == before["listing_statuses"].get("draft", 0) + 1
     assert payload["listing_statuses"]["ready"] == before["listing_statuses"].get("ready", 0) + 1
     assert payload["publishing_job_statuses"] == before["publishing_job_statuses"]
+
+
+def test_localization_metadata_is_public_and_explicit_about_catalog_status():
+    response = client.get("/api/localization")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["default_locale"] == "en"
+    assert payload["fallback_locale"] == "en"
+    assert payload["ui_catalog_status"] == "english_complete"
+    assert {locale["code"] for locale in payload["supported_locales"]} >= {"en", "nl"}
+    assert any(locale["code"] == "nl" and locale["complete"] is False for locale in payload["supported_locales"])
 
 
 def test_listings_support_pagination_filtering_and_sorting():

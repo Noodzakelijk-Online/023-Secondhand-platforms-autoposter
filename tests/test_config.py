@@ -35,3 +35,16 @@ def test_ebay_oauth_production_requires_client_and_redirect_config():
 
     with pytest.raises(RuntimeError, match="EBAY OAuth production mode"):
         validate_startup_safety(settings)
+
+
+def test_default_locale_must_be_supported():
+    settings = Settings(default_locale="nl", supported_locales="en,de")
+
+    with pytest.raises(RuntimeError, match="DEFAULT_LOCALE"):
+        validate_startup_safety(settings)
+
+
+def test_supported_locale_list_is_normalized():
+    settings = Settings(supported_locales="en, NL, de")
+
+    assert settings.supported_locale_list == ["en", "nl", "de"]

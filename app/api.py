@@ -67,6 +67,7 @@ from app.security import (
 from app.services.analytics import build_user_analytics
 from app.services.audit import record_audit_event
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
+from app.services.localization import localization_metadata
 from app.services.oauth import consume_ebay_authorization_callback, create_ebay_authorization_url
 from app.services.quality import analyze_listing_quality
 from app.storage import StoredFile, read_validated_image, store_validated_image
@@ -149,6 +150,11 @@ def metrics(db: Session = Depends(get_db)) -> dict:
         "listing_statuses": listing_statuses,
         "publishing_job_statuses": job_statuses,
     }
+
+
+@router.get("/localization", tags=["Diagnostics"])
+def localization() -> dict:
+    return localization_metadata(get_settings())
 
 
 @router.get("/analytics", response_model=AnalyticsResult, tags=["Diagnostics"])

@@ -70,6 +70,8 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `PLATFORM_RATE_LIMIT_OVERRIDES`: optional comma-separated per-platform cooldowns such as `marktplaats=120,ebay=300`.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
 - `AUDIT_RETENTION_DAYS`: age after which sanitized audit events can be purged by `python -m app.audit_retention`; `0` disables purging.
+- `DEFAULT_LOCALE`: default UI/API locale contract. Default: `en`.
+- `SUPPORTED_LOCALES`: comma-separated supported locale codes. Default: `en,nl`.
 - `EBAY_OAUTH_CLIENT_ID`: optional eBay developer App ID for the official API consent foundation.
 - `EBAY_OAUTH_REDIRECT_URI`: optional eBay OAuth redirect URI/RuName callback configured in the eBay developer application.
 - `EBAY_OAUTH_ENVIRONMENT`: `sandbox` by default; `production` requires client ID and redirect URI.
@@ -181,6 +183,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `POST /api/auth/login`
 - `DELETE /api/auth/me`
 - `GET /api/analytics`
+- `GET /api/localization`
 - `GET /api/listings`
 - `POST /api/listings`
 - `PATCH /api/listings/{id}`
@@ -274,6 +277,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - False completion prevention: `docs/FALSE_COMPLETION_PREVENTION.md`
 - Autonomy-first design: `docs/AUTONOMY_FIRST_DESIGN.md`
 - Workspaces optional review: `docs/WORKSPACES_OPTIONAL_REVIEW.md`
+- Internationalization: `docs/INTERNATIONALIZATION.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
 - Auth deployment posture: `docs/AUTH_SECURITY_POSTURE.md`
