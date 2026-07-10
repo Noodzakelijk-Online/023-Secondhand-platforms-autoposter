@@ -183,6 +183,8 @@ See `docs/PLATFORM_COMPLETION_CONTRACTS.md` for the tested per-platform completi
 
 ## API highlights
 
+For a seller-facing workflow guide, see `docs/USER_GUIDE.md`. For endpoint-level details, see `docs/API_REFERENCE.md`.
+
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `DELETE /api/auth/me`

@@ -55,7 +55,7 @@ Legend:
 | 43 | Partial | Worker/API smoke coverage | Add true browser E2E workflows. |
 | 44 | Done | `pyproject.toml`, `scripts/verify.py` | Consider type-check gate later. |
 | 45 | Done | `.github/workflows/verify.yml` | Keep CI matrix aligned with verify script. |
-| 46 | Partial | README plus `docs/` set | Add richer API/user docs as needed. |
+| 46 | Done | `Readme.md`, `docs/USER_GUIDE.md`, `docs/API_REFERENCE.md`, `tests/test_documentation_overhaul.py` | Keep user guide and API reference aligned when workflows, endpoints, or launch limits change. |
 | 47 | Done | `docs/COMPLETION_MATRIX.md` | Keep counts synchronized. |
 | 48 | Done | `docs/FINAL_VERIFICATION_REPORT.md` | Refresh before final release. |
 | 49 | Done | `docs/TECHNICAL_DEBT_REGISTER.md` | Keep debt items current. |

@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 51.
-- Partial: 38.
+- Done: 52.
+- Partial: 37.
 - Not started: 0.
 
 ## Phase Status
@@ -65,7 +65,7 @@ Legend:
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
 | 44 | Code Quality Tooling | Done | Ruff is pinned/configured in `pyproject.toml` and enforced by `python scripts/verify.py`. |
 | 45 | CI/CD Quality Gates | Done | `.github/workflows/verify.yml` runs `python scripts/verify.py` on pushes and pull requests to `main`. |
-| 46 | Documentation Overhaul | Partial | README and docs exist; more runbooks and API docs needed. |
+| 46 | Documentation Overhaul | Done | README links a seller user guide and API reference; docs cover assisted workflows, endpoint groups, error shape, pagination, data portability, and launch limits with regression tests. |
 | 47 | Completion Matrix | Done | This file. |
 | 48 | Final Verification Report | Done | See `docs/FINAL_VERIFICATION_REPORT.md`; local verification passed at commit `7de54a4` with 69 tests. |
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
