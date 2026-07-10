@@ -9,7 +9,7 @@ Legend:
 
 | Phase | Status | Evidence | Remaining gate |
 | --- | --- | --- | --- |
-| 0 | Partial | `docs/COMPLETION_MATRIX.md`, `git status` practice in local verification | Add branch/PR provenance artifact before release. |
+| 0 | Done | `docs/REPOSITORY_PROVENANCE.md`, `docs/COMPLETION_MATRIX.md`, `git status` practice in local verification | Refresh provenance when branch, remote, or release baseline changes. |
 | 1 | Partial | `docs/RED_TEAM_REVIEW.md`, `docs/TECHNICAL_DEBT_REGISTER.md` | Add formal deep audit report with route/model/storage review. |
 | 2 | Done | `docs/PRODUCT_DEFINITION.md` | Keep aligned when product scope changes. |
 | 3 | Partial | `app/main.py`, `app/api.py`, `app/services/` | Split large route module if product surface grows. |
@@ -86,7 +86,7 @@ Legend:
 | 74 | Partial | `docs/NON_TECHNICAL_USER_SIMULATION.md`, `tests/test_non_technical_user_simulation.py` | Execute and record a real non-technical user walkthrough. |
 | 75 | Done | `docs/AUTONOMY_FIRST_DESIGN.md`, `tests/test_autonomy_first_design.py` | Keep user-control boundaries aligned with UI wording and adapter behavior. |
 | 76 | Done | `docs/PRODUCT_VALUE_REVIEW.md`, `tests/test_product_value_review.py` | Revisit after non-technical simulation and browser evidence. |
-| 77 | Partial | `docs/PLATFORM_REALITY_REVIEW.md` | Add broader product realism review. |
+| 77 | Done | `docs/PRODUCT_REALISM_REVIEW.md`, `docs/PLATFORM_REALITY_REVIEW.md`, `tests/test_product_realism_review.py` | Revisit if product positioning or automation scope changes. |
 | 78 | Done | This traceability document plus `tests/test_requirements_traceability.py` | Keep synchronized with completion matrix. |
 | 79 | Done | `docs/TASK_GRAPH_AND_EXECUTION.md` | Keep execution lanes and critical path aligned with the matrix. |
 | 80 | Done | `docs/PROGRESSIVE_STABILIZATION_GATES.md` | Keep gate status aligned with release readiness evidence. |

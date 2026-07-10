@@ -262,6 +262,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 ## Project phase documentation
 
 - Product definition: `docs/PRODUCT_DEFINITION.md`
+- Repository provenance: `docs/REPOSITORY_PROVENANCE.md`
 - Platform reality review: `docs/PLATFORM_REALITY_REVIEW.md`
 - Legacy script quarantine: `docs/LEGACY_SCRIPT_QUARANTINE.md`
 - Rate limits: `docs/RATE_LIMITS.md`
@@ -280,6 +281,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Workspaces optional review: `docs/WORKSPACES_OPTIONAL_REVIEW.md`
 - Internationalization: `docs/INTERNATIONALIZATION.md`
 - Product value review: `docs/PRODUCT_VALUE_REVIEW.md`
+- Product realism review: `docs/PRODUCT_REALISM_REVIEW.md`
 - Non-technical user simulation: `docs/NON_TECHNICAL_USER_SIMULATION.md`
 - Final no-excuses search: `docs/FINAL_NO_EXCUSES_SEARCH.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`

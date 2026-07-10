@@ -11,15 +11,15 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 40.
+- Done: 43.
 - Partial: 46.
-- Not started: 3.
+- Not started: 0.
 
 ## Phase Status
 
 | Phase | Name | Status | Notes |
 | --- | --- | --- | --- |
-| 0 | Repository Integrity And Starting Point Verification | Partial | Main branch and commit state were checked; no PR/branch audit artifact yet. |
+| 0 | Repository Integrity And Starting Point Verification | Done | See `docs/REPOSITORY_PROVENANCE.md`; branch, remote, baseline commit, verification commands, and release cleanliness rules are recorded. |
 | 1 | Deep Technical Audit | Partial | Repo was inspected; formal audit report still needed. |
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
 | 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
@@ -96,7 +96,7 @@ Legend:
 | 74 | Real Non-Technical User Simulation | Partial | See `docs/NON_TECHNICAL_USER_SIMULATION.md`; proxy walkthrough and risk areas are documented, but real external user evidence is still required. |
 | 75 | Autonomy-First Design | Done | See `docs/AUTONOMY_FIRST_DESIGN.md`; tests guard user-control boundaries and blocked automation claims. |
 | 76 | Product Value Review | Done | See `docs/PRODUCT_VALUE_REVIEW.md`; current demo value and launch-blocking product gaps are documented and guarded by tests. |
-| 77 | Product Realism Review | Partial | Reality review added; broader review needed. |
+| 77 | Product Realism Review | Done | See `docs/PRODUCT_REALISM_REVIEW.md`; real capabilities are separated from aspirational automation, launch, i18n, and workspace claims. |
 | 78 | Requirements Traceability | Done | See `docs/REQUIREMENTS_TRACEABILITY.md`; a regression test ensures all 89 phase statuses stay synchronized with this matrix. |
 | 79 | Task Graph And Codex Execution Management | Done | See `docs/TASK_GRAPH_AND_EXECUTION.md` for execution lanes, critical path, and future Codex run rules. |
 | 80 | Progressive Stabilization Gates | Done | See `docs/PROGRESSIVE_STABILIZATION_GATES.md` for staged local, security, workflow, deployment, and launch acceptance gates. |
