@@ -234,6 +234,13 @@ class PlatformAccountOut(PlatformAccountCreate):
     updated_at: datetime
 
 
+class OAuthStartResponse(BaseModel):
+    authorization_url: str
+    expires_at: datetime
+    platform: str = "ebay"
+    mode: str = "official_api"
+
+
 class PlatformOverrideUpdate(BaseModel):
     platform: str
     overrides: dict[str, Any] = Field(default_factory=dict)
@@ -394,3 +401,48 @@ class ValidationResult(BaseModel):
     missing_fields: list[str]
     warnings: list[str] = Field(default_factory=list)
     mapped_fields: dict[str, Any] = Field(default_factory=dict)
+
+
+class ListingQualityIssue(BaseModel):
+    field: str
+    severity: str
+    message: str
+    action: str
+
+
+class ListingQualitySuggestion(BaseModel):
+    field: str
+    value: Any
+    rationale: str
+
+
+class ListingQualityResult(BaseModel):
+    score: int = Field(ge=0, le=100)
+    grade: str
+    summary: str
+    issues: list[ListingQualityIssue] = Field(default_factory=list)
+    suggestions: list[ListingQualitySuggestion] = Field(default_factory=list)
+    checklist: dict[str, bool] = Field(default_factory=dict)
+
+
+class AnalyticsIssueCount(BaseModel):
+    field: str
+    count: int
+
+
+class AnalyticsQualitySummary(BaseModel):
+    grade_counts: dict[str, int] = Field(default_factory=dict)
+    top_issue_fields: list[AnalyticsIssueCount] = Field(default_factory=list)
+    listings_missing_images: int = 0
+    average_images_per_listing: float = 0
+
+
+class AnalyticsResult(BaseModel):
+    source: str
+    external_tracking: bool
+    summary: dict[str, int | float] = Field(default_factory=dict)
+    listing_statuses: dict[str, int] = Field(default_factory=dict)
+    job_statuses: dict[str, int] = Field(default_factory=dict)
+    job_platforms: dict[str, int] = Field(default_factory=dict)
+    selected_platforms: dict[str, int] = Field(default_factory=dict)
+    quality: AnalyticsQualitySummary

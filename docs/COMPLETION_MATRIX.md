@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 31.
-- Partial: 42.
-- Not started: 16.
+- Done: 37.
+- Partial: 44.
+- Not started: 8.
 
 ## Phase Status
 
@@ -35,7 +35,7 @@ Legend:
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
 | 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields, and the listing editor now shows a prepublish review with copy-ready mapped fields; deeper manual completion workflows still need browser evidence. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
-| 16 | Official API Foundations | Not started | eBay official API/OAuth foundations not implemented. |
+| 16 | Official API Foundations | Partial | eBay OAuth consent URL/state/callback foundation exists with hashed short-lived state, sandbox-first config, and secret-manager token handoff status; real token exchange and official publishing are still not implemented. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
@@ -46,7 +46,7 @@ Legend:
 | 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Partial | Templates can be saved, applied, edited, and deleted; category mappings can be created/edited/deleted. Richer variants and automation helpers still need work. |
-| 27 | Listing Quality Assistant | Not started | No AI/local assistant service yet. |
+| 27 | Listing Quality Assistant | Partial | Local deterministic quality assistant now scores listings, identifies buyer-readiness issues, and offers safe title/description/tag suggestions in API and UI; external AI and richer marketplace-specific optimization are not implemented. |
 | 28 | Search, Filtering, Sorting, And Pagination | Partial | Listing and job API/UI support focused filtering, sorting, bounded limit/offset paging, and pagination headers; account/template/mapping screens still need deeper query controls. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
 | 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, sanitized audit events, and audit retention purging exist; admin review UI still needs work. |
@@ -76,7 +76,7 @@ Legend:
 | 54 | Responsive And Browser Compatibility | Partial | Responsive checklist covers mobile/tablet/desktop viewport checks; browser matrix execution still needed. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
 | 56 | Observability And Maintenance | Done | Job logs, request logs, JSON/text log formatting, a lightweight `/api/metrics` snapshot, and operator runbook guidance exist. |
-| 57 | Product Analytics Local-First | Not started | Needed if desired. |
+| 57 | Product Analytics Local-First | Done | User-scoped local analytics endpoint and dashboard insights derive aggregates from listings, mappings, jobs, and quality checks without external tracking; see `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`. |
 | 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
 | 59 | Workspaces Optional Review | Not started | Needed. |
 | 60 | Internationalization | Not started | Needed. |
@@ -94,16 +94,16 @@ Legend:
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
 | 74 | Real Non-Technical User Simulation | Not started | Needed. |
-| 75 | Autonomy-First Design | Not started | Needs product walkthrough. |
+| 75 | Autonomy-First Design | Done | See `docs/AUTONOMY_FIRST_DESIGN.md`; tests guard user-control boundaries and blocked automation claims. |
 | 76 | Product Value Review | Not started | Needed. |
 | 77 | Product Realism Review | Partial | Reality review added; broader review needed. |
-| 78 | Requirements Traceability | Not started | Needed. |
-| 79 | Task Graph And Codex Execution Management | Not started | Needed. |
-| 80 | Progressive Stabilization Gates | Not started | Needed. |
+| 78 | Requirements Traceability | Done | See `docs/REQUIREMENTS_TRACEABILITY.md`; a regression test ensures all 89 phase statuses stay synchronized with this matrix. |
+| 79 | Task Graph And Codex Execution Management | Done | See `docs/TASK_GRAPH_AND_EXECUTION.md` for execution lanes, critical path, and future Codex run rules. |
+| 80 | Progressive Stabilization Gates | Done | See `docs/PROGRESSIVE_STABILIZATION_GATES.md` for staged local, security, workflow, deployment, and launch acceptance gates. |
 | 81 | Implementation Depth Requirement | Partial | Core app is wired; many deep hardening tasks remain. |
 | 82 | No Partial UI Without Backend Wiring | Done | Current visible core UI calls real API endpoints. |
 | 83 | No Backend Endpoint Without Frontend Or Purpose | Done | Current endpoints support visible app flows or documented API use. |
-| 84 | False Completion Prevention | Not started | Need stronger release checklist. |
+| 84 | False Completion Prevention | Done | See `docs/FALSE_COMPLETION_PREVENTION.md`; tests guard required anti-overclaim wording for release readiness, assisted posting, eBay API, and fresh-clone evidence. |
 | 85 | Final No-Excuses Search | Not started | Needed near release. |
 | 86 | Final Fresh-Clone Dry Run | Partial | Local tests run; fresh clone dry run not documented as final. |
 | 87 | Final Acceptance Criteria | Partial | Core acceptance partially met; full PDF criteria not complete. |

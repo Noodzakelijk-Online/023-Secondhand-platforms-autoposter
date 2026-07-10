@@ -32,6 +32,15 @@ class Settings(BaseSettings):
     platform_rate_limit_overrides: str = ""
     session_expire_hours: int = 168
     audit_retention_days: int = 365
+    ebay_oauth_client_id: str = ""
+    ebay_oauth_redirect_uri: str = ""
+    ebay_oauth_environment: str = "sandbox"
+    ebay_oauth_scopes: str = (
+        "https://api.ebay.com/oauth/api_scope/sell.inventory "
+        "https://api.ebay.com/oauth/api_scope/sell.account"
+    )
+    ebay_oauth_state_ttl_seconds: int = 600
+    ebay_token_secret_ref_prefix: str = "secret://ebay/oauth"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
@@ -80,6 +89,20 @@ class Settings(BaseSettings):
     def feature_flags(self) -> tuple[FeatureFlag, ...]:
         return build_feature_flags(self)
 
+    @property
+    def ebay_oauth_scope_list(self) -> list[str]:
+        return [scope.strip() for scope in self.ebay_oauth_scopes.split() if scope.strip()]
+
+    @property
+    def ebay_oauth_authorize_url(self) -> str:
+        if self.ebay_oauth_environment.lower() == "production":
+            return "https://auth.ebay.com/oauth2/authorize"
+        return "https://auth.sandbox.ebay.com/oauth2/authorize"
+
+    @property
+    def ebay_oauth_configured(self) -> bool:
+        return bool(self.ebay_oauth_client_id.strip() and self.ebay_oauth_redirect_uri.strip())
+
 
 def validate_startup_safety(settings: Settings) -> None:
     problems: list[str] = []
@@ -107,6 +130,14 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("SESSION_EXPIRE_HOURS must be positive")
     if settings.audit_retention_days < 0:
         problems.append("AUDIT_RETENTION_DAYS must be non-negative")
+    if settings.ebay_oauth_environment.lower() not in {"sandbox", "production"}:
+        problems.append("EBAY_OAUTH_ENVIRONMENT must be sandbox or production")
+    if settings.ebay_oauth_state_ttl_seconds <= 0:
+        problems.append("EBAY_OAUTH_STATE_TTL_SECONDS must be positive")
+    if not settings.ebay_oauth_scope_list:
+        problems.append("EBAY_OAUTH_SCOPES must contain at least one scope")
+    if settings.ebay_oauth_environment.lower() == "production" and not settings.ebay_oauth_configured:
+        problems.append("EBAY OAuth production mode requires EBAY_OAUTH_CLIENT_ID and EBAY_OAUTH_REDIRECT_URI")
 
     if problems:
         detail = "; ".join(problems)

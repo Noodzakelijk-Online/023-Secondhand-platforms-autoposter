@@ -40,6 +40,7 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "ix_publishing_jobs_due_queue" in job_indexes
     assert "audit_events" in tables
     assert "login_throttles" in tables
+    assert "platform_oauth_states" in tables
     audit_columns = {column["name"] for column in inspect(engine).get_columns("audit_events")}
     assert "user_email_hash" in audit_columns
     assert "event_data" in audit_columns
@@ -52,3 +53,9 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "attempts" in throttle_columns
     throttle_indexes = {index["name"] for index in inspect(engine).get_indexes("login_throttles")}
     assert "ix_login_throttles_identifier_hash" in throttle_indexes
+    oauth_state_columns = {column["name"] for column in inspect(engine).get_columns("platform_oauth_states")}
+    assert "state_hash" in oauth_state_columns
+    assert "consumed_at" in oauth_state_columns
+    oauth_state_indexes = {index["name"] for index in inspect(engine).get_indexes("platform_oauth_states")}
+    assert "ix_platform_oauth_states_state_hash" in oauth_state_indexes
+    assert "ix_platform_oauth_states_expires_at" in oauth_state_indexes

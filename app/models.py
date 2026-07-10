@@ -150,6 +150,25 @@ class PlatformAccount(Base, TimestampMixin):
     secret_ref: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
 
+class PlatformOAuthState(Base):
+    __tablename__ = "platform_oauth_states"
+    __table_args__ = (
+        UniqueConstraint("state_hash"),
+        Index("ix_platform_oauth_states_user_platform_created_at", "user_id", "platform", "created_at"),
+        Index("ix_platform_oauth_states_expires_at", "expires_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    platform: Mapped[str] = mapped_column(String(80), index=True)
+    state_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    redirect_uri: Mapped[str] = mapped_column(String(500))
+    scopes: Mapped[list] = mapped_column(JSON, default=list)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+
 class PlatformListingMapping(Base, TimestampMixin):
     __tablename__ = "platform_listing_mappings"
     __table_args__ = (UniqueConstraint("listing_id", "platform"),)

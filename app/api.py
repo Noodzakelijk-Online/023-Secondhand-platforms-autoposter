@@ -18,6 +18,7 @@ from app.models import (
     ListingTemplate,
     PlatformAccount,
     PlatformListingMapping,
+    PlatformOAuthState,
     PublicationAttempt,
     PublishingJob,
     PublishingJobLog,
@@ -27,6 +28,7 @@ from app.models import (
 from app.query import apply_pagination, apply_sort, listing_search_filter
 from app.rate_limit import check_login_rate_limit, record_failed_login, record_successful_login
 from app.schemas import (
+    AnalyticsResult,
     AuthLogin,
     AuthRegister,
     AuthToken,
@@ -39,7 +41,9 @@ from app.schemas import (
     ImageOrderUpdate,
     ListingCreate,
     ListingOut,
+    ListingQualityResult,
     ListingUpdate,
+    OAuthStartResponse,
     PlatformAccountCreate,
     PlatformAccountOut,
     PlatformMappingOut,
@@ -60,8 +64,11 @@ from app.security import (
     revoke_session,
     verify_password,
 )
+from app.services.analytics import build_user_analytics
 from app.services.audit import record_audit_event
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
+from app.services.oauth import consume_ebay_authorization_callback, create_ebay_authorization_url
+from app.services.quality import analyze_listing_quality
 from app.storage import StoredFile, read_validated_image, store_validated_image
 
 router = APIRouter(prefix="/api")
@@ -144,6 +151,11 @@ def metrics(db: Session = Depends(get_db)) -> dict:
     }
 
 
+@router.get("/analytics", response_model=AnalyticsResult, tags=["Diagnostics"])
+def analytics(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return build_user_analytics(db, user.id)
+
+
 @router.post("/auth/register", response_model=AuthToken, tags=["Auth"])
 def register(payload: AuthRegister, db: Session = Depends(get_db)) -> AuthToken:
     existing = db.query(User).filter(User.email == payload.email.lower()).one_or_none()
@@ -219,6 +231,7 @@ def delete_user_data(db: Session, user: User) -> None:
             "templates_deleted": db.query(ListingTemplate).filter(ListingTemplate.owner_id == user_id).count(),
             "category_mappings_deleted": db.query(CategoryMapping).filter(CategoryMapping.owner_id == user_id).count(),
             "platform_accounts_deleted": db.query(PlatformAccount).filter(PlatformAccount.owner_id == user_id).count(),
+            "oauth_states_deleted": db.query(PlatformOAuthState).filter(PlatformOAuthState.user_id == user_id).count(),
         },
     )
     if listing_ids:
@@ -237,6 +250,7 @@ def delete_user_data(db: Session, user: User) -> None:
     db.query(ListingTemplate).filter(ListingTemplate.owner_id == user_id).delete(synchronize_session=False)
     db.query(CategoryMapping).filter(CategoryMapping.owner_id == user_id).delete(synchronize_session=False)
     db.query(PlatformAccount).filter(PlatformAccount.owner_id == user_id).delete(synchronize_session=False)
+    db.query(PlatformOAuthState).filter(PlatformOAuthState.user_id == user_id).delete(synchronize_session=False)
     db.query(UserSession).filter(UserSession.user_id == user_id).delete(synchronize_session=False)
     db.query(User).filter(User.id == user_id).delete(synchronize_session=False)
     db.commit()
@@ -529,6 +543,16 @@ def validate_listing(
     return results
 
 
+@router.get("/listings/{listing_id}/quality", response_model=ListingQualityResult, tags=["Listings"])
+def listing_quality(
+    listing_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    listing = _load_listing(db, user.id, listing_id)
+    return analyze_listing_quality(listing)
+
+
 def effective_platform_overrides(
     db: Session,
     owner_id: int,
@@ -687,6 +711,21 @@ def delete_account(account_id: int, user: User = Depends(get_current_user), db: 
         raise HTTPException(status_code=404, detail="Account not found")
     db.delete(account)
     db.commit()
+
+
+@router.post("/accounts/ebay/oauth/start", response_model=OAuthStartResponse, tags=["Accounts"])
+def start_ebay_oauth(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    authorization_url, expires_at = create_ebay_authorization_url(db, user, get_settings())
+    return OAuthStartResponse(authorization_url=authorization_url, expires_at=expires_at)
+
+
+@router.get("/accounts/ebay/oauth/callback", response_model=PlatformAccountOut, tags=["Accounts"])
+def ebay_oauth_callback(
+    state: str = Query(..., min_length=1),
+    code: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+):
+    return consume_ebay_authorization_callback(db, state, code, get_settings())
 
 
 @router.get("/templates", response_model=list[TemplateOut], tags=["Templates"])

@@ -70,6 +70,12 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `PLATFORM_RATE_LIMIT_OVERRIDES`: optional comma-separated per-platform cooldowns such as `marktplaats=120,ebay=300`.
 - `SESSION_EXPIRE_HOURS`: bearer session lifetime.
 - `AUDIT_RETENTION_DAYS`: age after which sanitized audit events can be purged by `python -m app.audit_retention`; `0` disables purging.
+- `EBAY_OAUTH_CLIENT_ID`: optional eBay developer App ID for the official API consent foundation.
+- `EBAY_OAUTH_REDIRECT_URI`: optional eBay OAuth redirect URI/RuName callback configured in the eBay developer application.
+- `EBAY_OAUTH_ENVIRONMENT`: `sandbox` by default; `production` requires client ID and redirect URI.
+- `EBAY_OAUTH_SCOPES`: space-separated eBay OAuth scopes requested during consent.
+- `EBAY_OAUTH_STATE_TTL_SECONDS`: lifetime for one-use OAuth state values.
+- `EBAY_TOKEN_SECRET_REF_PREFIX`: secret-manager reference prefix used after consent; raw tokens are not stored in app tables.
 - `PUBLIC_BASE_URL`: public URL used for future generated links and diagnostics.
 - `LOG_LEVEL`: desired logging verbosity for deployment.
 - `LOG_FORMAT`: `text` for local logs or `json` for production log aggregation.
@@ -158,7 +164,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 | Marktplaats | Assisted | Prepares mapped fields. User completes login, verification, category/payment choices, and final submission. |
 | Koopplein | Assisted | Prepares fields and tracks status. User confirms final post manually. |
 | Nextdoor | Assisted | Keeps neighborhood/account confirmations user-controlled. |
-| eBay | Assisted | Ready for future official API/OAuth integration; no credential-dependent automation is enabled by default. |
+| eBay | Assisted by default | OAuth consent foundation exists for future official API work, but token exchange and credential-dependent publishing are not enabled. |
 | Tweedehands | Assisted | Legacy import/posting scripts are separate and must be run only in compliant user-controlled sessions. |
 
 ## Adding a platform adapter
@@ -174,11 +180,13 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `DELETE /api/auth/me`
+- `GET /api/analytics`
 - `GET /api/listings`
 - `POST /api/listings`
 - `PATCH /api/listings/{id}`
 - `POST /api/listings/{id}/images`
 - `GET /api/listings/{id}/validate`
+- `GET /api/listings/{id}/quality`
 - `POST /api/listings/{id}/publish`
 - `GET /api/jobs`
 - `POST /api/jobs/{id}/retry`
@@ -196,6 +204,10 @@ Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 Listings include revision tracking. Editing a listing increments its `revision`, and publishing job idempotency includes user, listing, revision, platform, action type, account, and operation mode. Re-queuing the same listing revision returns the existing job; editing the listing allows a fresh platform package/job.
 
 Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category.
+
+The listing editor includes a local quality assistant. It scores buyer-readiness, flags missing or weak fields, and offers deterministic title, description, and tag suggestions from the listing data already entered. It does not call an external AI service or invent product facts.
+
+The dashboard includes local-first Insights from `GET /api/analytics`: inventory value, average price, listing quality, platform coverage, and job outcomes. These are derived from the authenticated user's local records and do not use an external analytics provider.
 
 List endpoints support bounded pagination with `limit` and `offset`. Core list endpoints also expose focused filtering/sorting parameters, such as `/api/listings?search=chair&status=draft&sort=-updated_at`. The Listings screen uses those query parameters for search, status filtering, sorting, and previous/next paging.
 
@@ -255,6 +267,12 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Testing strategy: `docs/TESTING_STRATEGY.md`
 - Browser and accessibility QA: `docs/BROWSER_ACCESSIBILITY_QA.md`
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
+- Product analytics local-first: `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`
+- Requirements traceability: `docs/REQUIREMENTS_TRACEABILITY.md`
+- Task graph and execution: `docs/TASK_GRAPH_AND_EXECUTION.md`
+- Progressive stabilization gates: `docs/PROGRESSIVE_STABILIZATION_GATES.md`
+- False completion prevention: `docs/FALSE_COMPLETION_PREVENTION.md`
+- Autonomy-first design: `docs/AUTONOMY_FIRST_DESIGN.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
 - Auth deployment posture: `docs/AUTH_SECURITY_POSTURE.md`

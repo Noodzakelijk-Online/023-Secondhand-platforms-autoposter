@@ -4,7 +4,16 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from app.database import Base, SessionLocal, engine
-from app.models import AuditEvent, CategoryMapping, Listing, ListingTemplate, PlatformAccount, PublishingJob, User
+from app.models import (
+    AuditEvent,
+    CategoryMapping,
+    Listing,
+    ListingTemplate,
+    PlatformAccount,
+    PlatformOAuthState,
+    PublishingJob,
+    User,
+)
 from app.services.audit import purge_expired_audit_events, record_audit_event
 from tests.test_api import PNG_BYTES, client
 
@@ -198,6 +207,23 @@ def test_delete_me_purges_owned_data_and_revokes_session():
     other_listing = client.post("/api/listings", headers=other_headers, json={"title": "Keep me"})
     assert other_listing.status_code == 200, other_listing.text
 
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email.like("delete-%")).one()
+        db.add(
+            PlatformOAuthState(
+                user_id=user.id,
+                platform="ebay",
+                state_hash="0" * 64,
+                redirect_uri="https://app.example.com/callback",
+                scopes=["https://api.ebay.com/oauth/api_scope/sell.inventory"],
+                expires_at=datetime.now(UTC) + timedelta(minutes=10),
+            )
+        )
+        db.commit()
+    finally:
+        db.close()
+
     delete_response = client.delete("/api/auth/me", headers=headers)
 
     assert delete_response.status_code == 204, delete_response.text
@@ -210,6 +236,7 @@ def test_delete_me_purges_owned_data_and_revokes_session():
         assert db.query(Listing).filter(Listing.title == "Portable cabinet").count() == 0
         assert db.query(PublishingJob).count() == 0
         assert db.query(PlatformAccount).filter(PlatformAccount.display_name == "Portable eBay").count() == 0
+        assert db.query(PlatformOAuthState).count() == 0
         assert db.query(ListingTemplate).filter(ListingTemplate.name == "Pickup").count() == 0
         assert db.query(CategoryMapping).filter(CategoryMapping.source_category == "Furniture").count() == 0
         event = db.query(AuditEvent).filter(AuditEvent.action == "account_deleted").one()

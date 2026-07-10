@@ -53,6 +53,7 @@ def test_openapi_routes_are_grouped_with_tags():
     assert response.status_code == 200
     paths = response.json()["paths"]
     assert paths["/api/metrics"]["get"]["tags"] == ["Diagnostics"]
+    assert paths["/api/analytics"]["get"]["tags"] == ["Diagnostics"]
     assert paths["/api/auth/login"]["post"]["tags"] == ["Auth"]
     assert paths["/api/listings"]["get"]["tags"] == ["Listings"]
     assert paths["/api/listings/{listing_id}/images"]["post"]["tags"] == ["Images"]

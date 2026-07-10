@@ -7,7 +7,9 @@ const state = {
   accounts: [],
   templates: [],
   categoryMappings: [],
+  analytics: null,
   validationResults: {},
+  qualityResult: null,
   selectedListingId: null,
   selectedPlatforms: new Set(),
   listingQuery: {
@@ -121,13 +123,14 @@ function platformByKey(key) {
 }
 
 async function loadAll() {
-  const [platforms, listingResult, jobResult, accounts, templates, categoryMappings] = await Promise.all([
+  const [platforms, listingResult, jobResult, accounts, templates, categoryMappings, analytics] = await Promise.all([
     api("/platforms"),
     apiWithMeta(listingQueryPath()),
     apiWithMeta(jobQueryPath()),
     api("/accounts"),
     api("/templates"),
     api("/category-mappings"),
+    api("/analytics"),
   ]);
   state.platforms = platforms;
   state.listings = listingResult.data;
@@ -137,9 +140,11 @@ async function loadAll() {
   state.accounts = accounts;
   state.templates = templates;
   state.categoryMappings = categoryMappings;
+  state.analytics = analytics;
   if (state.selectedListingId && !state.listings.some((listing) => listing.id === state.selectedListingId)) {
     state.selectedListingId = null;
     state.validationResults = {};
+    state.qualityResult = null;
   }
   if (!state.selectedListingId && state.listings.length) state.selectedListingId = state.listings[0].id;
   render();
@@ -158,8 +163,81 @@ function renderDashboard() {
   $("#metricReady").textContent = state.listings.filter((l) => l.platform_mappings.some((m) => m.status === "draft")).length;
   $("#metricAction").textContent = state.jobs.filter((j) => j.status === "needs_user_action").length;
   $("#metricFailed").textContent = state.jobs.filter((j) => j.status === "failed").length;
+  renderAnalytics();
   $("#recentListings").innerHTML = state.listings.slice(0, 5).map(listingItemHtml).join("") || `<p class="muted">No listings yet.</p>`;
   $("#latestJobs").innerHTML = state.jobs.slice(0, 5).map(jobItemHtml).join("") || `<p class="muted">No jobs yet.</p>`;
+}
+
+function renderAnalytics() {
+  const analytics = state.analytics;
+  if (!analytics) {
+    $("#analyticsSummary").innerHTML = `<p class="muted">No insights yet.</p>`;
+    $("#analyticsDetails").innerHTML = "";
+    return;
+  }
+  const summary = analytics.summary || {};
+  const quality = analytics.quality || {};
+  $("#analyticsSummary").innerHTML = [
+    analyticsMetricHtml("Quality", `${summary.average_quality_score || 0}/100`),
+    analyticsMetricHtml("Inventory value", money(summary.inventory_value_cents || 0)),
+    analyticsMetricHtml("Avg price", money(summary.average_price_cents || 0)),
+    analyticsMetricHtml("Missing images", quality.listings_missing_images || 0),
+  ].join("");
+  $("#analyticsDetails").innerHTML = `
+    <div>
+      <strong>Quality grades</strong>
+      ${analyticsBarsHtml(quality.grade_counts || {})}
+    </div>
+    <div>
+      <strong>Selected platforms</strong>
+      ${analyticsBarsHtml(analytics.selected_platforms || {})}
+    </div>
+    <div>
+      <strong>Job outcomes</strong>
+      ${analyticsBarsHtml(analytics.job_statuses || {})}
+    </div>
+    <div>
+      <strong>Common fixes</strong>
+      ${analyticsIssueListHtml(quality.top_issue_fields || [])}
+    </div>
+  `;
+}
+
+function analyticsMetricHtml(label, value) {
+  return `
+    <article>
+      <strong>${escapeHtml(value)}</strong>
+      <span>${escapeHtml(label)}</span>
+    </article>
+  `;
+}
+
+function analyticsBarsHtml(values) {
+  const entries = Object.entries(values);
+  if (!entries.length) return `<p class="muted">No data</p>`;
+  const max = Math.max(...entries.map(([, count]) => Number(count) || 0), 1);
+  return `
+    <div class="analytics-bars">
+      ${entries.map(([label, count]) => `
+        <div class="analytics-bar-row">
+          <span>${escapeHtml(formatFieldLabel(label))}</span>
+          <div><i style="width: ${Math.max(8, (Number(count) / max) * 100)}%"></i></div>
+          <strong>${Number(count)}</strong>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function analyticsIssueListHtml(items) {
+  if (!items.length) return `<p class="muted">No recurring fixes</p>`;
+  return `
+    <div class="analytics-issues">
+      ${items.map((item) => `
+        <span>${escapeHtml(formatFieldLabel(item.field))}: ${Number(item.count)}</span>
+      `).join("")}
+    </div>
+  `;
 }
 
 function listingItemHtml(listing) {
@@ -219,8 +297,71 @@ function renderListings() {
   form.internal_notes.value = listing.internal_notes || "";
   $("#listingRevision").textContent = `Revision ${listing.revision || 1}`;
   renderListingTemplateOptions();
+  renderQualityAssistant();
   renderImages(listing);
   renderPlatforms(listing);
+}
+
+function renderQualityAssistant() {
+  const result = state.qualityResult;
+  const panel = $("#qualityAssistant");
+  if (!result) {
+    panel.innerHTML = `<p class="muted">Not checked</p>`;
+    return;
+  }
+  const issues = result.issues || [];
+  const suggestions = result.suggestions || [];
+  panel.innerHTML = `
+    <div class="quality-score">
+      <strong>${Number(result.score || 0)}</strong>
+      <span class="${statusClass(result.grade)}">${escapeHtml(formatFieldLabel(result.grade))}</span>
+      <p>${escapeHtml(result.summary)}</p>
+    </div>
+    <div class="quality-checklist">
+      ${Object.entries(result.checklist || {}).map(([field, passed]) => `
+        <span class="${passed ? "check-pass" : "check-fail"}">${passed ? "OK" : "Fix"} ${escapeHtml(formatFieldLabel(field))}</span>
+      `).join("")}
+    </div>
+    <div class="quality-grid">
+      <section>
+        <h4>Fixes</h4>
+        ${issues.map(qualityIssueHtml).join("") || `<p class="muted">No required fixes.</p>`}
+      </section>
+      <section>
+        <h4>Suggestions</h4>
+        ${suggestions.map(qualitySuggestionHtml).join("") || `<p class="muted">No suggestions.</p>`}
+      </section>
+    </div>
+  `;
+}
+
+function qualityIssueHtml(issue) {
+  return `
+    <article class="quality-item">
+      <div class="pane-head">
+        <strong>${escapeHtml(formatFieldLabel(issue.field))}</strong>
+        <span class="${statusClass(issue.severity)}">${escapeHtml(issue.severity)}</span>
+      </div>
+      <p>${escapeHtml(issue.message)}</p>
+      <div class="recovery-row">
+        <span>${escapeHtml(issue.action)}</span>
+        <button type="button" class="ghost" data-focus-quality="${escapeHtml(issue.field)}">Fix</button>
+      </div>
+    </article>
+  `;
+}
+
+function qualitySuggestionHtml(suggestion) {
+  return `
+    <article class="quality-item">
+      <div class="pane-head">
+        <strong>${escapeHtml(formatFieldLabel(suggestion.field))}</strong>
+        <button type="button" class="ghost" data-apply-suggestion="${escapeHtml(suggestion.field)}">Apply</button>
+      </div>
+      <p>${escapeHtml(suggestion.rationale)}</p>
+      <pre>${escapeHtml(formatFieldValue(suggestion.value))}</pre>
+    </article>
+  `;
 }
 
 function renderListingTemplateOptions() {
@@ -380,6 +521,9 @@ function missingFieldHint(field) {
 function focusRecoveryTarget(field) {
   const fieldMap = {
     price_cents: "price",
+    shipping_cost_cents: "shipping_cost",
+    delivery_options: "delivery_options",
+    dimensions: "dimensions",
     images: "imageInput",
   };
   if (field === "images") {
@@ -391,6 +535,22 @@ function focusRecoveryTarget(field) {
   if (!target) return;
   target.focus();
   target.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
+function applyQualitySuggestion(suggestion) {
+  const form = $("#listingForm");
+  if (!form) return;
+  if (suggestion.field === "title") {
+    form.title.value = String(suggestion.value || "");
+  } else if (suggestion.field === "description") {
+    form.description.value = String(suggestion.value || "");
+  } else if (suggestion.field === "tags" && Array.isArray(suggestion.value)) {
+    form.tags.value = suggestion.value.join(", ");
+  } else {
+    return;
+  }
+  $("#editorMessage").textContent = `${formatFieldLabel(suggestion.field)} suggestion applied`;
+  focusRecoveryTarget(suggestion.field);
 }
 
 function packageText(platformKey) {
@@ -710,6 +870,7 @@ $("#listingList").addEventListener("click", (event) => {
   if (!item) return;
   state.selectedListingId = Number(item.dataset.listingId);
   state.validationResults = {};
+  state.qualityResult = null;
   renderListings();
 });
 
@@ -718,6 +879,7 @@ $("#recentListings").addEventListener("click", (event) => {
   if (!item) return;
   state.selectedListingId = Number(item.dataset.listingId);
   state.validationResults = {};
+  state.qualityResult = null;
   show("listings");
   renderListings();
 });
@@ -753,6 +915,7 @@ $("#listingForm").addEventListener("submit", async (event) => {
     }),
   });
   await savePlatformOverrides();
+  state.qualityResult = null;
   $("#editorMessage").textContent = "Saved";
   await loadAll();
 });
@@ -829,6 +992,29 @@ $("#validateButton").addEventListener("click", async () => {
   await loadAll();
 });
 
+$("#qualityButton").addEventListener("click", async () => {
+  const listing = selectedListing();
+  if (!listing) return;
+  state.qualityResult = await api(`/listings/${listing.id}/quality`);
+  $("#editorMessage").textContent = `Quality ${state.qualityResult.score}/100`;
+  renderQualityAssistant();
+});
+
+$("#qualityAssistant").addEventListener("click", (event) => {
+  const focusButton = event.target.closest("[data-focus-quality]");
+  if (focusButton) {
+    focusRecoveryTarget(focusButton.dataset.focusQuality);
+    return;
+  }
+  const applyButton = event.target.closest("[data-apply-suggestion]");
+  if (!applyButton || !state.qualityResult) return;
+  const suggestion = (state.qualityResult.suggestions || []).find(
+    (candidate) => candidate.field === applyButton.dataset.applySuggestion
+  );
+  if (!suggestion) return;
+  applyQualitySuggestion(suggestion);
+});
+
 $("#prepublishReview").addEventListener("click", async (event) => {
   const packageButton = event.target.closest("[data-copy-package]");
   if (packageButton) {
@@ -866,6 +1052,7 @@ $("#publishButton").addEventListener("click", async () => {
     body: JSON.stringify({ platforms, process_now: true }),
   });
   state.validationResults = {};
+  state.qualityResult = null;
   state.jobQuery.offset = 0;
   $("#editorMessage").textContent = "Queued";
   show("queue");

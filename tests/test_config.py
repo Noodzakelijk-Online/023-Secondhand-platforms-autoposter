@@ -1,6 +1,6 @@
 import pytest
 
-from app.config import Settings
+from app.config import Settings, validate_startup_safety
 
 
 def test_platform_rate_limit_overrides_are_platform_specific():
@@ -16,3 +16,22 @@ def test_platform_rate_limit_overrides_reject_invalid_entries():
 
     with pytest.raises(ValueError, match="platform=seconds"):
         _ = settings.platform_rate_limit_seconds_by_platform
+
+
+def test_ebay_oauth_uses_sandbox_authorize_url_by_default():
+    settings = Settings()
+
+    assert settings.ebay_oauth_authorize_url == "https://auth.sandbox.ebay.com/oauth2/authorize"
+    assert "https://api.ebay.com/oauth/api_scope/sell.inventory" in settings.ebay_oauth_scope_list
+
+
+def test_ebay_oauth_production_requires_client_and_redirect_config():
+    settings = Settings(
+        app_env="development",
+        ebay_oauth_environment="production",
+        ebay_oauth_client_id="",
+        ebay_oauth_redirect_uri="",
+    )
+
+    with pytest.raises(RuntimeError, match="EBAY OAuth production mode"):
+        validate_startup_safety(settings)

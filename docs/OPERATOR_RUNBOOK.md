@@ -78,6 +78,7 @@ Expected production status is `ok`. A warning requires operator review. An error
 
 - Check the Queue screen for `failed` and `needs_user_action` jobs.
 - Use job retry only after confirming the listing and platform account state.
+- eBay OAuth consent can create an account with `status=needs_token_exchange`; this is expected until secret-manager-backed token exchange and sandbox API verification are implemented.
 - Investigate repeated stale-running recovery logs; they can indicate worker crashes, timeouts, or deployment restarts during publishing work.
 - Keep uploads on persistent storage and include them in backups.
 - Keep database backups separate from application deploy artifacts.

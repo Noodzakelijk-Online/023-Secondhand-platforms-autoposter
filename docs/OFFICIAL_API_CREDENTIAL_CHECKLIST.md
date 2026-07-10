@@ -34,6 +34,7 @@ Before enabling any eBay `official_api` adapter:
 
 - Create an eBay developer application for sandbox and production.
 - Configure OAuth redirect URLs for the deployed app environment.
+- Set `EBAY_OAUTH_CLIENT_ID`, `EBAY_OAUTH_REDIRECT_URI`, `EBAY_OAUTH_ENVIRONMENT`, and `EBAY_OAUTH_SCOPES` for the target environment.
 - Confirm the seller account has listing privileges in the target marketplace.
 - Confirm required seller policies exist for payment, fulfillment, returns, and location.
 - Verify listing category, condition, item specifics, image requirements, shipping details, and marketplace currency rules against eBay documentation.
@@ -42,6 +43,18 @@ Before enabling any eBay `official_api` adapter:
 - Prove API error handling for invalid category, missing specifics, expired token, quota limit, duplicate request, and seller policy failure.
 - Add tests that use fake local API responses only for automated CI and require explicit operator action for real sandbox credentials.
 - Add a production cutover note that names the exact environment variables or secret-manager entries required.
+
+## eBay OAuth Foundation In This Repository
+
+The app now includes a guarded OAuth consent foundation:
+
+- `POST /api/accounts/ebay/oauth/start` requires an authenticated app user and returns an eBay consent URL.
+- OAuth `state` is stored only as a SHA-256 hash in `platform_oauth_states`, expires according to `EBAY_OAUTH_STATE_TTL_SECONDS`, and can be consumed once.
+- `GET /api/accounts/ebay/oauth/callback` validates state and records an eBay platform account as `mode=official_api` and `status=needs_token_exchange`.
+- The callback does not store raw authorization codes, access tokens, refresh tokens, client secrets, or token payloads in app tables.
+- `PlatformAccount.secret_ref` records the expected secret-manager location prefix from `EBAY_TOKEN_SECRET_REF_PREFIX`; it is not exposed in API responses or data exports.
+
+This is not a complete eBay API integration. The next production-hardening slice must exchange the authorization code through a secret-manager-backed token service, persist only external secret references, refresh tokens safely, and prove sandbox Inventory API behavior before any adapter can mark jobs as published.
 
 ## Adapter Activation Gate
 
@@ -72,7 +85,7 @@ Keep these artifacts outside the public repository if they contain account detai
 - Marktplaats: assisted only.
 - Koopplein: assisted only.
 - Nextdoor: assisted only.
-- eBay: assisted only; future official API candidate.
+- eBay: assisted by default; OAuth consent foundation exists, but token exchange and official publishing are not implemented.
 - Tweedehands: assisted only.
 
 No platform should be represented to a client as fully API-automated until its checklist is complete and committed with tests, documentation, and operator runbook updates.

@@ -60,6 +60,14 @@
               <article><strong id="metricAction">0</strong><span>Need action</span></article>
               <article><strong id="metricFailed">0</strong><span>Failed</span></article>
             </div>
+            <section class="analytics-panel">
+              <div class="pane-head">
+                <h3>Insights</h3>
+                <span class="muted">Local only</span>
+              </div>
+              <div id="analyticsSummary" class="analytics-grid"></div>
+              <div id="analyticsDetails" class="analytics-details"></div>
+            </section>
             <div class="two-column">
               <section>
                 <h3>Recent listings</h3>
@@ -156,6 +164,13 @@
                     <button type="button" id="deleteListingButton" class="danger">Delete</button>
                   </div>
                 </form>
+
+                <div class="section-line"></div>
+                <div class="pane-head">
+                  <h3>Quality assistant</h3>
+                  <button id="qualityButton" class="ghost" type="button">Check</button>
+                </div>
+                <div id="qualityAssistant" class="quality-assistant"></div>
 
                 <div class="section-line"></div>
                 <div class="pane-head">

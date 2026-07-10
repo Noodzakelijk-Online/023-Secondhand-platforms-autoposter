@@ -7,7 +7,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 - Frontend entrypoint: `public/app.js`
 - API implementation: `app/api.py`
 - Current UI coverage: dashboard, listings, queue, accounts, settings, export/import
-- Current test coverage: API smoke flow, hardening, auth, storage, worker, revisions, category mappings, data portability, diagnostics
+- Current test coverage: API smoke flow, hardening, auth, storage, worker, revisions, category mappings, data portability, diagnostics, listing quality
 
 ## Route Map
 
@@ -16,6 +16,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `GET` | `/api/health` | Boot health badge | `test_api_hardening.py` | Public endpoint. |
 | `GET` | `/api/diagnostics` | Settings diagnostics panel | `test_doctor.py` | Visible and tested through doctor coverage. |
 | `GET` | `/api/metrics` | Operator/runbook endpoint | `test_api_hardening.py` | Lightweight JSON counters for local/operator monitoring. |
+| `GET` | `/api/analytics` | Dashboard Insights panel | `test_analytics.py` | User-scoped local product analytics; no external tracking. |
 | `POST` | `/api/auth/register` | Auth form create account | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/login` | Auth form sign in | `test_api.py`, `test_auth_security.py` | Visible and tested. |
 | `POST` | `/api/auth/logout` | Sidebar sign out | `test_auth_security.py` | Visible and tested. |
@@ -33,6 +34,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `DELETE` | `/api/listings/{listing_id}/images/{image_id}` | Image tile delete | `test_storage_uploads.py` | Visible and tested. |
 | `POST` | `/api/listings/{listing_id}/platforms` | Platform selection and description overrides | `test_listing_revisions.py`, `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/listings/{listing_id}/validate` | Validate button | `test_api.py`, `test_category_mappings.py` | Visible and tested. |
+| `GET` | `/api/listings/{listing_id}/quality` | Listing quality assistant panel | `test_listing_quality.py` | Visible and tested; deterministic local scoring and suggestions only. |
 | `POST` | `/api/listings/{listing_id}/publish` | Queue publish button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs` | Dashboard/latest jobs and queue view with platform/status/sort/page controls | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs/{job_id}` | Not directly used | `test_worker.py` | Useful for future deep-linking. |
