@@ -117,3 +117,30 @@ def test_publish_idempotency_is_revision_aware():
 
     assert third["id"] != first["id"]
     assert third["listing_revision"] == 2
+
+
+def test_publish_can_force_new_assisted_package_revision():
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+
+    first = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    ).json()[0]
+    duplicate = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True},
+    ).json()[0]
+    regenerated = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["marktplaats"], "process_now": True, "force_new_revision": True},
+    ).json()[0]
+
+    assert duplicate["id"] == first["id"]
+    assert regenerated["id"] != first["id"]
+    assert regenerated["listing_revision"] == first["listing_revision"] + 1
+    listing = client.get(f"/api/listings/{listing_id}", headers=headers).json()
+    assert listing["revision"] == regenerated["listing_revision"]

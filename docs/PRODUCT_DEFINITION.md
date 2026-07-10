@@ -51,8 +51,9 @@ The current implementation uses assisted mode for every exposed platform.
 6. Add platform-specific description overrides if needed.
 7. Validate readiness.
 8. Queue assisted package jobs.
-9. Review job logs and assisted posting package data.
-10. Complete platform-side actions manually when required.
+9. Regenerate a fresh assisted package only when the seller intentionally wants a new package revision.
+10. Review job logs and assisted posting package data.
+11. Complete platform-side actions manually when required.
 
 ## What The Product Must Never Do
 

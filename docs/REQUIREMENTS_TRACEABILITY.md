@@ -28,7 +28,7 @@ Legend:
 | 16 | Partial | `app/services/oauth.py`, `tests/test_ebay_oauth.py` | Add token exchange, refresh, sandbox API proof. |
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |
 | 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |
-| 19 | Partial | `app/services/jobs.py`, `tests/test_worker.py` | Add polished explicit repost/regenerate UI. |
+| 19 | Done | `app/services/jobs.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_listing_revisions.py`, `tests/test_regenerate_package_ui.py` | Keep regenerate/repost semantics explicit if future official API publishing or manual completion confirmation is added. |
 | 20 | Partial | `docs/RATE_LIMITS.md`, `tests/test_worker.py` | Add official API quota-header handling. |
 | 21 | Partial | `GET /api/jobs`, queue UI in `public/app.js` | Add robust polling/SSE behavior evidence. |
 | 22 | Done | Static frontend in `public/`, README architecture notes | Revisit only if frontend complexity changes. |

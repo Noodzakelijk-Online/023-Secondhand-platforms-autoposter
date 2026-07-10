@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 49.
-- Partial: 40.
+- Done: 50.
+- Partial: 39.
 - Not started: 0.
 
 ## Phase Status
@@ -38,7 +38,7 @@ Legend:
 | 16 | Official API Foundations | Partial | eBay OAuth consent URL/state/callback foundation exists with hashed short-lived state, sandbox-first config, and secret-manager token handoff status; real token exchange and official publishing are still not implemented. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
-| 19 | Job Idempotency And Duplicate Posting Prevention | Partial | Idempotency key now includes user, listing, revision, platform, action, account, and operation mode; explicit user-controlled repost/regenerate flow still needs UI polish. |
+| 19 | Job Idempotency And Duplicate Posting Prevention | Done | Idempotency keys include user, listing, revision, platform, action, account, and operation mode; UI/API expose explicit regenerate-package flow for user-controlled fresh assisted packages. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Global and per-platform cooldowns exist with worker tests; see `docs/RATE_LIMITS.md`. Official API quota-header handling is still future work. |
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |

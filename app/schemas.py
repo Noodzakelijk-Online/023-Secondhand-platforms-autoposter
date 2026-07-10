@@ -255,6 +255,7 @@ class PublishRequest(BaseModel):
     platforms: list[str]
     account_ids: dict[str, int] = Field(default_factory=dict)
     process_now: bool = True
+    force_new_revision: bool = False
 
 
 class JobLogOut(BaseModel):

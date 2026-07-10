@@ -1286,7 +1286,7 @@ $("#prepublishReview").addEventListener("click", async (event) => {
   $("#editorMessage").textContent = `Review ${formatFieldLabel(fixButton.dataset.focusMissing)}`;
 });
 
-$("#publishButton").addEventListener("click", async () => {
+async function queueAssistedPackage({ forceNewRevision = false } = {}) {
   const listing = selectedListing();
   if (!listing) return;
   await savePlatformOverrides();
@@ -1299,15 +1299,19 @@ $("#publishButton").addEventListener("click", async () => {
   }
   await api(`/listings/${listing.id}/publish`, {
     method: "POST",
-    body: JSON.stringify({ platforms, process_now: true }),
+    body: JSON.stringify({ platforms, process_now: true, force_new_revision: forceNewRevision }),
   });
   state.validationResults = {};
   state.qualityResult = null;
   state.jobQuery.offset = 0;
-  $("#editorMessage").textContent = "Assisted package queued";
+  $("#editorMessage").textContent = forceNewRevision ? "Fresh assisted package queued" : "Assisted package queued";
   show("queue");
   await loadAll();
-});
+}
+
+$("#publishButton").addEventListener("click", () => queueAssistedPackage());
+
+$("#regeneratePackageButton").addEventListener("click", () => queueAssistedPackage({ forceNewRevision: true }));
 
 $("#jobList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-job-id]");

@@ -591,6 +591,11 @@ def publish_listing(
     db: Session = Depends(get_db),
 ):
     listing = _load_listing(db, user.id, listing_id)
+    if payload.force_new_revision:
+        listing.revision += 1
+        db.add(ListingDraft(listing_id=listing.id, payload={"force_new_revision": True}, source="regenerate_package"))
+        db.commit()
+        listing = _load_listing(db, user.id, listing_id)
     jobs = []
     for platform_key in payload.platforms:
         get_adapter(platform_key)
