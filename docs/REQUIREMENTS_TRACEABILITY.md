@@ -42,8 +42,8 @@ Legend:
 | 30 | Partial | Data delete/export/import, audit events, retention purge | Add admin/operator audit review UI if required. |
 | 31 | Partial | Account routes/UI, eBay OAuth foundation | Add secure token setup and secret-manager exchange. |
 | 32 | Partial | `app/middleware.py`, `docs/AUTH_SECURITY_POSTURE.md` | Capture deployment web-security review. |
-| 33 | Partial | Structured errors in middleware/tests | Improve UX copy and endpoint-specific messages. |
-| 34 | Partial | Global message/banner and field recovery in `public/app.js` | Add retry guidance and browser evidence. |
+| 33 | Done | `docs/ERROR_HANDLING_UX.md`, `app/middleware.py`, `public/app.js`, `tests/test_api_hardening.py`, `tests/test_frontend_error_ux.py` | Keep error codes, retryability, and frontend display aligned when new error classes are introduced. |
+| 34 | Partial | Global message/banner, import error handling, retry guidance, and field recovery in `public/app.js` | Add executed browser evidence for error, retry, import, and validation recovery flows. |
 | 35 | Done | `Dockerfile`, `docker-compose.yml` | Keep in sync with runtime dependencies. |
 | 36 | Done | `app/doctor.py`, `tests/test_doctor.py` | Add checks as new infrastructure appears. |
 | 37 | Done | `scripts/verify.py` | Keep quality gate current. |

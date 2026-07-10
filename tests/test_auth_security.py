@@ -113,6 +113,7 @@ def test_failed_login_attempts_are_rate_limited():
     response = client.post("/api/auth/login", json={"email": email, "password": "wrong-password"})
     assert response.status_code == 429
     assert response.json()["error"]["code"] == "RATE_LIMITED"
+    assert response.json()["error"]["retryable"] is True
 
     db = SessionLocal()
     try:

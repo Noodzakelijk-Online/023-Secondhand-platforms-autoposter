@@ -61,6 +61,18 @@ let listingSearchTimer = null;
 let templateSearchTimer = null;
 let mappingSearchTimer = null;
 
+class ApiError extends Error {
+  constructor(message, options = {}) {
+    super(message || "Request failed");
+    this.name = "ApiError";
+    this.code = options.code || "REQUEST_FAILED";
+    this.requestId = options.requestId || "";
+    this.retryable = Boolean(options.retryable);
+    this.fieldErrors = options.fieldErrors || {};
+    this.status = options.status || 0;
+  }
+}
+
 function setBusy(delta) {
   state.pendingRequests = Math.max(0, state.pendingRequests + delta);
   document.body.classList.toggle("busy", state.pendingRequests > 0);
@@ -71,6 +83,27 @@ function showAppMessage(message, tone = "error") {
   if (!node) return;
   node.textContent = message || "Something went wrong";
   node.className = `app-message ${tone}`;
+}
+
+function showAppError(error, fallback = "Something went wrong") {
+  const node = $("#appMessage");
+  if (!node) return;
+  const message = error?.message || fallback;
+  const details = [];
+  if (error?.fieldErrors && Object.keys(error.fieldErrors).length) {
+    const fieldSummary = Object.entries(error.fieldErrors)
+      .slice(0, 3)
+      .map(([field, messages]) => `${formatFieldLabel(field)}: ${[].concat(messages).join(", ")}`)
+      .join(" ");
+    details.push(fieldSummary);
+  }
+  if (error?.retryable) details.push("You can retry this request.");
+  if (error?.requestId) details.push(`Request ID: ${error.requestId}`);
+  node.innerHTML = `
+    <strong>${escapeHtml(message)}</strong>
+    ${details.length ? `<span>${escapeHtml(details.join(" "))}</span>` : ""}
+  `;
+  node.className = "app-message error";
 }
 
 function clearAppMessage() {
@@ -93,14 +126,21 @@ async function apiWithMeta(path, options = {}) {
   try {
     const response = await fetch(`/api${path}`, { ...options, headers });
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: response.statusText }));
-      throw new Error(error.error?.message || error.detail || "Request failed");
+      const payload = await response.json().catch(() => ({ detail: response.statusText }));
+      const envelope = payload.error || {};
+      throw new ApiError(envelope.message || payload.detail || "Request failed", {
+        code: envelope.code,
+        requestId: envelope.request_id || response.headers.get("X-Request-ID") || "",
+        retryable: envelope.retryable,
+        fieldErrors: envelope.field_errors,
+        status: response.status,
+      });
     }
     const data = response.status === 204 ? null : await response.json();
     return { data, headers: response.headers };
   } catch (error) {
     if (error instanceof Error) throw error;
-    throw new Error("Network request failed");
+    throw new ApiError("Network request failed", { retryable: true });
   } finally {
     setBusy(-1);
   }
@@ -822,7 +862,7 @@ function escapeHtml(value) {
 
 window.addEventListener("unhandledrejection", (event) => {
   event.preventDefault();
-  showAppMessage(event.reason?.message || "Something went wrong");
+  showAppError(event.reason, "Something went wrong");
 });
 
 async function boot() {
@@ -848,7 +888,7 @@ async function boot() {
   try {
     await loadAll();
   } catch (error) {
-    showAppMessage(error.message);
+    showAppError(error);
   }
 }
 
@@ -1282,6 +1322,7 @@ $("#jobList").addEventListener("click", (event) => {
     </div>
     <p><span class="${statusClass(job.status)}">${escapeHtml(job.status)}</span></p>
     <p class="muted">${escapeHtml(job.error_message || job.result?.posting_url || "")}</p>
+    <p class="retry-guidance">${escapeHtml(jobRetryGuidance(job))}</p>
     <h3>Logs</h3>
     ${(job.logs || []).map((log) => `<p class="job-log">${escapeHtml(log.message)}</p>`).join("")}
   `;
@@ -1290,6 +1331,15 @@ $("#jobList").addEventListener("click", (event) => {
     await loadAll();
   });
 });
+
+function jobRetryGuidance(job) {
+  if (job.status === "failed") return "Retry after fixing the listing, platform account, or reported validation issue.";
+  if (job.status === "needs_user_action") {
+    return "Retry only if you want to regenerate the assisted package after changing the listing.";
+  }
+  if (job.next_retry_at) return `This job is waiting for its cooldown until ${new Date(job.next_retry_at).toLocaleString()}.`;
+  return "Retry requeues this job; use it only when the previous attempt is stale or intentionally corrected.";
+}
 
 $("#accountForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1424,7 +1474,11 @@ $("#importDataInput").addEventListener("change", async (event) => {
       `${result.category_mappings_created + result.category_mappings_updated} mappings`;
     await loadAll();
   } catch (error) {
-    $("#dataPortabilityMessage").textContent = error.message;
+    $("#dataPortabilityMessage").textContent = [
+      error.message,
+      error.retryable ? "Try the import again after checking the file." : "",
+      error.requestId ? `Request ID: ${error.requestId}` : "",
+    ].filter(Boolean).join(" ");
   } finally {
     event.target.value = "";
   }

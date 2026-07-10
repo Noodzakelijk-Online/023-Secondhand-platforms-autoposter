@@ -169,6 +169,13 @@ nav {
   color: var(--danger);
   margin: -8px 0 18px;
   padding: 12px 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.app-message span {
+  color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .app-message.success {
@@ -740,6 +747,15 @@ textarea {
   border-left: 3px solid var(--line);
   padding-left: 10px;
   color: var(--muted);
+}
+
+.retry-guidance {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfcfd;
+  color: var(--muted);
+  margin: 0;
+  padding: 9px 10px;
 }
 
 @media (max-width: 880px) {

@@ -79,6 +79,7 @@ def setup_middleware(app: FastAPI) -> None:
             code=http_error_code(exc.status_code),
             message=message,
             details=details,
+            retryable=http_error_retryable(exc.status_code),
         )
 
     @app.exception_handler(RequestValidationError)
@@ -121,3 +122,7 @@ def http_error_code(status_code: int) -> str:
         429: "RATE_LIMITED",
     }
     return mapping.get(status_code, "HTTP_ERROR")
+
+
+def http_error_retryable(status_code: int) -> bool:
+    return status_code in {408, 429, 500, 502, 503, 504}
