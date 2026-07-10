@@ -10,7 +10,7 @@ Legend:
 | Phase | Status | Evidence | Remaining gate |
 | --- | --- | --- | --- |
 | 0 | Done | `docs/REPOSITORY_PROVENANCE.md`, `docs/COMPLETION_MATRIX.md`, `git status` practice in local verification | Refresh provenance when branch, remote, or release baseline changes. |
-| 1 | Partial | `docs/RED_TEAM_REVIEW.md`, `docs/TECHNICAL_DEBT_REGISTER.md` | Add formal deep audit report with route/model/storage review. |
+| 1 | Done | `docs/DEEP_TECHNICAL_AUDIT.md`, `docs/RED_TEAM_REVIEW.md`, `docs/TECHNICAL_DEBT_REGISTER.md`, `tests/test_deep_technical_audit.py` | Refresh audit after major route, model, storage, auth, adapter, worker, or deployment changes. |
 | 2 | Done | `docs/PRODUCT_DEFINITION.md` | Keep aligned when product scope changes. |
 | 3 | Partial | `app/main.py`, `app/api.py`, `app/services/` | Split large route module if product surface grows. |
 | 4 | Partial | `app/models.py`, `migrations/versions/`, `tests/test_migrations.py` | Prove migrations on PostgreSQL target. |
