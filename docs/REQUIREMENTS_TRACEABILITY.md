@@ -33,7 +33,7 @@ Legend:
 | 21 | Partial | `GET /api/jobs`, queue UI in `public/app.js` | Add robust polling/SSE behavior evidence. |
 | 22 | Done | Static frontend in `public/`, README architecture notes | Revisit only if frontend complexity changes. |
 | 23 | Partial | `public/index.html`, `public/app.js`, `public/styles.css` | Add executed browser QA evidence. |
-| 24 | Partial | `docs/API_USAGE_AUDIT.md` | Complete formal visible-action audit. |
+| 24 | Done | `docs/UI_ACTION_AUDIT.md`, `tests/test_ui_action_audit.py` | Keep action audit current when visible controls change. |
 | 25 | Done | `docs/API_USAGE_AUDIT.md` | Keep updated with routes and UI changes. |
 | 26 | Partial | Template/category mapping routes and UI, `tests/test_api.py` | Add variants/automation helpers. |
 | 27 | Partial | `app/services/quality.py`, `tests/test_listing_quality.py` | Add richer per-category or optional AI provider. |
@@ -83,9 +83,9 @@ Legend:
 | 71 | Done | `scripts/audit_dependencies.py`, supply-chain workflow/docs | Keep audits current with dependencies. |
 | 72 | Done | `docs/BACKUP_RESTORE.md` | Prove restore in target environment. |
 | 73 | Done | `docs/OPERATOR_RUNBOOK.md` | Update when operations change. |
-| 74 | Not started | No non-technical simulation report yet. | Run and document a fresh user walkthrough. |
+| 74 | Partial | `docs/NON_TECHNICAL_USER_SIMULATION.md`, `tests/test_non_technical_user_simulation.py` | Execute and record a real non-technical user walkthrough. |
 | 75 | Done | `docs/AUTONOMY_FIRST_DESIGN.md`, `tests/test_autonomy_first_design.py` | Keep user-control boundaries aligned with UI wording and adapter behavior. |
-| 76 | Not started | No product value review yet. | Document whether current feature set solves the target job. |
+| 76 | Done | `docs/PRODUCT_VALUE_REVIEW.md`, `tests/test_product_value_review.py` | Revisit after non-technical simulation and browser evidence. |
 | 77 | Partial | `docs/PLATFORM_REALITY_REVIEW.md` | Add broader product realism review. |
 | 78 | Done | This traceability document plus `tests/test_requirements_traceability.py` | Keep synchronized with completion matrix. |
 | 79 | Done | `docs/TASK_GRAPH_AND_EXECUTION.md` | Keep execution lanes and critical path aligned with the matrix. |
@@ -94,7 +94,7 @@ Legend:
 | 82 | Done | `docs/API_USAGE_AUDIT.md`, visible UI/API wiring | Keep route/UI audit current. |
 | 83 | Done | `docs/API_USAGE_AUDIT.md` | Keep purposeful endpoint mapping current. |
 | 84 | Done | `docs/FALSE_COMPLETION_PREVENTION.md`, `tests/test_false_completion_prevention.py` | Keep blocked claims aligned with release readiness status. |
-| 85 | Not started | No final no-excuses search yet. | Run near release only. |
+| 85 | Partial | `docs/FINAL_NO_EXCUSES_SEARCH.md`, `tests/test_final_no_excuses_search.py` | Repeat the no-excuses search at final release time after launch evidence exists. |
 | 86 | Partial | Local verification gate passes | Perform and document fresh-clone dry run. |
 | 87 | Partial | Completion matrix and product definition | Final acceptance remains pending. |
 | 88 | Partial | Prior turn summaries and docs | Final release response pending. |

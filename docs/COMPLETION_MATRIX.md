@@ -11,9 +11,9 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 38.
-- Partial: 45.
-- Not started: 6.
+- Done: 40.
+- Partial: 46.
+- Not started: 3.
 
 ## Phase Status
 
@@ -43,7 +43,7 @@ Legend:
 | 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, and validation recovery shortcuts exist; browser evidence still needs work. |
-| 24 | UI Action Audit | Partial | Main visible actions are wired; formal audit still needed. |
+| 24 | UI Action Audit | Done | See `docs/UI_ACTION_AUDIT.md`; visible dashboard actions are mapped to handlers/endpoints, with browser-evidence gaps called out. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Partial | Templates can be saved, applied, edited, and deleted; category mappings can be created/edited/deleted. Richer variants and automation helpers still need work. |
 | 27 | Listing Quality Assistant | Partial | Local deterministic quality assistant now scores listings, identifies buyer-readiness issues, and offers safe title/description/tag suggestions in API and UI; external AI and richer marketplace-specific optimization are not implemented. |
@@ -93,9 +93,9 @@ Legend:
 | 71 | Supply Chain And Dependencies | Done | `scripts/audit_dependencies.py` and `.github/workflows/supply-chain.yml` run `pip-audit`; see `docs/SUPPLY_CHAIN.md`. |
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
-| 74 | Real Non-Technical User Simulation | Not started | Needed. |
+| 74 | Real Non-Technical User Simulation | Partial | See `docs/NON_TECHNICAL_USER_SIMULATION.md`; proxy walkthrough and risk areas are documented, but real external user evidence is still required. |
 | 75 | Autonomy-First Design | Done | See `docs/AUTONOMY_FIRST_DESIGN.md`; tests guard user-control boundaries and blocked automation claims. |
-| 76 | Product Value Review | Not started | Needed. |
+| 76 | Product Value Review | Done | See `docs/PRODUCT_VALUE_REVIEW.md`; current demo value and launch-blocking product gaps are documented and guarded by tests. |
 | 77 | Product Realism Review | Partial | Reality review added; broader review needed. |
 | 78 | Requirements Traceability | Done | See `docs/REQUIREMENTS_TRACEABILITY.md`; a regression test ensures all 89 phase statuses stay synchronized with this matrix. |
 | 79 | Task Graph And Codex Execution Management | Done | See `docs/TASK_GRAPH_AND_EXECUTION.md` for execution lanes, critical path, and future Codex run rules. |
@@ -104,7 +104,7 @@ Legend:
 | 82 | No Partial UI Without Backend Wiring | Done | Current visible core UI calls real API endpoints. |
 | 83 | No Backend Endpoint Without Frontend Or Purpose | Done | Current endpoints support visible app flows or documented API use. |
 | 84 | False Completion Prevention | Done | See `docs/FALSE_COMPLETION_PREVENTION.md`; tests guard required anti-overclaim wording for release readiness, assisted posting, eBay API, and fresh-clone evidence. |
-| 85 | Final No-Excuses Search | Not started | Needed near release. |
+| 85 | Final No-Excuses Search | Partial | See `docs/FINAL_NO_EXCUSES_SEARCH.md`; pre-final overclaim/secret searches were run, but the true final search must be repeated near release. |
 | 86 | Final Fresh-Clone Dry Run | Partial | Local tests run; fresh clone dry run not documented as final. |
 | 87 | Final Acceptance Criteria | Partial | Core acceptance partially met; full PDF criteria not complete. |
 | 88 | Final Response Requirements | Partial | Prior final response covered current work; final release response pending. |

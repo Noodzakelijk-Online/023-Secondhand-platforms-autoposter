@@ -266,6 +266,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Legacy script quarantine: `docs/LEGACY_SCRIPT_QUARANTINE.md`
 - Rate limits: `docs/RATE_LIMITS.md`
 - API usage audit: `docs/API_USAGE_AUDIT.md`
+- UI action audit: `docs/UI_ACTION_AUDIT.md`
 - Technical debt register: `docs/TECHNICAL_DEBT_REGISTER.md`
 - Testing strategy: `docs/TESTING_STRATEGY.md`
 - Browser and accessibility QA: `docs/BROWSER_ACCESSIBILITY_QA.md`
@@ -278,6 +279,9 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Autonomy-first design: `docs/AUTONOMY_FIRST_DESIGN.md`
 - Workspaces optional review: `docs/WORKSPACES_OPTIONAL_REVIEW.md`
 - Internationalization: `docs/INTERNATIONALIZATION.md`
+- Product value review: `docs/PRODUCT_VALUE_REVIEW.md`
+- Non-technical user simulation: `docs/NON_TECHNICAL_USER_SIMULATION.md`
+- Final no-excuses search: `docs/FINAL_NO_EXCUSES_SEARCH.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
 - Auth deployment posture: `docs/AUTH_SECURITY_POSTURE.md`
