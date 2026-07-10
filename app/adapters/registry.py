@@ -34,6 +34,7 @@ def list_platforms() -> list[dict]:
             "posting_url": adapter.posting_url,
             "required_fields": adapter.get_required_fields(),
             "supported_categories": adapter.get_supported_categories(),
+            "capabilities": adapter.get_capabilities(),
             "compliance_notes": adapter.extra_warnings,
         }
         for adapter in ADAPTERS.values()

@@ -52,7 +52,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 | Select platform / edit platform description | platform cards plus save paths | `POST /api/listings/{id}/platforms` during save/validate/publish | Wired |
 | Validate platforms | `#validateButton click` | `GET /api/listings/{id}/validate` | Wired |
 | Copy prepublish package or field | `#prepublishReview click` | Clipboard/local fallback | Wired |
-| Queue publish | `#publishButton click` | `POST /api/listings/{id}/publish` | Wired |
+| Queue assisted package | `#publishButton click` | `POST /api/listings/{id}/publish` | Wired |
 
 ## Queue
 
@@ -91,4 +91,4 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 - This is source-level wiring evidence, not an executed browser walkthrough.
 - Dashboard latest-job cards are currently display-only; opening details happens from the Queue list.
 - Browser evidence is still needed for copy-to-clipboard fallback, file import/export, mobile layout, keyboard flow, and destructive confirmation clarity.
-- `Queue publish` wording remains a known non-technical-user risk because assisted jobs still require final manual platform action.
+- Visible queue wording now says `Queue assisted package` and `Assisted package queue` to avoid implying automatic marketplace submission.

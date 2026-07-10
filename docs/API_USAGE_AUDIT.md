@@ -35,7 +35,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `POST` | `/api/listings/{listing_id}/platforms` | Platform selection and description overrides | `test_listing_revisions.py`, `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/listings/{listing_id}/validate` | Validate button | `test_api.py`, `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/listings/{listing_id}/quality` | Listing quality assistant panel | `test_listing_quality.py` | Visible and tested; deterministic local scoring and suggestions only. |
-| `POST` | `/api/listings/{listing_id}/publish` | Queue publish button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
+| `POST` | `/api/listings/{listing_id}/publish` | Queue assisted package button | `test_api.py`, `test_category_mappings.py`, `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs` | Dashboard/latest jobs and queue view with platform/status/sort/page controls | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs/{job_id}` | Not directly used | `test_worker.py` | Useful for future deep-linking. |
 | `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |

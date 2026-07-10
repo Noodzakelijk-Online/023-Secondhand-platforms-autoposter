@@ -44,7 +44,14 @@ def test_platform_metadata_contract():
         assert platform["automation_mode"] == "assisted"
         assert isinstance(platform["required_fields"], list)
         assert isinstance(platform["supported_categories"], list)
+        assert platform["capabilities"]["publish_mode"] == "assisted_package"
+        assert platform["capabilities"]["requires_user_final_submission"] is True
+        assert platform["capabilities"]["prepared_fields"]
+        assert "final_submission" in platform["capabilities"]["blocked_actions"]
         assert isinstance(platform["compliance_notes"], list)
+    ebay = next(platform for platform in platforms if platform["key"] == "ebay")
+    assert ebay["capabilities"]["official_api_candidate"] is True
+    assert ebay["capabilities"]["supports_official_api"] is False
 
 
 def test_create_validate_and_publish_listing_flow():

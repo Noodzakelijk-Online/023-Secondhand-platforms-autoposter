@@ -55,3 +55,7 @@ This document records the current integration reality for each platform. It inte
 ## Cross-Platform Compliance Position
 
 All current platform integrations are assisted. Jobs may prepare a platform posting package and return `needs_user_action`; they must not claim `published` unless a real official API confirms publication or a user confirmation feature is added and records the published URL.
+
+Each registered adapter exposes capability metadata through `GET /api/platforms`. That metadata records prepared fields, account requirements, manual steps, blocked actions, official API status, and final-submission responsibility so the UI can describe platform limits from the same source of truth used by validation and publishing.
+
+The tested platform-by-platform completion contract is maintained in `docs/PLATFORM_COMPLETION_CONTRACTS.md`.

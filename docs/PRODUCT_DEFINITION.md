@@ -50,7 +50,7 @@ The current implementation uses assisted mode for every exposed platform.
 5. Select target platforms.
 6. Add platform-specific description overrides if needed.
 7. Validate readiness.
-8. Queue publishing jobs.
+8. Queue assisted package jobs.
 9. Review job logs and assisted posting package data.
 10. Complete platform-side actions manually when required.
 

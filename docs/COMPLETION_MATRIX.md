@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 43.
-- Partial: 46.
+- Done: 46.
+- Partial: 43.
 - Not started: 0.
 
 ## Phase Status
@@ -30,11 +30,11 @@ Legend:
 | 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
 | 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, revisioning, and condition/status invariants; category mapping depth still needs work. |
-| 11 | Platform Adapter System | Partial | Adapter contract exists; capability metadata must be expanded. |
-| 12 | Platform-Specific Completion Contract | Partial | Adapters/jobs/UI exist; platform docs/tests need deeper coverage. |
+| 11 | Platform Adapter System | Done | Adapter contract, registry, assisted adapters, capability metadata, compliance notes, required fields, supported categories, and API/UI exposure exist. |
+| 12 | Platform-Specific Completion Contract | Done | See `docs/PLATFORM_COMPLETION_CONTRACTS.md`; registered adapters have tested per-platform validation, mapping, assisted publish outcomes, blocked actions, and capability metadata. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
 | 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields, and the listing editor now shows a prepublish review with copy-ready mapped fields; deeper manual completion workflows still need browser evidence. |
-| 15 | Exact Wording Rules For Honest Product Behavior | Partial | README/docs are honest; UI wording needs audit. |
+| 15 | Exact Wording Rules For Honest Product Behavior | Done | See `docs/UI_WORDING_AUDIT.md`; frontend wording uses assisted-package language and tests block automatic publishing overclaims. |
 | 16 | Official API Foundations | Partial | eBay OAuth consent URL/state/callback foundation exists with hashed short-lived state, sandbox-first config, and secret-manager token handoff status; real token exchange and official publishing are still not implemented. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |

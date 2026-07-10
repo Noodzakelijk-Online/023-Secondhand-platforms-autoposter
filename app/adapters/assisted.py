@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.adapters.base import PlatformAdapter, PublishOutcome, ValidationOutcome
+from app.adapters.base import PlatformAdapter, PlatformCapabilities, PublishOutcome, ValidationOutcome
 
 COMMON_CATEGORIES = [
     "Electronics",
@@ -15,6 +15,52 @@ COMMON_CATEGORIES = [
     "Other",
 ]
 
+COMMON_PREPARED_FIELDS = [
+    "title",
+    "description",
+    "price",
+    "currency",
+    "condition",
+    "category",
+    "location",
+    "delivery_options",
+    "pickup_allowed",
+    "shipping_allowed",
+    "shipping_cost",
+    "dimensions",
+    "weight_grams",
+    "brand",
+    "model",
+    "color",
+    "material",
+    "tags",
+    "image_filenames",
+]
+
+ASSISTED_CAPABILITIES = PlatformCapabilities(
+    prepared_fields=COMMON_PREPARED_FIELDS,
+    account_requirements=[
+        "User-controlled marketplace account",
+        "Manual login or active platform session when the platform asks for it",
+    ],
+    manual_steps=[
+        "Open the platform posting page",
+        "Copy the prepared fields into the marketplace form",
+        "Complete any account, verification, payment, or confirmation prompt",
+        "Review the marketplace preview and submit manually",
+    ],
+    blocked_actions=[
+        "login",
+        "captcha_or_anti_abuse_checks",
+        "two_factor_or_sms_prompts",
+        "paid_placement_choices",
+        "final_submission",
+    ],
+    rate_limit_policy=(
+        "The app rate-limits local package preparation; final marketplace submission remains user-controlled."
+    ),
+)
+
 
 class AssistedPostingAdapter(PlatformAdapter):
     key = "assisted"
@@ -23,6 +69,7 @@ class AssistedPostingAdapter(PlatformAdapter):
     posting_url = ""
     required_fields = ["title", "description", "price_cents", "condition", "category", "location"]
     supported_categories = COMMON_CATEGORIES
+    capabilities = ASSISTED_CAPABILITIES
     extra_warnings: list[str] = []
 
     def get_required_fields(self) -> list[str]:
@@ -114,6 +161,17 @@ class MarktplaatsAdapter(AssistedPostingAdapter):
     posting_url = "https://www.marktplaats.nl/plaats"
     required_fields = AssistedPostingAdapter.required_fields + ["delivery_options"]
     supported_categories = COMMON_CATEGORIES + ["Bicycles", "Collectibles", "Music instruments"]
+    capabilities = PlatformCapabilities(
+        prepared_fields=COMMON_PREPARED_FIELDS,
+        account_requirements=[
+            "Marktplaats account",
+            "Manual login or active session",
+            "User review of category, shipping, paid placement, and confirmation choices",
+        ],
+        manual_steps=ASSISTED_CAPABILITIES.manual_steps,
+        blocked_actions=ASSISTED_CAPABILITIES.blocked_actions,
+        rate_limit_policy=ASSISTED_CAPABILITIES.rate_limit_policy,
+    )
     extra_warnings = [
         "Marktplaats is configured as assisted posting because login, two-factor checks, "
         "paid placement choices, and anti-abuse controls may require the account owner."
@@ -125,6 +183,16 @@ class KooppleinAdapter(AssistedPostingAdapter):
     name = "Koopplein"
     posting_url = "https://koopplein.nl/nederland/advertenties/edit"
     supported_categories = COMMON_CATEGORIES + ["Free", "Wanted"]
+    capabilities = PlatformCapabilities(
+        prepared_fields=COMMON_PREPARED_FIELDS,
+        account_requirements=[
+            "Koopplein account if the platform requires one for the chosen listing",
+            "User review of category, price type, and final confirmation",
+        ],
+        manual_steps=ASSISTED_CAPABILITIES.manual_steps,
+        blocked_actions=ASSISTED_CAPABILITIES.blocked_actions,
+        rate_limit_policy=ASSISTED_CAPABILITIES.rate_limit_policy,
+    )
     extra_warnings = [
         "Koopplein is configured as assisted posting; review category and price type before final submission."
     ]
@@ -147,6 +215,35 @@ class NextdoorAdapter(AssistedPostingAdapter):
         "Sport and outdoor",
         "Garden",
     ]
+    capabilities = PlatformCapabilities(
+        prepared_fields=[
+            "title",
+            "description",
+            "price",
+            "currency",
+            "category",
+            "location",
+            "image_filenames",
+            "tags",
+        ],
+        account_requirements=[
+            "Nextdoor account",
+            "Neighborhood access and any user-controlled local posting permissions",
+        ],
+        manual_steps=[
+            "Open the Nextdoor for-sale posting page",
+            "Copy the prepared listing fields",
+            "Review neighborhood visibility and platform confirmations",
+            "Submit manually from the account owner's session",
+        ],
+        blocked_actions=[
+            "login",
+            "captcha_or_anti_abuse_checks",
+            "neighborhood_permission_checks",
+            "final_submission",
+        ],
+        rate_limit_policy=ASSISTED_CAPABILITIES.rate_limit_policy,
+    )
     extra_warnings = [
         "Nextdoor posting remains assisted because neighborhood account controls and confirmations "
         "must stay user-controlled."
@@ -159,6 +256,32 @@ class EbayAdapter(AssistedPostingAdapter):
     posting_url = "https://www.ebay.nl/sl/sell"
     required_fields = AssistedPostingAdapter.required_fields + ["delivery_options"]
     supported_categories = COMMON_CATEGORIES + ["Collectibles", "Parts and accessories"]
+    capabilities = PlatformCapabilities(
+        prepared_fields=COMMON_PREPARED_FIELDS,
+        supports_official_api=False,
+        official_api_candidate=True,
+        account_requirements=[
+            "eBay seller account",
+            "Seller policy, payment, shipping, and return settings when required by eBay",
+            "OAuth credentials and token storage before any future official API publishing",
+        ],
+        manual_steps=[
+            "Open the eBay selling flow",
+            "Copy the prepared listing fields",
+            "Review seller policies, shipping, returns, fees, and listing preview",
+            "Submit manually unless a future official API adapter is enabled and proven",
+        ],
+        blocked_actions=[
+            "login",
+            "captcha_or_anti_abuse_checks",
+            "oauth_token_exchange",
+            "fee_confirmation",
+            "final_submission",
+        ],
+        rate_limit_policy=(
+            "Assisted jobs are locally rate-limited. Future official API work must obey eBay quota headers."
+        ),
+    )
     extra_warnings = [
         "eBay can support official API integration later, but this build stays assisted "
         "until OAuth credentials and marketplace policies are configured."
@@ -169,6 +292,16 @@ class TweedehandsAdapter(AssistedPostingAdapter):
     key = "tweedehands"
     name = "Tweedehands"
     posting_url = "https://www.tweedehands.net"
+    capabilities = PlatformCapabilities(
+        prepared_fields=COMMON_PREPARED_FIELDS,
+        account_requirements=[
+            "Tweedehands account",
+            "Manual session that follows the platform rules",
+        ],
+        manual_steps=ASSISTED_CAPABILITIES.manual_steps,
+        blocked_actions=ASSISTED_CAPABILITIES.blocked_actions + ["scraping_without_user_control"],
+        rate_limit_policy=ASSISTED_CAPABILITIES.rate_limit_policy,
+    )
     extra_warnings = [
         "Tweedehands import/posting is assisted; use the legacy scraper only in a user-controlled "
         "session that respects site rules."

@@ -20,11 +20,11 @@ Legend:
 | 8 | Partial | `app/middleware.py`, `tests/test_api_hardening.py` | Add broader endpoint throttling if needed. |
 | 9 | Partial | `app/storage.py`, `tests/test_storage_uploads.py` | Add object storage adapter and image-processing policy. |
 | 10 | Partial | `app/models.py`, `app/schemas.py`, `tests/test_data_invariants.py` | Expand category-specific field depth. |
-| 11 | Partial | `app/adapters/base.py`, `app/adapters/assisted.py` | Expand adapter capability metadata. |
-| 12 | Partial | `app/adapters/`, `docs/PLATFORM_REALITY_REVIEW.md` | Add deeper platform contract tests/docs. |
+| 11 | Done | `app/adapters/base.py`, `app/adapters/assisted.py`, `app/adapters/registry.py`, `tests/test_api.py` | Keep capability metadata aligned when adapters or platform modes change. |
+| 12 | Done | `docs/PLATFORM_COMPLETION_CONTRACTS.md`, `tests/test_platform_contracts.py`, `app/adapters/` | Keep platform contracts current when adapters, categories, blocked actions, or official API modes change. |
 | 13 | Done | `docs/PLATFORM_REALITY_REVIEW.md` | Re-review if platform policies change. |
 | 14 | Partial | `app/services/jobs.py`, `public/app.js` prepublish review | Add executed browser evidence. |
-| 15 | Partial | `Readme.md`, `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Complete UI wording audit. |
+| 15 | Done | `docs/UI_WORDING_AUDIT.md`, `tests/test_ui_wording.py`, `public/index.html`, `public/app.js` | Re-audit wording when platform modes, official API behavior, or primary job actions change. |
 | 16 | Partial | `app/services/oauth.py`, `tests/test_ebay_oauth.py` | Add token exchange, refresh, sandbox API proof. |
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |
 | 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |

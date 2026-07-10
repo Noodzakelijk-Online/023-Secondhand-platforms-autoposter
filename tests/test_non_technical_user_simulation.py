@@ -7,8 +7,8 @@ def test_non_technical_user_simulation_requires_real_user_evidence():
     required_phrases = [
         "proxy simulation",
         "not a substitute for observing a real non-technical user",
-        "Queue publish",
-        "sounds too automatic",
+        "Queue assisted package",
+        "understandable without implying automatic marketplace submission",
         "real non-technical user walkthrough must be executed",
         "remains partial until external user evidence exists",
     ]

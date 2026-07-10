@@ -395,16 +395,26 @@ function renderPlatforms(listing) {
     const checked = state.selectedPlatforms.has(platform.key) ? "checked" : "";
     const override = mapping?.overrides?.description || "";
     const errors = mapping?.validation_errors?.length ? `Missing: ${mapping.validation_errors.join(", ")}` : "Ready for validation";
+    const capabilities = platform.capabilities || {};
     return `
       <article class="platform-card">
         <label><input type="checkbox" data-platform="${platform.key}" ${checked} /> ${escapeHtml(platform.name)}</label>
         <span class="${statusClass(mapping?.status || "draft")}">${escapeHtml(mapping?.status || platform.automation_mode)}</span>
+        <div class="capability-strip">
+          ${capabilityChipHtml(`${(capabilities.prepared_fields || []).length} prepared fields`)}
+          ${capabilityChipHtml(capabilities.requires_user_final_submission ? "manual submit" : "API submit")}
+          ${capabilities.official_api_candidate ? capabilityChipHtml("API candidate") : ""}
+        </div>
         <textarea data-platform-description="${platform.key}" placeholder="Platform description variant">${escapeHtml(override)}</textarea>
         <small class="muted">${escapeHtml(errors)}</small>
       </article>
     `;
   }).join("");
   renderPrepublishReview(listing);
+}
+
+function capabilityChipHtml(label) {
+  return `<span>${escapeHtml(label)}</span>`;
 }
 
 function renderPrepublishReview(listing) {
@@ -598,7 +608,7 @@ function renderJobs() {
   $("#jobPageInfo").textContent = `${start}-${end} of ${state.jobQuery.total}`;
   $("#jobPrevPage").disabled = state.jobQuery.offset === 0;
   $("#jobNextPage").disabled = state.jobQuery.offset + state.jobQuery.limit >= state.jobQuery.total;
-  $("#jobList").innerHTML = state.jobs.map(jobItemHtml).join("") || `<p class="muted">No publishing jobs.</p>`;
+  $("#jobList").innerHTML = state.jobs.map(jobItemHtml).join("") || `<p class="muted">No assisted packages queued.</p>`;
 }
 
 function renderAccounts() {
@@ -1054,7 +1064,7 @@ $("#publishButton").addEventListener("click", async () => {
   state.validationResults = {};
   state.qualityResult = null;
   state.jobQuery.offset = 0;
-  $("#editorMessage").textContent = "Queued";
+  $("#editorMessage").textContent = "Assisted package queued";
   show("queue");
   await loadAll();
 });

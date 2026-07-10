@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
@@ -26,11 +26,31 @@ class PublishOutcome:
     data: dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class PlatformCapabilities:
+    publish_mode: str = "assisted_package"
+    update_mode: str = "manual"
+    remove_mode: str = "manual"
+    status_mode: str = "manual"
+    prepared_fields: list[str] = field(default_factory=list)
+    supports_images: bool = True
+    supports_category_mapping: bool = True
+    supports_platform_overrides: bool = True
+    supports_official_api: bool = False
+    official_api_candidate: bool = False
+    requires_user_final_submission: bool = True
+    account_requirements: list[str] = field(default_factory=list)
+    manual_steps: list[str] = field(default_factory=list)
+    blocked_actions: list[str] = field(default_factory=list)
+    rate_limit_policy: str = ""
+
+
 class PlatformAdapter(ABC):
     key: str
     name: str
     automation_mode: str
     posting_url: str
+    capabilities: PlatformCapabilities = PlatformCapabilities()
 
     @abstractmethod
     def validate_listing(self, listing, overrides: dict[str, Any] | None = None) -> ValidationOutcome:
@@ -74,3 +94,6 @@ class PlatformAdapter(ABC):
     @abstractmethod
     def get_supported_categories(self) -> list[str]:
         raise NotImplementedError
+
+    def get_capabilities(self) -> dict[str, Any]:
+        return asdict(self.capabilities)

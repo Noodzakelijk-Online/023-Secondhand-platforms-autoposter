@@ -10,7 +10,7 @@ def test_ui_action_audit_covers_visible_workflows_and_limits():
         "Run quality check",
         "Upload images",
         "Validate platforms",
-        "Queue publish",
+        "Queue assisted package",
         "Retry job",
         "Save account",
         "Export JSON",

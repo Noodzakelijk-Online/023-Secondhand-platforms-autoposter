@@ -169,13 +169,17 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 | eBay | Assisted by default | OAuth consent foundation exists for future official API work, but token exchange and credential-dependent publishing are not enabled. |
 | Tweedehands | Assisted | Legacy import/posting scripts are separate and must be run only in compliant user-controlled sessions. |
 
+See `docs/PLATFORM_COMPLETION_CONTRACTS.md` for the tested per-platform completion contract.
+
 ## Adding a platform adapter
 
 1. Add a class implementing `PlatformAdapter` in `app/adapters/`.
-2. Implement `validate_listing`, `map_listing_to_platform_fields`, `publish_listing`, `get_required_fields`, and `get_supported_categories`.
+2. Implement `validate_listing`, `map_listing_to_platform_fields`, `publish_listing`, `get_required_fields`, `get_supported_categories`, and honest `PlatformCapabilities` metadata.
 3. Register it in `app/adapters/registry.py`.
 4. Add adapter tests that prove assisted adapters do not fake external success; use fake local API responses only for future official API test suites.
 5. Document the automation mode and compliance limits here.
+
+`GET /api/platforms` exposes each adapter's capabilities, including prepared fields, supported category mapping, official API status, account requirements, manual steps, blocked actions, and whether final marketplace submission remains user-controlled.
 
 ## API highlights
 

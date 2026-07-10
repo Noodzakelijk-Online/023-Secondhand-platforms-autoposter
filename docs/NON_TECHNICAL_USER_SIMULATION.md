@@ -29,14 +29,14 @@ Mira wants to:
 | 4 | Run Quality assistant. | App shows score, concrete fixes, and optional suggestions. | Supported. |
 | 5 | Apply a suggestion. | Suggestion changes form fields only after explicit user action. | Supported. |
 | 6 | Select platforms and validate. | App reports missing fields and copy-ready mapped fields. | Supported. |
-| 7 | Queue publish. | App creates assisted jobs and labels final action as user-controlled. | Supported. |
+| 7 | Queue assisted package. | App creates assisted jobs and labels final action as user-controlled. | Supported. |
 | 8 | Open Queue. | User can inspect job status, logs, retry where relevant, and see needs-action context. | Partially supported; clearer manual-completion capture is still needed. |
 | 9 | Export JSON. | Export excludes secrets, sessions, and image binaries. | Supported. |
 | 10 | Delete account data. | Owned records and uploaded images are removed. | Supported. |
 
 ## Observed Risk Areas To Test With A Real User
 
-- Whether "Queue publish" sounds too automatic.
+- Whether "Queue assisted package" is understandable without implying automatic marketplace submission.
 - Whether `needs_user_action` explains the next manual step clearly enough.
 - Whether platform warnings are visible before the user leaves the app.
 - Whether the quality assistant feels advisory rather than surprising.
