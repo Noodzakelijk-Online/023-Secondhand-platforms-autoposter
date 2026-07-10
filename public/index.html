@@ -238,6 +238,33 @@
             <div class="layout">
               <section class="pane">
                 <h3>Platform accounts</h3>
+                <div class="query-tools">
+                  <div class="tool-grid">
+                    <label>Platform<select id="accountPlatformFilter"><option value="">All platforms</option></select></label>
+                    <label>Status
+                      <select id="accountStatusFilter">
+                        <option value="">All statuses</option>
+                        <option value="needs_setup">Needs setup</option>
+                        <option value="connected">Connected</option>
+                        <option value="disabled">Disabled</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>Sort
+                    <select id="accountSort">
+                      <option value="-created_at">Newest</option>
+                      <option value="created_at">Oldest</option>
+                      <option value="display_name">Name A-Z</option>
+                      <option value="platform">Platform A-Z</option>
+                      <option value="status">Status A-Z</option>
+                    </select>
+                  </label>
+                  <div class="row pager-row">
+                    <button id="accountPrevPage" type="button" class="ghost">Previous</button>
+                    <span id="accountPageInfo" class="muted">0 accounts</span>
+                    <button id="accountNextPage" type="button" class="ghost">Next</button>
+                  </div>
+                </div>
                 <div id="accountList" class="list"></div>
               </section>
               <section class="editor">
@@ -261,9 +288,49 @@
             <div class="layout">
               <section class="pane">
                 <h3>Description templates</h3>
+                <div class="query-tools">
+                  <label>Search<input id="templateSearch" placeholder="template name" /></label>
+                  <div class="tool-grid">
+                    <label>Platform<select id="templatePlatformFilter"><option value="">All platforms</option></select></label>
+                    <label>Sort
+                      <select id="templateSort">
+                        <option value="name">Name A-Z</option>
+                        <option value="-name">Name Z-A</option>
+                        <option value="platform">Platform A-Z</option>
+                        <option value="-created_at">Newest</option>
+                        <option value="created_at">Oldest</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="row pager-row">
+                    <button id="templatePrevPage" type="button" class="ghost">Previous</button>
+                    <span id="templatePageInfo" class="muted">0 templates</span>
+                    <button id="templateNextPage" type="button" class="ghost">Next</button>
+                  </div>
+                </div>
                 <div id="templateList" class="list"></div>
                 <div class="section-line"></div>
                 <h3>Category mappings</h3>
+                <div class="query-tools">
+                  <label>Search<input id="mappingSourceFilter" placeholder="source category" /></label>
+                  <div class="tool-grid">
+                    <label>Platform<select id="mappingPlatformFilter"><option value="">All platforms</option></select></label>
+                    <label>Sort
+                      <select id="mappingSort">
+                        <option value="source_category">Source A-Z</option>
+                        <option value="-source_category">Source Z-A</option>
+                        <option value="platform">Platform A-Z</option>
+                        <option value="platform_category">Target A-Z</option>
+                        <option value="-created_at">Newest</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="row pager-row">
+                    <button id="mappingPrevPage" type="button" class="ghost">Previous</button>
+                    <span id="mappingPageInfo" class="muted">0 mappings</span>
+                    <button id="mappingNextPage" type="button" class="ghost">Next</button>
+                  </div>
+                </div>
                 <div id="categoryMappingList" class="list"></div>
                 <div class="section-line"></div>
                 <h3>Data portability</h3>

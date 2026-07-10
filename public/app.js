@@ -28,12 +28,38 @@ const state = {
     offset: 0,
     total: 0,
   },
+  accountQuery: {
+    platform: "",
+    status: "",
+    sort: "-created_at",
+    limit: 10,
+    offset: 0,
+    total: 0,
+  },
+  templateQuery: {
+    platform: "",
+    search: "",
+    sort: "name",
+    limit: 10,
+    offset: 0,
+    total: 0,
+  },
+  mappingQuery: {
+    platform: "",
+    sourceCategory: "",
+    sort: "source_category",
+    limit: 10,
+    offset: 0,
+    total: 0,
+  },
   pendingRequests: 0,
 };
 
 const $ = (selector) => document.querySelector(selector);
 const money = (cents) => (cents / 100).toLocaleString(undefined, { style: "currency", currency: "EUR" });
 let listingSearchTimer = null;
+let templateSearchTimer = null;
+let mappingSearchTimer = null;
 
 function setBusy(delta) {
   state.pendingRequests = Math.max(0, state.pendingRequests + delta);
@@ -102,6 +128,41 @@ function jobQueryPath() {
   return `/jobs?${params.toString()}`;
 }
 
+function accountQueryPath() {
+  const params = new URLSearchParams({
+    limit: String(state.accountQuery.limit),
+    offset: String(state.accountQuery.offset),
+    sort: state.accountQuery.sort,
+  });
+  if (state.accountQuery.platform) params.set("platform", state.accountQuery.platform);
+  if (state.accountQuery.status) params.set("status", state.accountQuery.status);
+  return `/accounts?${params.toString()}`;
+}
+
+function templateQueryPath() {
+  const params = new URLSearchParams({
+    limit: String(state.templateQuery.limit),
+    offset: String(state.templateQuery.offset),
+    sort: state.templateQuery.sort,
+  });
+  if (state.templateQuery.platform) params.set("platform", state.templateQuery.platform);
+  if (state.templateQuery.search.trim()) params.set("search", state.templateQuery.search.trim());
+  return `/templates?${params.toString()}`;
+}
+
+function mappingQueryPath() {
+  const params = new URLSearchParams({
+    limit: String(state.mappingQuery.limit),
+    offset: String(state.mappingQuery.offset),
+    sort: state.mappingQuery.sort,
+  });
+  if (state.mappingQuery.platform) params.set("platform", state.mappingQuery.platform);
+  if (state.mappingQuery.sourceCategory.trim()) {
+    params.set("source_category", state.mappingQuery.sourceCategory.trim());
+  }
+  return `/category-mappings?${params.toString()}`;
+}
+
 function show(view) {
   clearAppMessage();
   document.querySelectorAll(".view").forEach((node) => node.classList.remove("active"));
@@ -123,13 +184,21 @@ function platformByKey(key) {
 }
 
 async function loadAll() {
-  const [platforms, listingResult, jobResult, accounts, templates, categoryMappings, analytics] = await Promise.all([
+  const [
+    platforms,
+    listingResult,
+    jobResult,
+    accountResult,
+    templateResult,
+    categoryMappingResult,
+    analytics,
+  ] = await Promise.all([
     api("/platforms"),
     apiWithMeta(listingQueryPath()),
     apiWithMeta(jobQueryPath()),
-    api("/accounts"),
-    api("/templates"),
-    api("/category-mappings"),
+    apiWithMeta(accountQueryPath()),
+    apiWithMeta(templateQueryPath()),
+    apiWithMeta(mappingQueryPath()),
     api("/analytics"),
   ]);
   state.platforms = platforms;
@@ -137,9 +206,14 @@ async function loadAll() {
   state.listingQuery.total = Number(listingResult.headers.get("X-Total-Count") || state.listings.length);
   state.jobs = jobResult.data;
   state.jobQuery.total = Number(jobResult.headers.get("X-Total-Count") || state.jobs.length);
-  state.accounts = accounts;
-  state.templates = templates;
-  state.categoryMappings = categoryMappings;
+  state.accounts = accountResult.data;
+  state.accountQuery.total = Number(accountResult.headers.get("X-Total-Count") || state.accounts.length);
+  state.templates = templateResult.data;
+  state.templateQuery.total = Number(templateResult.headers.get("X-Total-Count") || state.templates.length);
+  state.categoryMappings = categoryMappingResult.data;
+  state.mappingQuery.total = Number(
+    categoryMappingResult.headers.get("X-Total-Count") || state.categoryMappings.length
+  );
   state.analytics = analytics;
   if (state.selectedListingId && !state.listings.some((listing) => listing.id === state.selectedListingId)) {
     state.selectedListingId = null;
@@ -616,6 +690,15 @@ function renderAccounts() {
   $("#accountPlatform").innerHTML = platformOptions;
   $("#templatePlatform").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
   $("#mappingPlatform").innerHTML = platformOptions;
+  $("#accountPlatformFilter").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
+  $("#accountPlatformFilter").value = state.accountQuery.platform;
+  $("#accountStatusFilter").value = state.accountQuery.status;
+  $("#accountSort").value = state.accountQuery.sort;
+  const start = state.accountQuery.total ? state.accountQuery.offset + 1 : 0;
+  const end = Math.min(state.accountQuery.offset + state.accountQuery.limit, state.accountQuery.total);
+  $("#accountPageInfo").textContent = `${start}-${end} of ${state.accountQuery.total}`;
+  $("#accountPrevPage").disabled = state.accountQuery.offset === 0;
+  $("#accountNextPage").disabled = state.accountQuery.offset + state.accountQuery.limit >= state.accountQuery.total;
   $("#accountList").innerHTML = state.accounts.map((account) => `
     <article class="list-item">
       <div class="pane-head">
@@ -629,6 +712,27 @@ function renderAccounts() {
 }
 
 function renderSettings() {
+  const platformOptions = state.platforms.map((platform) => `<option value="${platform.key}">${escapeHtml(platform.name)}</option>`).join("");
+  $("#templatePlatformFilter").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
+  $("#templatePlatformFilter").value = state.templateQuery.platform;
+  $("#templateSearch").value = state.templateQuery.search;
+  $("#templateSort").value = state.templateQuery.sort;
+  const templateStart = state.templateQuery.total ? state.templateQuery.offset + 1 : 0;
+  const templateEnd = Math.min(state.templateQuery.offset + state.templateQuery.limit, state.templateQuery.total);
+  $("#templatePageInfo").textContent = `${templateStart}-${templateEnd} of ${state.templateQuery.total}`;
+  $("#templatePrevPage").disabled = state.templateQuery.offset === 0;
+  $("#templateNextPage").disabled = state.templateQuery.offset + state.templateQuery.limit >= state.templateQuery.total;
+
+  $("#mappingPlatformFilter").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
+  $("#mappingPlatformFilter").value = state.mappingQuery.platform;
+  $("#mappingSourceFilter").value = state.mappingQuery.sourceCategory;
+  $("#mappingSort").value = state.mappingQuery.sort;
+  const mappingStart = state.mappingQuery.total ? state.mappingQuery.offset + 1 : 0;
+  const mappingEnd = Math.min(state.mappingQuery.offset + state.mappingQuery.limit, state.mappingQuery.total);
+  $("#mappingPageInfo").textContent = `${mappingStart}-${mappingEnd} of ${state.mappingQuery.total}`;
+  $("#mappingPrevPage").disabled = state.mappingQuery.offset === 0;
+  $("#mappingNextPage").disabled = state.mappingQuery.offset + state.mappingQuery.limit >= state.mappingQuery.total;
+
   $("#templateList").innerHTML = state.templates.map((template) => `
     <article class="list-item">
       <div class="pane-head">
@@ -875,6 +979,102 @@ $("#jobNextPage").addEventListener("click", async () => {
   await loadAll();
 });
 
+$("#accountPlatformFilter").addEventListener("change", async (event) => {
+  state.accountQuery.platform = event.target.value;
+  state.accountQuery.offset = 0;
+  await loadAll();
+});
+
+$("#accountStatusFilter").addEventListener("change", async (event) => {
+  state.accountQuery.status = event.target.value;
+  state.accountQuery.offset = 0;
+  await loadAll();
+});
+
+$("#accountSort").addEventListener("change", async (event) => {
+  state.accountQuery.sort = event.target.value;
+  state.accountQuery.offset = 0;
+  await loadAll();
+});
+
+$("#accountPrevPage").addEventListener("click", async () => {
+  state.accountQuery.offset = Math.max(0, state.accountQuery.offset - state.accountQuery.limit);
+  await loadAll();
+});
+
+$("#accountNextPage").addEventListener("click", async () => {
+  const nextOffset = state.accountQuery.offset + state.accountQuery.limit;
+  if (nextOffset >= state.accountQuery.total) return;
+  state.accountQuery.offset = nextOffset;
+  await loadAll();
+});
+
+$("#templateSearch").addEventListener("input", (event) => {
+  clearTimeout(templateSearchTimer);
+  templateSearchTimer = setTimeout(async () => {
+    state.templateQuery.search = event.target.value;
+    state.templateQuery.offset = 0;
+    await loadAll();
+  }, 250);
+});
+
+$("#templatePlatformFilter").addEventListener("change", async (event) => {
+  state.templateQuery.platform = event.target.value;
+  state.templateQuery.offset = 0;
+  await loadAll();
+});
+
+$("#templateSort").addEventListener("change", async (event) => {
+  state.templateQuery.sort = event.target.value;
+  state.templateQuery.offset = 0;
+  await loadAll();
+});
+
+$("#templatePrevPage").addEventListener("click", async () => {
+  state.templateQuery.offset = Math.max(0, state.templateQuery.offset - state.templateQuery.limit);
+  await loadAll();
+});
+
+$("#templateNextPage").addEventListener("click", async () => {
+  const nextOffset = state.templateQuery.offset + state.templateQuery.limit;
+  if (nextOffset >= state.templateQuery.total) return;
+  state.templateQuery.offset = nextOffset;
+  await loadAll();
+});
+
+$("#mappingSourceFilter").addEventListener("input", (event) => {
+  clearTimeout(mappingSearchTimer);
+  mappingSearchTimer = setTimeout(async () => {
+    state.mappingQuery.sourceCategory = event.target.value;
+    state.mappingQuery.offset = 0;
+    await loadAll();
+  }, 250);
+});
+
+$("#mappingPlatformFilter").addEventListener("change", async (event) => {
+  state.mappingQuery.platform = event.target.value;
+  state.mappingQuery.offset = 0;
+  await loadAll();
+});
+
+$("#mappingSort").addEventListener("change", async (event) => {
+  state.mappingQuery.sort = event.target.value;
+  state.mappingQuery.offset = 0;
+  await loadAll();
+});
+
+$("#mappingPrevPage").addEventListener("click", async () => {
+  state.mappingQuery.offset = Math.max(0, state.mappingQuery.offset - state.mappingQuery.limit);
+  await loadAll();
+});
+
+$("#mappingNextPage").addEventListener("click", async () => {
+  const nextOffset = state.mappingQuery.offset + state.mappingQuery.limit;
+  if (nextOffset >= state.mappingQuery.total) return;
+  state.mappingQuery.offset = nextOffset;
+  await loadAll();
+});
+
 $("#listingList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");
   if (!item) return;
@@ -1104,6 +1304,7 @@ $("#accountForm").addEventListener("submit", async (event) => {
     }),
   });
   $("#accountName").value = "";
+  state.accountQuery.offset = 0;
   await loadAll();
 });
 
@@ -1131,6 +1332,7 @@ $("#templateForm").addEventListener("submit", async (event) => {
   delete event.currentTarget.dataset.templateId;
   $("#templateForm button[type='submit']").textContent = "Save template";
   $("#cancelTemplateEditButton").classList.add("hidden");
+  state.templateQuery.offset = 0;
   await loadAll();
 });
 
@@ -1178,6 +1380,7 @@ $("#categoryMappingForm").addEventListener("submit", async (event) => {
   $("#mappingPlatformCategory").value = "";
   delete event.currentTarget.dataset.mappingId;
   $("#categoryMappingForm button[type='submit']").textContent = "Save mapping";
+  state.mappingQuery.offset = 0;
   await loadAll();
 });
 

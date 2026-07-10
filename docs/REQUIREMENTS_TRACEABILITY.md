@@ -37,7 +37,7 @@ Legend:
 | 25 | Done | `docs/API_USAGE_AUDIT.md` | Keep updated with routes and UI changes. |
 | 26 | Partial | Template/category mapping routes and UI, `tests/test_api.py` | Add variants/automation helpers. |
 | 27 | Partial | `app/services/quality.py`, `tests/test_listing_quality.py` | Add richer per-category or optional AI provider. |
-| 28 | Partial | `app/query.py`, listing/job controls in UI | Add deeper query controls to account/template/mapping screens. |
+| 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
 | 29 | Partial | Export/import routes, `tests/test_data_portability.py` | Add image binary export and CSV tools. |
 | 30 | Partial | Data delete/export/import, audit events, retention purge | Add admin/operator audit review UI if required. |
 | 31 | Partial | Account routes/UI, eBay OAuth foundation | Add secure token setup and secret-manager exchange. |

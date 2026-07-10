@@ -680,6 +680,7 @@ def list_accounts(
     offset: int = Query(default=0, ge=0),
     platform: str | None = Query(default=None, max_length=80),
     status: str | None = Query(default=None, max_length=40),
+    sort: str = Query(default="-created_at", pattern="^-?(created_at|updated_at|display_name|platform|status)$"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -688,7 +689,19 @@ def list_accounts(
         query = query.filter(PlatformAccount.platform == platform)
     if status:
         query = query.filter(PlatformAccount.status == status)
-    query = query.order_by(PlatformAccount.created_at.desc())
+    query = apply_sort(
+        query,
+        PlatformAccount,
+        sort,
+        {
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "display_name": "display_name",
+            "platform": "platform",
+            "status": "status",
+            "default": "created_at",
+        },
+    )
     return apply_pagination(query, response, limit, offset).all()
 
 
@@ -741,6 +754,7 @@ def list_templates(
     offset: int = Query(default=0, ge=0),
     platform: str | None = Query(default=None, max_length=80),
     search: str | None = Query(default=None, max_length=120),
+    sort: str = Query(default="name", pattern="^-?(name|platform|created_at|updated_at)$"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -749,7 +763,18 @@ def list_templates(
         query = query.filter(ListingTemplate.platform == platform)
     if search:
         query = query.filter(ListingTemplate.name.ilike(f"%{search.strip()}%"))
-    query = query.order_by(ListingTemplate.name)
+    query = apply_sort(
+        query,
+        ListingTemplate,
+        sort,
+        {
+            "name": "name",
+            "platform": "platform",
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "default": "name",
+        },
+    )
     return apply_pagination(query, response, limit, offset).all()
 
 
@@ -807,6 +832,10 @@ def list_category_mappings(
     offset: int = Query(default=0, ge=0),
     platform: str | None = Query(default=None, max_length=80),
     source_category: str | None = Query(default=None, max_length=120),
+    sort: str = Query(
+        default="source_category",
+        pattern="^-?(source_category|platform|platform_category|created_at|updated_at)$",
+    ),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -815,7 +844,19 @@ def list_category_mappings(
         query = query.filter(CategoryMapping.platform == platform)
     if source_category:
         query = query.filter(CategoryMapping.source_category.ilike(f"%{source_category.strip()}%"))
-    query = query.order_by(CategoryMapping.source_category.asc(), CategoryMapping.platform.asc())
+    query = apply_sort(
+        query,
+        CategoryMapping,
+        sort,
+        {
+            "source_category": "source_category",
+            "platform": "platform",
+            "platform_category": "platform_category",
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "default": "source_category",
+        },
+    )
     return apply_pagination(query, response, limit, offset).all()
 
 
