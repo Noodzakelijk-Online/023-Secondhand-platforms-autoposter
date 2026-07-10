@@ -52,6 +52,13 @@ const state = {
     offset: 0,
     total: 0,
   },
+  jobPolling: {
+    enabled: true,
+    intervalMs: 10000,
+    timerId: null,
+    inFlight: false,
+    lastUpdatedAt: null,
+  },
   pendingRequests: 0,
 };
 
@@ -262,6 +269,50 @@ async function loadAll() {
   }
   if (!state.selectedListingId && state.listings.length) state.selectedListingId = state.listings[0].id;
   render();
+  scheduleJobPolling();
+}
+
+async function refreshJobsOnly() {
+  if (!state.token || state.jobPolling.inFlight) return;
+  state.jobPolling.inFlight = true;
+  try {
+    const [jobResult, analytics] = await Promise.all([apiWithMeta(jobQueryPath()), api("/analytics")]);
+    state.jobs = jobResult.data;
+    state.jobQuery.total = Number(jobResult.headers.get("X-Total-Count") || state.jobs.length);
+    state.analytics = analytics;
+    state.jobPolling.lastUpdatedAt = new Date();
+    renderDashboard();
+    renderJobs();
+  } catch (error) {
+    showAppError(error, "Could not refresh jobs");
+  } finally {
+    state.jobPolling.inFlight = false;
+    scheduleJobPolling();
+  }
+}
+
+function scheduleJobPolling() {
+  if (state.jobPolling.timerId) {
+    clearTimeout(state.jobPolling.timerId);
+    state.jobPolling.timerId = null;
+  }
+  if (!state.token || !state.jobPolling.enabled) {
+    renderJobPollingStatus();
+    return;
+  }
+  state.jobPolling.timerId = setTimeout(refreshJobsOnly, state.jobPolling.intervalMs);
+  renderJobPollingStatus();
+}
+
+function renderJobPollingStatus() {
+  const toggle = $("#jobPollingToggle");
+  const status = $("#jobPollingStatus");
+  if (!toggle || !status) return;
+  toggle.textContent = state.jobPolling.enabled ? "Pause live refresh" : "Resume live refresh";
+  const updated = state.jobPolling.lastUpdatedAt
+    ? `Updated ${state.jobPolling.lastUpdatedAt.toLocaleTimeString()}`
+    : "Waiting for first refresh";
+  status.textContent = state.jobPolling.enabled ? `Live refresh on - ${updated}` : "Live refresh paused";
 }
 
 function render() {
@@ -954,7 +1005,12 @@ $("#newListingButton").addEventListener("click", async () => {
 
 $("#refreshButton").addEventListener("click", loadAll);
 
-$("#refreshJobsButton").addEventListener("click", loadAll);
+$("#refreshJobsButton").addEventListener("click", refreshJobsOnly);
+
+$("#jobPollingToggle").addEventListener("click", () => {
+  state.jobPolling.enabled = !state.jobPolling.enabled;
+  scheduleJobPolling();
+});
 
 $("#listingSearch").addEventListener("input", (event) => {
   clearTimeout(listingSearchTimer);

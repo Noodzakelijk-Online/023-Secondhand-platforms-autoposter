@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 50.
-- Partial: 39.
+- Done: 51.
+- Partial: 38.
 - Not started: 0.
 
 ## Phase Status
@@ -40,7 +40,7 @@ Legend:
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Done | Idempotency keys include user, listing, revision, platform, action, account, and operation mode; UI/API expose explicit regenerate-package flow for user-controlled fresh assisted packages. |
 | 20 | Platform Rate Limiting And Cooldowns | Partial | Global and per-platform cooldowns exist with worker tests; see `docs/RATE_LIMITS.md`. Official API quota-header handling is still future work. |
-| 21 | Live Job Updates Or Polling | Partial | Jobs can be processed by a worker and listed via API; robust frontend polling/SSE still needed. |
+| 21 | Live Job Updates Or Polling | Done | Queue UI has controlled live polling for jobs and analytics with pause/resume, manual refresh, status text, and source-level regression coverage. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, and validation recovery shortcuts exist; browser evidence still needs work. |
 | 24 | UI Action Audit | Done | See `docs/UI_ACTION_AUDIT.md`; visible dashboard actions are mapped to handlers/endpoints, with browser-evidence gaps called out. |

@@ -30,7 +30,7 @@ Legend:
 | 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |
 | 19 | Done | `app/services/jobs.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_listing_revisions.py`, `tests/test_regenerate_package_ui.py` | Keep regenerate/repost semantics explicit if future official API publishing or manual completion confirmation is added. |
 | 20 | Partial | `docs/RATE_LIMITS.md`, `tests/test_worker.py` | Add official API quota-header handling. |
-| 21 | Partial | `GET /api/jobs`, queue UI in `public/app.js` | Add robust polling/SSE behavior evidence. |
+| 21 | Done | `GET /api/jobs`, queue polling in `public/app.js`, `public/index.html`, `tests/test_job_polling_ui.py` | Revisit only if SSE/WebSocket delivery becomes necessary for deployment scale. |
 | 22 | Done | Static frontend in `public/`, README architecture notes | Revisit only if frontend complexity changes. |
 | 23 | Partial | `public/index.html`, `public/app.js`, `public/styles.css` | Add executed browser QA evidence. |
 | 24 | Done | `docs/UI_ACTION_AUDIT.md`, `tests/test_ui_action_audit.py` | Keep action audit current when visible controls change. |

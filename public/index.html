@@ -198,7 +198,11 @@
           <section id="queueView" class="view">
             <div class="pane-head">
               <h3>Assisted package queue</h3>
-              <button id="refreshJobsButton" class="ghost">Refresh</button>
+              <div class="row compact-actions">
+                <span id="jobPollingStatus" class="muted">Live refresh on</span>
+                <button id="jobPollingToggle" class="ghost" type="button">Pause live refresh</button>
+                <button id="refreshJobsButton" class="ghost" type="button">Refresh</button>
+              </div>
             </div>
             <div class="query-tools">
               <div class="tool-grid">

@@ -59,6 +59,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 | UI action | Handler | Backend behavior | Status |
 | --- | --- | --- | --- |
 | Refresh jobs | `#refreshJobsButton click` | Reloads list endpoints | Wired |
+| Pause/resume live job refresh | `#jobPollingToggle click` | Local polling state; `GET /api/jobs` and analytics refresh while enabled | Wired |
 | Filter/sort/page jobs | queue query handlers | `GET /api/jobs` with query parameters | Wired |
 | Open job details | `#jobList click` | Local detail render from loaded jobs | Wired |
 | Retry job | `#retryJobButton click` | `POST /api/jobs/{id}/retry` | Wired |
