@@ -68,7 +68,7 @@ Legend:
 | 56 | Done | `app/observability.py`, `/api/metrics`, runbook | Add Prometheus/OTel only if required. |
 | 57 | Done | `app/services/analytics.py`, `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md` | Keep local-only analytics posture. |
 | 58 | Partial | User-owned data model and auth boundaries | Finish SaaS policies if multi-tenant launch is planned. |
-| 59 | Not started | No dedicated workspace review yet. | Decide whether workspaces are in or out. |
+| 59 | Done | `docs/WORKSPACES_OPTIONAL_REVIEW.md`, `tests/test_workspaces_optional_review.py` | Reopen only if team collaboration enters scope. |
 | 60 | Not started | No copy catalog or locale switching. | Add i18n decision/foundation. |
 | 61 | Done | `app/feature_flags.py`, `docs/FEATURE_FLAGS.md` | Keep flags safety-reviewed. |
 | 62 | Done | `app/services/job_state.py`, `docs/STATE_MACHINES.md` | Keep transition docs aligned. |

@@ -273,6 +273,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Progressive stabilization gates: `docs/PROGRESSIVE_STABILIZATION_GATES.md`
 - False completion prevention: `docs/FALSE_COMPLETION_PREVENTION.md`
 - Autonomy-first design: `docs/AUTONOMY_FIRST_DESIGN.md`
+- Workspaces optional review: `docs/WORKSPACES_OPTIONAL_REVIEW.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`
 - Auth deployment posture: `docs/AUTH_SECURITY_POSTURE.md`
