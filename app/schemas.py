@@ -293,12 +293,14 @@ class PublishingJobOut(BaseModel):
 class TemplateCreate(BaseModel):
     name: str
     body: str
+    variant: str = "default"
     platform: str | None = None
 
 
 class TemplateUpdate(BaseModel):
     name: str | None = None
     body: str | None = None
+    variant: str | None = None
     platform: str | None = None
 
 

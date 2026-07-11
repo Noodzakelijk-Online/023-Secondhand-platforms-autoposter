@@ -48,13 +48,13 @@ def test_account_template_and_mapping_endpoints_filter_sort_and_page():
     assert [account["display_name"] for account in disabled_accounts.json()] == ["Zeta eBay"]
 
     for payload in [
-        {"name": "Shipping eBay", "platform": "ebay", "body": "eBay shipping available."},
-        {"name": "Shipping Marktplaats", "platform": "marktplaats", "body": "Pickup preferred."},
+        {"name": "Shipping eBay", "variant": "short", "platform": "ebay", "body": "eBay shipping available."},
+        {"name": "Shipping Marktplaats", "variant": "seasonal", "platform": "marktplaats", "body": "Pickup preferred."},
         {"name": "Pickup", "platform": None, "body": "Local pickup only."},
     ]:
         assert client.post("/api/templates", headers=headers, json=payload).status_code == 200
 
-    templates = client.get("/api/templates?search=Shipping&platform=ebay&sort=-name", headers=headers)
+    templates = client.get("/api/templates?search=Shipping&platform=ebay&variant=short&sort=-name", headers=headers)
     assert templates.status_code == 200, templates.text
     assert templates.headers["X-Total-Count"] == "1"
     assert [template["name"] for template in templates.json()] == ["Shipping eBay"]
@@ -87,6 +87,7 @@ def test_frontend_exposes_extended_query_controls():
         "accountNextPage",
         "templateSearch",
         "templatePlatformFilter",
+        "templateVariantFilter",
         "templateSort",
         "templatePrevPage",
         "templateNextPage",

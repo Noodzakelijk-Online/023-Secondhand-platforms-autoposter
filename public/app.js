@@ -38,6 +38,7 @@ const state = {
   },
   templateQuery: {
     platform: "",
+    variant: "",
     search: "",
     sort: "name",
     limit: 10,
@@ -193,6 +194,7 @@ function templateQueryPath() {
     sort: state.templateQuery.sort,
   });
   if (state.templateQuery.platform) params.set("platform", state.templateQuery.platform);
+  if (state.templateQuery.variant.trim()) params.set("variant", state.templateQuery.variant.trim());
   if (state.templateQuery.search.trim()) params.set("search", state.templateQuery.search.trim());
   return `/templates?${params.toString()}`;
 }
@@ -532,7 +534,8 @@ function qualitySuggestionHtml(suggestion) {
 function renderListingTemplateOptions() {
   const options = state.templates.map((template) => {
     const platform = template.platform ? ` (${template.platform})` : "";
-    return `<option value="${template.id}">${escapeHtml(template.name)}${escapeHtml(platform)}</option>`;
+    const variant = template.variant && template.variant !== "default" ? ` - ${template.variant}` : "";
+    return `<option value="${template.id}">${escapeHtml(template.name)}${escapeHtml(variant)}${escapeHtml(platform)}</option>`;
   }).join("");
   $("#listingTemplateSelect").innerHTML = `<option value="">Choose template</option>${options}`;
 }
@@ -806,6 +809,7 @@ function renderSettings() {
   const platformOptions = state.platforms.map((platform) => `<option value="${platform.key}">${escapeHtml(platform.name)}</option>`).join("");
   $("#templatePlatformFilter").innerHTML = `<option value="">All platforms</option>${platformOptions}`;
   $("#templatePlatformFilter").value = state.templateQuery.platform;
+  $("#templateVariantFilter").value = state.templateQuery.variant;
   $("#templateSearch").value = state.templateQuery.search;
   $("#templateSort").value = state.templateQuery.sort;
   const templateStart = state.templateQuery.total ? state.templateQuery.offset + 1 : 0;
@@ -833,7 +837,7 @@ function renderSettings() {
           <button class="ghost" data-delete-template="${template.id}">Delete</button>
         </div>
       </div>
-      <span class="muted">${escapeHtml(template.platform || "All platforms")}</span>
+      <span class="muted">${escapeHtml(template.variant || "default")} - ${escapeHtml(template.platform || "All platforms")}</span>
       <p>${escapeHtml(template.body.slice(0, 160))}</p>
     </article>
   `).join("") || `<p class="muted">No templates saved.</p>`;
@@ -1118,6 +1122,15 @@ $("#templatePlatformFilter").addEventListener("change", async (event) => {
   state.templateQuery.platform = event.target.value;
   state.templateQuery.offset = 0;
   await loadAll();
+});
+
+$("#templateVariantFilter").addEventListener("input", (event) => {
+  clearTimeout(templateSearchTimer);
+  templateSearchTimer = setTimeout(async () => {
+    state.templateQuery.variant = event.target.value;
+    state.templateQuery.offset = 0;
+    await loadAll();
+  }, 250);
 });
 
 $("#templateSort").addEventListener("change", async (event) => {
@@ -1432,11 +1445,13 @@ $("#templateForm").addEventListener("submit", async (event) => {
     method: templateId ? "PATCH" : "POST",
     body: JSON.stringify({
       name: $("#templateName").value,
+      variant: $("#templateVariant").value || "default",
       platform: $("#templatePlatform").value || null,
       body: $("#templateBody").value,
     }),
   });
   $("#templateName").value = "";
+  $("#templateVariant").value = "default";
   $("#templateBody").value = "";
   $("#templatePlatform").value = "";
   delete event.currentTarget.dataset.templateId;
@@ -1448,6 +1463,7 @@ $("#templateForm").addEventListener("submit", async (event) => {
 
 $("#cancelTemplateEditButton").addEventListener("click", () => {
   $("#templateName").value = "";
+  $("#templateVariant").value = "default";
   $("#templateBody").value = "";
   $("#templatePlatform").value = "";
   delete $("#templateForm").dataset.templateId;
@@ -1461,6 +1477,7 @@ $("#templateList").addEventListener("click", async (event) => {
     const template = state.templates.find((candidate) => candidate.id === Number(editButton.dataset.editTemplate));
     if (!template) return;
     $("#templateName").value = template.name;
+    $("#templateVariant").value = template.variant || "default";
     $("#templatePlatform").value = template.platform || "";
     $("#templateBody").value = template.body;
     $("#templateForm").dataset.templateId = template.id;

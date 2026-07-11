@@ -46,7 +46,7 @@ Retry only after fixing the listing, platform account, or validation issue that 
 
 Accounts identify the platform account context, but the current app does not store raw platform passwords or active marketplace tokens.
 
-Templates help reuse description text. Category mappings translate a master listing category into a platform-specific category. Both settings screens support search/filter/sort/page controls.
+Templates help reuse description text. Use variants such as `default`, `short`, `seasonal`, or platform-specific copy styles to keep multiple reusable versions under clear labels. Category mappings translate a master listing category into a platform-specific category. Both settings screens support search/filter/sort/page controls.
 
 ## Data Portability And Privacy
 

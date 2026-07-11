@@ -294,13 +294,17 @@
               <section class="pane">
                 <h3>Description templates</h3>
                 <div class="query-tools">
-                  <label>Search<input id="templateSearch" placeholder="template name" /></label>
+                  <label>Search<input id="templateSearch" placeholder="template name or variant" /></label>
                   <div class="tool-grid">
                     <label>Platform<select id="templatePlatformFilter"><option value="">All platforms</option></select></label>
+                    <label>Variant<input id="templateVariantFilter" placeholder="default, short, seasonal" /></label>
+                  </div>
+                  <div class="tool-grid">
                     <label>Sort
                       <select id="templateSort">
                         <option value="name">Name A-Z</option>
                         <option value="-name">Name Z-A</option>
+                        <option value="variant">Variant A-Z</option>
                         <option value="platform">Platform A-Z</option>
                         <option value="-created_at">Newest</option>
                         <option value="created_at">Oldest</option>
@@ -360,6 +364,7 @@
               <section class="editor">
                 <form id="templateForm">
                   <label>Name<input id="templateName" required /></label>
+                  <label>Variant<input id="templateVariant" value="default" required /></label>
                   <label>Platform<select id="templatePlatform"><option value="">All platforms</option></select></label>
                   <label>Body<textarea id="templateBody" rows="8" required></textarea></label>
                   <div class="row compact-actions">

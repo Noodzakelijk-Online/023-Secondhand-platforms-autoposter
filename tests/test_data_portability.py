@@ -91,7 +91,12 @@ def create_portable_workspace(headers):
     template_response = client.post(
         "/api/templates",
         headers=headers,
-        json={"name": "Pickup", "platform": None, "body": "Pickup is available by appointment."},
+        json={
+            "name": "Pickup",
+            "variant": "appointment",
+            "platform": None,
+            "body": "Pickup is available by appointment.",
+        },
     )
     assert template_response.status_code == 200, template_response.text
 
@@ -119,6 +124,7 @@ def test_export_omits_private_and_secret_fields():
     assert bundle["listings"][0]["title"] == "Portable cabinet"
     assert bundle["listings"][0]["platform_mappings"][0]["platform"] == "marktplaats"
     assert bundle["platform_accounts"][0]["connection_data"] == {"store": "main"}
+    assert bundle["templates"][0]["variant"] == "appointment"
 
     serialized = json.dumps(bundle)
     assert "password_hash" not in serialized
@@ -171,6 +177,7 @@ def test_import_recreates_user_owned_business_data():
 
     templates = client.get("/api/templates", headers=target_headers).json()
     assert templates[0]["name"] == "Pickup"
+    assert templates[0]["variant"] == "appointment"
 
     mappings = client.get("/api/category-mappings", headers=target_headers).json()
     assert mappings[0]["platform_category"] == "Huis en Inrichting"

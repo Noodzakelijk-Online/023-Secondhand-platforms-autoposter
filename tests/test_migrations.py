@@ -34,10 +34,14 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "listing_revision" in job_columns
     assert "action_type" in job_columns
     assert "operation_mode" in job_columns
+    template_columns = {column["name"] for column in inspect(engine).get_columns("listing_templates")}
+    assert "variant" in template_columns
     listing_indexes = {index["name"] for index in inspect(engine).get_indexes("listings")}
     assert "ix_listings_owner_updated_at" in listing_indexes
     job_indexes = {index["name"] for index in inspect(engine).get_indexes("publishing_jobs")}
     assert "ix_publishing_jobs_due_queue" in job_indexes
+    template_indexes = {index["name"] for index in inspect(engine).get_indexes("listing_templates")}
+    assert "ix_listing_templates_owner_variant" in template_indexes
     assert "audit_events" in tables
     assert "login_throttles" in tables
     assert "platform_oauth_states" in tables

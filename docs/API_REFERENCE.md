@@ -85,9 +85,9 @@ Registered production platforms are assisted-only. A successful assisted job ret
 | `DELETE` | `/api/accounts/{account_id}` | Delete a platform account record. |
 | `POST` | `/api/accounts/ebay/oauth/start` | Start eBay OAuth consent foundation when configured. |
 | `GET` | `/api/accounts/ebay/oauth/callback` | Consume eBay OAuth callback state and record setup handoff. |
-| `GET` | `/api/templates` | List templates with search/platform/sort/page controls. |
-| `POST` | `/api/templates` | Create a template. |
-| `PATCH` | `/api/templates/{template_id}` | Update a template. |
+| `GET` | `/api/templates` | List templates with search/platform/variant/sort/page controls. |
+| `POST` | `/api/templates` | Create a template with `name`, `variant`, optional `platform`, and `body`. |
+| `PATCH` | `/api/templates/{template_id}` | Update a template, including its variant. |
 | `DELETE` | `/api/templates/{template_id}` | Delete a template. |
 | `GET` | `/api/category-mappings` | List mappings with source/platform/sort/page controls. |
 | `POST` | `/api/category-mappings` | Create or upsert a mapping. |

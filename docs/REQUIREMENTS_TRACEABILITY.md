@@ -35,7 +35,7 @@ Legend:
 | 23 | Partial | `public/index.html`, `public/app.js`, `public/styles.css` | Add executed browser QA evidence. |
 | 24 | Done | `docs/UI_ACTION_AUDIT.md`, `tests/test_ui_action_audit.py` | Keep action audit current when visible controls change. |
 | 25 | Done | `docs/API_USAGE_AUDIT.md` | Keep updated with routes and UI changes. |
-| 26 | Partial | Template/category mapping routes and UI, `tests/test_api.py` | Add variants/automation helpers. |
+| 26 | Done | Template variants in `app/models.py`, `app/schemas.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_template_variants.py` | Keep template variant controls aligned with export/import and UI filters. |
 | 27 | Partial | `app/services/quality.py`, `tests/test_listing_quality.py` | Add richer per-category or optional AI provider. |
 | 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
 | 29 | Partial | Export/import routes, `tests/test_data_portability.py` | Add image binary export and CSV tools. |

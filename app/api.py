@@ -758,22 +758,27 @@ def list_templates(
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     platform: str | None = Query(default=None, max_length=80),
+    variant: str | None = Query(default=None, max_length=80),
     search: str | None = Query(default=None, max_length=120),
-    sort: str = Query(default="name", pattern="^-?(name|platform|created_at|updated_at)$"),
+    sort: str = Query(default="name", pattern="^-?(name|variant|platform|created_at|updated_at)$"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     query = db.query(ListingTemplate).filter(ListingTemplate.owner_id == user.id)
     if platform:
         query = query.filter(ListingTemplate.platform == platform)
+    if variant:
+        query = query.filter(ListingTemplate.variant == variant)
     if search:
-        query = query.filter(ListingTemplate.name.ilike(f"%{search.strip()}%"))
+        term = f"%{search.strip()}%"
+        query = query.filter((ListingTemplate.name.ilike(term)) | (ListingTemplate.variant.ilike(term)))
     query = apply_sort(
         query,
         ListingTemplate,
         sort,
         {
             "name": "name",
+            "variant": "variant",
             "platform": "platform",
             "created_at": "created_at",
             "updated_at": "updated_at",
@@ -1015,7 +1020,7 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
             for account in accounts
         ],
         "templates": [
-            {"name": template.name, "platform": template.platform, "body": template.body}
+            {"name": template.name, "variant": template.variant, "platform": template.platform, "body": template.body}
             for template in templates
         ],
         "category_mappings": [
@@ -1080,12 +1085,14 @@ def import_data(
             .filter(
                 ListingTemplate.owner_id == user.id,
                 ListingTemplate.name == template_payload.name,
+                ListingTemplate.variant == template_payload.variant,
                 ListingTemplate.platform == template_payload.platform,
             )
             .one_or_none()
         )
         if template:
             template.body = template_payload.body
+            template.variant = template_payload.variant
             result.templates_updated += 1
         else:
             db.add(ListingTemplate(owner_id=user.id, **template_payload.model_dump()))

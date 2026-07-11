@@ -129,12 +129,14 @@ def test_accounts_and_templates():
     template_response = client.post(
         "/api/templates",
         headers=headers,
-        json={"name": "Default", "platform": None, "body": "Available for pickup in Arnhem."},
+        json={"name": "Default", "variant": "pickup", "platform": None, "body": "Available for pickup in Arnhem."},
     )
     assert template_response.status_code == 200, template_response.text
 
     assert client.get("/api/accounts", headers=headers).json()[0]["platform"] == "ebay"
-    assert client.get("/api/templates", headers=headers).json()[0]["name"] == "Default"
+    template = client.get("/api/templates", headers=headers).json()[0]
+    assert template["name"] == "Default"
+    assert template["variant"] == "pickup"
 
     account = client.get("/api/accounts", headers=headers).json()[0]
     delete_response = client.delete(f"/api/accounts/{account['id']}", headers=headers)
@@ -155,10 +157,11 @@ def test_templates_can_be_updated_deleted_and_are_owner_scoped():
     update_response = client.patch(
         f"/api/templates/{template_id}",
         headers=owner_headers,
-        json={"name": "Shipping", "platform": "ebay", "body": "Shipping available."},
+        json={"name": "Shipping", "variant": "seasonal", "platform": "ebay", "body": "Shipping available."},
     )
     assert update_response.status_code == 200, update_response.text
     assert update_response.json()["name"] == "Shipping"
+    assert update_response.json()["variant"] == "seasonal"
     assert update_response.json()["platform"] == "ebay"
     assert update_response.json()["body"] == "Shipping available."
 

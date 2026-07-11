@@ -261,11 +261,15 @@ class ListingDraft(Base, TimestampMixin):
 
 class ListingTemplate(Base, TimestampMixin):
     __tablename__ = "listing_templates"
-    __table_args__ = (Index("ix_listing_templates_owner_platform_name", "owner_id", "platform", "name"),)
+    __table_args__ = (
+        Index("ix_listing_templates_owner_platform_name", "owner_id", "platform", "name"),
+        Index("ix_listing_templates_owner_variant", "owner_id", "variant"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column(String(120))
+    variant: Mapped[str] = mapped_column(String(80), default="default")
     platform: Mapped[str | None] = mapped_column(String(80), nullable=True)
     body: Mapped[str] = mapped_column(Text)
 
