@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 64.
-- Partial: 25.
+- Done: 65.
+- Partial: 24.
 - Not started: 0.
 
 ## Phase Status
@@ -61,7 +61,7 @@ Legend:
 | 39 | Fake Provider Lab For Testing Only | Done | See `docs/FAKE_PROVIDER_LAB.md`; the fake official API provider lives under `tests/` and is not registered in production adapters. |
 | 40 | No Mocks In Production Audit | Done | See `docs/NO_MOCKS_PRODUCTION_AUDIT.md`; tests ensure registered adapters do not fake published success. |
 | 41 | Testing Strategy | Done | See `docs/TESTING_STRATEGY.md`; remaining browser/concurrency/PostgreSQL gaps are tracked there. |
-| 42 | Acceptance Tests | Partial | Smoke flow exists; full acceptance suite needed. |
+| 42 | Acceptance Tests | Done | See `docs/ACCEPTANCE_TESTS.md`; API-level seller acceptance workflow covers setup, listing, image, quality, validation, assisted package queue, analytics, export/import, and audit activity. |
 | 43 | End-To-End Workflows | Partial | API E2E-like smoke exists; browser E2E needed. |
 | 44 | Code Quality Tooling | Done | Ruff is pinned/configured in `pyproject.toml` and enforced by `python scripts/verify.py`. |
 | 45 | CI/CD Quality Gates | Done | `.github/workflows/verify.yml` runs `python scripts/verify.py` on pushes and pull requests to `main`. |

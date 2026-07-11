@@ -51,7 +51,7 @@ Legend:
 | 39 | Done | `docs/FAKE_PROVIDER_LAB.md`, `tests/fake_provider_lab.py` | Keep fake providers out of production registry. |
 | 40 | Done | `docs/NO_MOCKS_PRODUCTION_AUDIT.md`, `tests/test_no_mocks_production.py` | Re-run when adapters change. |
 | 41 | Done | `docs/TESTING_STRATEGY.md` | Update strategy as coverage changes. |
-| 42 | Partial | API smoke tests in `tests/test_api.py` | Add full browser acceptance suite. |
+| 42 | Done | `docs/ACCEPTANCE_TESTS.md`, `tests/test_acceptance_workflow.py`, `tests/test_api.py` | Keep acceptance workflow aligned with seller-critical API behavior; browser E2E remains tracked separately. |
 | 43 | Partial | Worker/API smoke coverage | Add true browser E2E workflows. |
 | 44 | Done | `pyproject.toml`, `scripts/verify.py` | Consider type-check gate later. |
 | 45 | Done | `.github/workflows/verify.yml` | Keep CI matrix aligned with verify script. |
