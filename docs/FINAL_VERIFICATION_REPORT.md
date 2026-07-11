@@ -16,7 +16,7 @@ Result: passed from the working checkout. See `docs/FRESH_CLONE_DRY_RUN.md` for 
 
 - Ruff lint: passed.
 - Python compile checks: passed.
-- Pytest suite: passed, 144 tests.
+- Pytest suite: passed, 145 tests.
 - Doctor diagnostics: passed with local-development warnings.
 
 ## Expected Local Warnings

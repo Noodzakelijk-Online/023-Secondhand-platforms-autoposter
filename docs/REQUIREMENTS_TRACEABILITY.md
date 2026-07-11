@@ -67,7 +67,7 @@ Legend:
 | 55 | Done | `docs/BACKUP_RESTORE.md` | Validate restore against deployment target. |
 | 56 | Done | `app/observability.py`, `/api/metrics`, runbook | Add Prometheus/OTel only if required. |
 | 57 | Done | `app/services/analytics.py`, `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md` | Keep local-only analytics posture. |
-| 58 | Partial | User-owned data model and auth boundaries | Finish SaaS policies if multi-tenant launch is planned. |
+| 58 | Done | `docs/SAAS_READINESS.md`, `GET /api/account/readiness`, `tests/test_saas_readiness.py` | Reopen only if subscriptions, organizations, seats, or role-based team access enter scope. |
 | 59 | Done | `docs/WORKSPACES_OPTIONAL_REVIEW.md`, `tests/test_workspaces_optional_review.py` | Reopen only if team collaboration enters scope. |
 | 60 | Partial | `app/services/localization.py`, `/api/localization`, `docs/INTERNATIONALIZATION.md`, `tests/test_internationalization.py` | Add full frontend copy catalog, user locale preference, translated messages, and browser evidence. |
 | 61 | Done | `app/feature_flags.py`, `docs/FEATURE_FLAGS.md` | Keep flags safety-reviewed. |

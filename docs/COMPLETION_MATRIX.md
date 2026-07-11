@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 66.
-- Partial: 23.
+- Done: 67.
+- Partial: 22.
 - Not started: 0.
 
 ## Phase Status
@@ -77,7 +77,7 @@ Legend:
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
 | 56 | Observability And Maintenance | Done | Job logs, request logs, JSON/text log formatting, a lightweight `/api/metrics` snapshot, and operator runbook guidance exist. |
 | 57 | Product Analytics Local-First | Done | User-scoped local analytics endpoint and dashboard insights derive aggregates from listings, mappings, jobs, and quality checks without external tracking; see `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`. |
-| 58 | SaaS Readiness Without Forcing Billing | Partial | User model exists; SaaS boundaries not complete. |
+| 58 | SaaS Readiness Without Forcing Billing | Done | See `docs/SAAS_READINESS.md`; authenticated account readiness exposes owner-scoped usage, personal-account scope, no billing requirement, and workspace deferral. |
 | 59 | Workspaces Optional Review | Done | See `docs/WORKSPACES_OPTIONAL_REVIEW.md`; workspaces are explicitly deferred, with future model/role/export/audit requirements captured. |
 | 60 | Internationalization | Partial | Locale configuration, startup validation, `/api/localization`, and `docs/INTERNATIONALIZATION.md` exist; visible UI copy is still mostly English and full locale catalogs are future work. |
 | 61 | Feature Flags | Done | `app.feature_flags` centralizes runtime flags, production safety checks, doctor output, and docs. |

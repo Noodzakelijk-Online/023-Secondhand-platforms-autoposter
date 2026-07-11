@@ -39,3 +39,5 @@ Required foundations:
 ## Current Status
 
 Workspaces are deliberately deferred. The app should continue improving single-account owner isolation and assisted-posting workflows before adding team collaboration.
+
+The current single-account SaaS boundary is exposed through `GET /api/account/readiness` and documented in `docs/SAAS_READINESS.md`.

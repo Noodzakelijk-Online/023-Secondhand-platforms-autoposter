@@ -31,6 +31,7 @@ Use `request_id` when matching browser reports to server logs. Retry only when `
 | `GET` | `/api/localization` | Current locale metadata and catalog status. |
 | `GET` | `/api/metrics` | Lightweight operational counts. |
 | `GET` | `/api/diagnostics` | Doctor checks plus local object counts. |
+| `GET` | `/api/account/readiness` | Authenticated personal-account readiness contract with owner-scoped usage counts and no billing requirement. |
 
 ## Authentication
 

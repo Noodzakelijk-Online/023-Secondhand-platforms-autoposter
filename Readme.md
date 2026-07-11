@@ -284,6 +284,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Automated accessibility audit: `docs/ACCESSIBILITY_AUDIT.md`
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Product analytics local-first: `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`
+- SaaS readiness without billing: `docs/SAAS_READINESS.md`
 - Requirements traceability: `docs/REQUIREMENTS_TRACEABILITY.md`
 - Task graph and execution: `docs/TASK_GRAPH_AND_EXECUTION.md`
 - Progressive stabilization gates: `docs/PROGRESSIVE_STABILIZATION_GATES.md`

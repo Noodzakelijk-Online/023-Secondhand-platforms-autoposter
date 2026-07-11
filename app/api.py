@@ -34,6 +34,8 @@ from app.models import (
 from app.query import apply_pagination, apply_sort, listing_search_filter
 from app.rate_limit import check_login_rate_limit, record_failed_login, record_successful_login
 from app.schemas import (
+    AccountReadiness,
+    AccountUsage,
     AnalyticsResult,
     AuditEventOut,
     AuthLogin,
@@ -192,6 +194,24 @@ def localization() -> dict:
 @router.get("/analytics", response_model=AnalyticsResult, tags=["Diagnostics"])
 def analytics(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return build_user_analytics(db, user.id)
+
+
+@router.get("/account/readiness", response_model=AccountReadiness, tags=["Account"])
+def account_readiness(user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> AccountReadiness:
+    listing_ids = [id_ for (id_,) in db.query(Listing.id).filter(Listing.owner_id == user.id).all()]
+    job_count = 0
+    if listing_ids:
+        job_count = db.query(PublishingJob).filter(PublishingJob.listing_id.in_(listing_ids)).count()
+    return AccountReadiness(
+        user=UserOut.model_validate(user),
+        usage=AccountUsage(
+            listings=len(listing_ids),
+            publishing_jobs=job_count,
+            platform_accounts=db.query(PlatformAccount).filter(PlatformAccount.owner_id == user.id).count(),
+            templates=db.query(ListingTemplate).filter(ListingTemplate.owner_id == user.id).count(),
+            category_mappings=db.query(CategoryMapping).filter(CategoryMapping.owner_id == user.id).count(),
+        ),
+    )
 
 
 @router.post("/auth/register", response_model=AuthToken, tags=["Auth"])

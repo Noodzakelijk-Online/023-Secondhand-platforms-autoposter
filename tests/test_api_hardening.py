@@ -99,7 +99,7 @@ def test_metrics_returns_operational_counts():
     assert payload["users_total"] == before["users_total"] + 1
     assert payload["listings_total"] == before["listings_total"] + 2
     assert payload["publishing_jobs_total"] == before["publishing_jobs_total"]
-    assert payload["platform_accounts_total"] == 0
+    assert payload["platform_accounts_total"] == before["platform_accounts_total"]
     assert payload["listing_statuses"]["draft"] == before["listing_statuses"].get("draft", 0) + 1
     assert payload["listing_statuses"]["ready"] == before["listing_statuses"].get("ready", 0) + 1
     assert payload["publishing_job_statuses"] == before["publishing_job_statuses"]

@@ -88,6 +88,24 @@ class UserOut(BaseModel):
     name: str
 
 
+class AccountUsage(BaseModel):
+    listings: int = 0
+    publishing_jobs: int = 0
+    platform_accounts: int = 0
+    templates: int = 0
+    category_mappings: int = 0
+
+
+class AccountReadiness(BaseModel):
+    user: UserOut
+    scope: str = "personal_account"
+    billing_required: bool = False
+    billing_status: str = "not_configured"
+    workspaces_enabled: bool = False
+    data_isolation: str = "owner_id"
+    usage: AccountUsage
+
+
 class AuthToken(BaseModel):
     token: str
     user: UserOut
