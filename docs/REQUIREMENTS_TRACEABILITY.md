@@ -95,7 +95,7 @@ Legend:
 | 83 | Done | `docs/API_USAGE_AUDIT.md` | Keep purposeful endpoint mapping current. |
 | 84 | Done | `docs/FALSE_COMPLETION_PREVENTION.md`, `tests/test_false_completion_prevention.py` | Keep blocked claims aligned with release readiness status. |
 | 85 | Partial | `docs/FINAL_NO_EXCUSES_SEARCH.md`, `tests/test_final_no_excuses_search.py` | Repeat the no-excuses search at final release time after launch evidence exists. |
-| 86 | Partial | Local verification gate passes | Perform and document fresh-clone dry run. |
+| 86 | Done | `docs/FRESH_CLONE_DRY_RUN.md` | Repeat after release-blocking changes or immediately before final launch. |
 | 87 | Partial | Completion matrix and product definition | Final acceptance remains pending. |
 | 88 | Partial | Prior turn summaries and docs | Final release response pending. |
 

@@ -9,7 +9,7 @@ def test_final_no_excuses_search_is_marked_pre_final_until_release_evidence_exis
         "not the final release search",
         "not release-ready",
         "Real non-technical user walkthrough is not executed",
-        "Fresh-clone dry run is not documented as final",
+        "Deployment database, worker, backup, production secrets, and CORS evidence are missing",
         "remains partial",
     ]
     for phrase in required_phrases:

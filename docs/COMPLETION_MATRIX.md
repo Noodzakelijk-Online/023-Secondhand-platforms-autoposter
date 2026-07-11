@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 61.
-- Partial: 28.
+- Done: 62.
+- Partial: 27.
 - Not started: 0.
 
 ## Phase Status
@@ -105,6 +105,6 @@ Legend:
 | 83 | No Backend Endpoint Without Frontend Or Purpose | Done | Current endpoints support visible app flows or documented API use. |
 | 84 | False Completion Prevention | Done | See `docs/FALSE_COMPLETION_PREVENTION.md`; tests guard required anti-overclaim wording for release readiness, assisted posting, eBay API, and fresh-clone evidence. |
 | 85 | Final No-Excuses Search | Partial | See `docs/FINAL_NO_EXCUSES_SEARCH.md`; pre-final overclaim/secret searches were run, but the true final search must be repeated near release. |
-| 86 | Final Fresh-Clone Dry Run | Partial | Local tests run; fresh clone dry run not documented as final. |
+| 86 | Final Fresh-Clone Dry Run | Done | See `docs/FRESH_CLONE_DRY_RUN.md`; a clean clone of the pushed repository at `ca42634` passed `python scripts\verify.py` with 139 tests. |
 | 87 | Final Acceptance Criteria | Partial | Core acceptance partially met; full PDF criteria not complete. |
 | 88 | Final Response Requirements | Partial | Prior final response covered current work; final release response pending. |

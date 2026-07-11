@@ -1,6 +1,6 @@
 # Final No-Excuses Search
 
-This is a pre-final search, not the final release search. The project is still not release-ready, so the real final search must be repeated after browser, deployment, fresh-clone, and acceptance evidence exists.
+This is a pre-final search, not the final release search. The project is still not release-ready, so the real final search must be repeated after browser, deployment, and acceptance evidence exists.
 
 ## Search Date
 
@@ -29,7 +29,6 @@ rg -n "password|access_token|refresh_token|client_secret|LASTPASS|COOKIE|SESSION
 
 - Real non-technical user walkthrough is not executed.
 - Browser, responsive, and accessibility QA evidence is not executed.
-- Fresh-clone dry run is not documented as final.
 - Deployment database, worker, backup, production secrets, and CORS evidence are missing.
 - eBay official API publishing remains unimplemented.
 - Several phases remain `Partial`.

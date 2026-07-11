@@ -293,6 +293,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Product value review: `docs/PRODUCT_VALUE_REVIEW.md`
 - Product realism review: `docs/PRODUCT_REALISM_REVIEW.md`
 - Non-technical user simulation: `docs/NON_TECHNICAL_USER_SIMULATION.md`
+- Fresh-clone dry run: `docs/FRESH_CLONE_DRY_RUN.md`
 - Final no-excuses search: `docs/FINAL_NO_EXCUSES_SEARCH.md`
 - Backup and restore: `docs/BACKUP_RESTORE.md`
 - Official API credential checklist: `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md`

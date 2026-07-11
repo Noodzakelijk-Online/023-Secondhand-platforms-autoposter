@@ -18,7 +18,7 @@ This register tracks known debt that remains after the current implementation sl
 | TD-012 | Medium | Accessibility/browser QA | 52, 53, 54 | Manual browser/accessibility checklist exists, but executed browser evidence and automated accessibility smoke checks are not captured. | Run the checklist in `docs/BROWSER_ACCESSIBILITY_QA.md`, capture findings, then add automated accessibility smoke checks if tooling is introduced. |
 | TD-013 | Low | Legacy scripts | 17 | Legacy runtime scripts and the duplicate old source tree are separated from the app root. | Keep the archive only while it has reference value; remove it later by explicit product decision. |
 | TD-014 | Low | Internationalization | 60 | UI text is English-only and hardcoded. | Add copy catalog decision once product language requirements are settled. |
-| TD-015 | Low | Release evidence | 70, 84, 85, 86, 87, 88 | Local final verification report exists, but fresh-clone dry run, browser evidence, and deployment-specific launch evidence are not complete. | Run a fresh-clone dry run and capture production-target launch evidence when environment details are available. |
+| TD-015 | Low | Release evidence | 70, 84, 85, 87, 88 | Local and fresh-clone verification reports exist, but browser evidence and deployment-specific launch evidence are not complete. | Capture production-target launch evidence when environment details are available. |
 | TD-016 | Low | Listing quality | 27 | The listing quality assistant has local category-specific heuristics for common categories, but does not use external AI or marketplace-specific search data. | Expand heuristics from real seller outcomes; add optional AI only after privacy, cost, and prompt-safety requirements are defined. |
 
 ## Maintenance Rules
