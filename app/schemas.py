@@ -398,6 +398,15 @@ class DataImportResult(BaseModel):
     skipped: int = 0
 
 
+class AuditEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    action: str
+    event_data: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+
+
 class ValidationResult(BaseModel):
     platform: str
     ready: bool

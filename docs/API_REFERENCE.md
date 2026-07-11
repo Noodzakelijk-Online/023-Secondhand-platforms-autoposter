@@ -104,6 +104,12 @@ Registered production platforms are assisted-only. A successful assisted job ret
 | `POST` | `/api/import/listings.csv` | Import owned listings from the supported CSV format. |
 | `GET` | `/api/export/images.zip` | Export owned uploaded image binaries as a ZIP with `manifest.json`. |
 
+## Privacy
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/audit-events` | Review the signed-in user's sanitized privacy activity with optional `action`, `limit`, and `offset` controls. |
+
 ## Pagination
 
 List endpoints return `X-Total-Count`, `X-Limit`, and `X-Offset` headers. Use `limit` and `offset` to page through results.

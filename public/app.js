@@ -7,6 +7,7 @@ const state = {
   accounts: [],
   templates: [],
   categoryMappings: [],
+  auditEvents: [],
   analytics: null,
   validationResults: {},
   qualityResult: null,
@@ -268,6 +269,7 @@ async function loadAll() {
     accountResult,
     templateResult,
     categoryMappingResult,
+    auditResult,
     analytics,
   ] = await Promise.all([
     api("/platforms"),
@@ -276,6 +278,7 @@ async function loadAll() {
     apiWithMeta(accountQueryPath()),
     apiWithMeta(templateQueryPath()),
     apiWithMeta(mappingQueryPath()),
+    api("/audit-events?limit=8"),
     api("/analytics"),
   ]);
   state.platforms = platforms;
@@ -288,6 +291,7 @@ async function loadAll() {
   state.templates = templateResult.data;
   state.templateQuery.total = Number(templateResult.headers.get("X-Total-Count") || state.templates.length);
   state.categoryMappings = categoryMappingResult.data;
+  state.auditEvents = auditResult;
   state.mappingQuery.total = Number(
     categoryMappingResult.headers.get("X-Total-Count") || state.categoryMappings.length
   );
@@ -701,6 +705,13 @@ function formatFieldValue(value) {
   return String(value);
 }
 
+function formatDateTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString();
+}
+
 function missingFieldRecoveryHtml(field) {
   return `
     <div class="recovery-row">
@@ -881,6 +892,16 @@ function renderSettings() {
       <span class="muted">${escapeHtml(mapping.platform)} -> ${escapeHtml(mapping.platform_category)}</span>
     </article>
   `).join("") || `<p class="muted">No category mappings saved.</p>`;
+
+  $("#auditEventList").innerHTML = state.auditEvents.map((event) => `
+    <article class="list-item">
+      <div class="pane-head">
+        <strong>${escapeHtml(formatFieldLabel(event.action))}</strong>
+        <span class="muted">${escapeHtml(formatDateTime(event.created_at))}</span>
+      </div>
+      <pre>${escapeHtml(JSON.stringify(event.event_data || {}, null, 2))}</pre>
+    </article>
+  `).join("") || `<p class="muted">No privacy activity yet.</p>`;
 }
 
 function renderDiagnostics(result) {

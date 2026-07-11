@@ -54,6 +54,8 @@ Use Export JSON to download portable listing/configuration data. The JSON export
 
 Delete my account data removes owned listings, jobs, templates, mappings, accounts, sessions, and uploaded local image files.
 
+The Privacy activity list shows recent sanitized export, import, image export, and deletion-related audit events for your own account. It does not show raw exported data, platform secrets, or email hashes.
+
 ## Diagnostics
 
 Run diagnostics from Settings to inspect startup safety, database, migrations, upload directory, platform adapters, and legacy script isolation. A local-development warning can be acceptable, but production launch requires the release readiness gate.

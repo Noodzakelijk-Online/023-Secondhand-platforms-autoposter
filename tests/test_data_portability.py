@@ -265,6 +265,38 @@ def test_image_zip_export_contains_manifest_and_owned_images():
         db.close()
 
 
+def test_privacy_audit_events_are_reviewable_and_owner_scoped():
+    owner_headers = auth_headers("audit-owner")
+    other_headers = auth_headers("audit-other")
+    client.get("/api/export", headers=owner_headers)
+    client.get("/api/export/listings.csv", headers=owner_headers)
+    client.get("/api/export", headers=other_headers)
+
+    response = client.get("/api/audit-events?limit=10", headers=owner_headers)
+
+    assert response.status_code == 200, response.text
+    assert response.headers["X-Total-Count"] == "2"
+    events = response.json()
+    assert {event["action"] for event in events} == {"data_exported", "listings_csv_exported"}
+    serialized = json.dumps(events)
+    assert "audit-other" not in serialized
+    assert "user_email_hash" not in serialized
+    assert "user_id" not in serialized
+
+    filtered = client.get("/api/audit-events?action=listings_csv_exported", headers=owner_headers)
+    assert filtered.status_code == 200, filtered.text
+    assert [event["action"] for event in filtered.json()] == ["listings_csv_exported"]
+
+
+def test_frontend_exposes_privacy_activity_review():
+    html = Path("public/index.html").read_text(encoding="utf-8")
+    script = Path("public/app.js").read_text(encoding="utf-8")
+
+    assert 'id="auditEventList"' in html
+    assert "/audit-events?limit=8" in script
+    assert "state.auditEvents" in script
+
+
 def test_delete_me_purges_owned_data_and_revokes_session():
     headers = auth_headers("delete")
     create_portable_workspace(headers)

@@ -16,6 +16,7 @@ from app.database import SessionLocal, get_db
 from app.demo import demo_mode_enabled, ensure_demo_user
 from app.doctor import run_checks
 from app.models import (
+    AuditEvent,
     CategoryMapping,
     Listing,
     ListingDraft,
@@ -34,6 +35,7 @@ from app.query import apply_pagination, apply_sort, listing_search_filter
 from app.rate_limit import check_login_rate_limit, record_failed_login, record_successful_login
 from app.schemas import (
     AnalyticsResult,
+    AuditEventOut,
     AuthLogin,
     AuthRegister,
     AuthToken,
@@ -965,6 +967,22 @@ def delete_category_mapping(
         raise HTTPException(status_code=404, detail="Category mapping not found")
     db.delete(category_mapping)
     db.commit()
+
+
+@router.get("/audit-events", response_model=list[AuditEventOut], tags=["Privacy"])
+def list_audit_events(
+    response: Response,
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    action: str | None = Query(default=None, max_length=80),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(AuditEvent).filter(AuditEvent.user_id == user.id)
+    if action:
+        query = query.filter(AuditEvent.action == action)
+    query = query.order_by(AuditEvent.created_at.desc(), AuditEvent.id.desc())
+    return apply_pagination(query, response, limit, offset).all()
 
 
 def _adapter_available(platform: str) -> bool:

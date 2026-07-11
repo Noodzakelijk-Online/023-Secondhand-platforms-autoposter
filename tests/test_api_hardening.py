@@ -62,6 +62,7 @@ def test_openapi_routes_are_grouped_with_tags():
     assert paths["/api/jobs"]["get"]["tags"] == ["Jobs"]
     assert paths["/api/templates/{template_id}"]["patch"]["tags"] == ["Templates"]
     assert paths["/api/export"]["get"]["tags"] == ["Data portability"]
+    assert paths["/api/audit-events"]["get"]["tags"] == ["Privacy"]
 
 
 def test_metrics_returns_operational_counts():

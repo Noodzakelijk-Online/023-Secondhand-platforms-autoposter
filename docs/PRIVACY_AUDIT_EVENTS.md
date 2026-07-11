@@ -1,11 +1,14 @@
 # Privacy Audit Events
 
-The app records local audit events for user data export, data import, and self-service account deletion. These events are intended for operator troubleshooting and privacy accountability without storing exported payloads, raw platform secrets, or raw user email addresses.
+The app records local audit events for user data export, data import, CSV/image portability, and self-service account deletion. These events support privacy accountability without storing exported payloads, raw platform secrets, or raw user email addresses.
 
 ## Recorded Actions
 
 - `data_exported`: written after a successful JSON export.
 - `data_imported`: written after import payload processing and before commit.
+- `listings_csv_exported`: written after a successful listing CSV export.
+- `listings_csv_imported`: written after a successful listing CSV import.
+- `images_exported`: written after a successful image ZIP export.
 - `account_deleted`: written before owned user data is purged, and retained after the user row is removed.
 
 ## Stored Fields
@@ -16,6 +19,8 @@ The app records local audit events for user data export, data import, and self-s
 - `event_data`: aggregate counts only, such as listings exported or images deleted.
 - `created_at`: event timestamp.
 
+The dashboard Settings privacy panel shows the signed-in user's own recent privacy activity through `GET /api/audit-events`. The response excludes `user_id` and `user_email_hash`.
+
 ## Boundaries
 
 - Audit events do not store passwords, bearer tokens, platform access tokens, platform secret references, exported listing content, imported JSON payloads, or raw email addresses.
@@ -23,4 +28,4 @@ The app records local audit events for user data export, data import, and self-s
 - `AUDIT_RETENTION_DAYS` controls how long audit events are kept before operator purging. Default: `365`.
 - `AUDIT_RETENTION_DAYS=0` disables purging.
 - Run `python -m app.audit_retention` from the application environment to purge expired audit events. Schedule it with the same database configuration used by the web process.
-- There is not yet an admin UI for reviewing audit events; that remains release-hardening work.
+- There is no cross-user admin audit console. Add one only with explicit workspace/operator roles.
