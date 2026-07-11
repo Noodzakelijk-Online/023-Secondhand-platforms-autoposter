@@ -28,7 +28,7 @@ rg -n "password|access_token|refresh_token|client_secret|LASTPASS|COOKIE|SESSION
 ## Current Blockers To A True Final Search
 
 - Real non-technical user walkthrough is not executed.
-- Browser, responsive, and accessibility QA evidence is not executed.
+- Browser, responsive, and full manual accessibility QA evidence is not executed.
 - Deployment database, worker, backup, production secrets, and CORS evidence are missing.
 - eBay official API publishing remains unimplemented.
 - Several phases remain `Partial`.

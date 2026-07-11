@@ -38,5 +38,5 @@ It is not yet a final client launch release because the release readiness checkl
 - production secrets and CORS confirmation
 - worker process confirmation
 - backup/restore evidence
-- browser, responsive, and accessibility walkthroughs
+- browser, responsive, and full manual accessibility walkthroughs
 - platform compliance acceptance

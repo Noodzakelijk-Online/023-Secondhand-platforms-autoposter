@@ -62,7 +62,7 @@ Legend:
 | 50 | Done | `docs/RED_TEAM_REVIEW.md` | Re-review after sensitive changes. |
 | 51 | Done | `docs/ADVERSARIAL_TEST_REPORT.md` | Re-run adversarial review near release. |
 | 52 | Partial | `docs/BROWSER_ACCESSIBILITY_QA.md` | Execute walkthrough and record evidence. |
-| 53 | Partial | Accessibility checklist in docs | Add automated or executed accessibility evidence. |
+| 53 | Done | `docs/ACCESSIBILITY_AUDIT.md`, `tests/test_accessibility_audit.py`, `public/index.html` | Keep smoke checks aligned with new visible controls and still execute the broader browser checklist before launch. |
 | 54 | Partial | Responsive checklist in docs | Execute browser matrix. |
 | 55 | Done | `docs/BACKUP_RESTORE.md` | Validate restore against deployment target. |
 | 56 | Done | `app/observability.py`, `/api/metrics`, runbook | Add Prometheus/OTel only if required. |

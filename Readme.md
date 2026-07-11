@@ -281,6 +281,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Technical debt register: `docs/TECHNICAL_DEBT_REGISTER.md`
 - Testing strategy: `docs/TESTING_STRATEGY.md`
 - Browser and accessibility QA: `docs/BROWSER_ACCESSIBILITY_QA.md`
+- Automated accessibility audit: `docs/ACCESSIBILITY_AUDIT.md`
 - Operator runbook: `docs/OPERATOR_RUNBOOK.md`
 - Product analytics local-first: `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`
 - Requirements traceability: `docs/REQUIREMENTS_TRACEABILITY.md`

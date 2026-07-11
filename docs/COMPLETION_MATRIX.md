@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 62.
-- Partial: 27.
+- Done: 63.
+- Partial: 26.
 - Not started: 0.
 
 ## Phase Status
@@ -72,7 +72,7 @@ Legend:
 | 50 | Red Team Review | Done | See `docs/RED_TEAM_REVIEW.md`. |
 | 51 | Adversarial Test Report | Done | See `docs/ADVERSARIAL_TEST_REPORT.md`. |
 | 52 | UI/UX Debugging Rounds | Partial | Manual browser QA checklist exists in `docs/BROWSER_ACCESSIBILITY_QA.md`; executed walkthrough evidence still needed. |
-| 53 | Accessibility | Partial | Checklist covers labels, focus, keyboard, contrast, zoom, and status semantics; automated or executed audit evidence still needed. |
+| 53 | Accessibility | Done | See `docs/ACCESSIBILITY_AUDIT.md`; static accessibility smoke tests verify form labels, button names, image alt text, landmarks, headings, and live status regions. |
 | 54 | Responsive And Browser Compatibility | Partial | Responsive checklist covers mobile/tablet/desktop viewport checks; browser matrix execution still needed. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |
 | 56 | Observability And Maintenance | Done | Job logs, request logs, JSON/text log formatting, a lightweight `/api/metrics` snapshot, and operator runbook guidance exist. |

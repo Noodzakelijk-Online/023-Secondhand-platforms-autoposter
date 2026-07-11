@@ -36,6 +36,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Data portability | `tests/test_data_portability.py` | Sanitized JSON export/import, listing CSV round trip, image ZIP export, settings, mappings, and account metadata. |
 | Diagnostics/startup/migrations | `tests/test_doctor.py`, `tests/test_startup_safety.py`, `tests/test_migrations.py` | Doctor checks, startup safety guards, and migration availability. |
 | Observability | `tests/test_observability.py` | Structured JSON log formatting and request log metadata. |
+| Accessibility | `tests/test_accessibility_audit.py` | Static dashboard smoke checks for labeled controls, named buttons, image alt text, landmarks, headings, and live status regions. |
 | Legacy isolation | `tests/test_legacy_quarantine.py` | Ensures legacy browser automation imports do not leak into the web app path. |
 
 ## Data And Isolation
@@ -55,7 +56,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 ## Remaining Gaps
 
 - Browser end-to-end tests for the static dashboard.
-- Accessibility checks and keyboard navigation tests.
+- Browser-executed accessibility and keyboard navigation tests.
 - Multi-worker concurrency tests with database locking semantics.
 - PostgreSQL-backed migration and integration test run.
 - Frontend state consistency tests for filters, pagination, and edit modes.

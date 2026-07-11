@@ -2,6 +2,8 @@
 
 This checklist captures the manual browser, responsive, and accessibility checks required before a client launch.
 
+Automated source-level accessibility smoke coverage is tracked separately in `docs/ACCESSIBILITY_AUDIT.md`. This checklist remains the manual browser, keyboard, zoom, screen-reader, and responsive launch gate.
+
 ## Scope
 
 Run this against the exact deployment candidate and environment that will be shown to users.
