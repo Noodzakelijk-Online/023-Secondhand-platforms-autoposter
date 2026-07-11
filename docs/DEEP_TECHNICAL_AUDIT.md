@@ -41,7 +41,7 @@ The adapter system is intentionally assisted-only for registered production plat
 | Area | Current state | Remaining work |
 | --- | --- | --- |
 | Deployment database | SQLite/local verification is strong; migrations exist. | Prove Alembic migration and worker behavior against the target PostgreSQL database. |
-| Edge security | App-level auth, headers, bearer-only posture, and throttling exist. | Capture host/proxy/WAF rate-limit and web-security evidence. |
+| Edge security | App-level auth, CSP/security headers, bearer-only posture, and throttling exist. | Capture host/proxy/WAF rate-limit evidence as a release-readiness item. |
 | Official APIs | eBay OAuth consent foundation exists. | Token exchange, refresh, secret-manager storage, sandbox publish proof, quota handling, and official adapter behavior remain unimplemented. |
 | Storage backend | Local storage is hardened. | Add and test S3/object storage before remote production storage. |
 | Browser evidence | Source-level UI wiring and tests exist. | Execute browser, responsive, accessibility, import/export, retry, and prepublish walkthroughs. |

@@ -13,12 +13,27 @@ The current deployment mode is bearer-token authentication only.
 
 Because browsers do not automatically attach bearer tokens from application state the way they attach cookies, API authentication is not currently exposed to normal cookie-based CSRF. The app still restricts CORS in production and sends security headers, but there is no CSRF token middleware because there are no authenticated cookie sessions to protect.
 
+## Browser Security Headers
+
+Every HTTP response includes:
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- `Content-Security-Policy` restricted to same-origin scripts/styles/connects, no objects, same-origin forms, and no frame ancestors
+- `Cross-Origin-Opener-Policy: same-origin`
+- `Cross-Origin-Resource-Policy: same-origin`
+
+HTTPS requests also receive `Strict-Transport-Security: max-age=31536000; includeSubDomains`.
+
 ## Production Controls
 
 - Set `APP_ENV=production`.
 - Keep `AUTH_TRANSPORT=bearer`.
 - Restrict `CORS_ORIGINS` to trusted frontend origins.
 - Serve the app only over HTTPS so bearer tokens are not sent over plaintext connections.
+- Terminate TLS at the deployment edge and preserve HTTPS scheme forwarding so HSTS is emitted for browser traffic.
 - Store bearer tokens only in the frontend runtime needed by the static dashboard; do not copy them into logs, URLs, analytics, screenshots, or exports.
 - Use `POST /api/auth/logout` to revoke a session when the user signs out.
 

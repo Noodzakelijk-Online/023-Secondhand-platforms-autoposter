@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 57.
-- Partial: 32.
+- Done: 58.
+- Partial: 31.
 - Not started: 0.
 
 ## Phase Status
@@ -51,7 +51,7 @@ Legend:
 | 29 | Exports And Imports | Done | JSON export/import covers listings, override drafts, templates, mappings, and sanitized accounts; listings also support CSV export/import, and uploaded image binaries can be exported separately as a manifest ZIP. |
 | 30 | Privacy And Data Control | Done | Auth isolation, sanitized export/import, CSV/image portability audit events, self-service account deletion, owner-scoped privacy activity review, and audit retention purging exist. |
 | 31 | Platform Account Management | Done | Account create/list/update/delete is wired in API and UI with setup statuses, owner scoping, secret-key scrubbing for manual connection metadata, and eBay OAuth handoff records that expose no raw tokens. |
-| 32 | Security Headers And Web Security | Partial | Security headers middleware and documented bearer-only CSRF posture exist; broader deployment security review still needed. |
+| 32 | Security Headers And Web Security | Done | Middleware enforces request IDs, nosniff, frame denial, referrer policy, permissions policy, CSP, COOP/CORP, HTTPS HSTS, and documented bearer-only CSRF posture with regression tests. |
 | 33 | Error Message Quality | Done | See `docs/ERROR_HANDLING_UX.md`; structured error envelopes include stable codes, field errors, retryability, request IDs, tests, and frontend metadata preservation. |
 | 34 | Frontend Error UX | Partial | Auth/editor messages, structured global API/network error banner, busy state, validation-to-field recovery actions, import errors, and job retry guidance exist; executed browser evidence still needs depth. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
