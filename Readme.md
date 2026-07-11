@@ -216,7 +216,7 @@ Listings include revision tracking. Editing a listing increments its `revision`,
 
 The listing editor also exposes an explicit regenerate package action. It creates a new listing revision before queueing, so the user can intentionally produce a fresh assisted package without implying automatic marketplace submission.
 
-Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category.
+Category mappings let a user translate a master listing category into a platform-specific category. Validation and publishing jobs apply these mappings unless a platform-specific override already supplies a category. Listings also support bounded `category_attributes` for item-specific details such as vehicle mileage, furniture style, clothing size, or electronics accessories.
 
 The listing editor includes a local quality assistant. It scores buyer-readiness, flags missing or weak fields, and offers deterministic title, description, and tag suggestions from the listing data already entered. It does not call an external AI service or invent product facts.
 

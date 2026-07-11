@@ -34,6 +34,7 @@ def create_listing(headers):
             "category": "Bikes",
             "location": "Arnhem",
             "delivery_options": {"pickup": True},
+            "category_attributes": {"frame_size_cm": 57, "gears": 7},
         },
     )
     assert response.status_code == 200, response.text
@@ -108,6 +109,7 @@ def test_category_mapping_is_applied_to_validation_and_publish_package():
     assert validation_response.status_code == 200, validation_response.text
     validation = validation_response.json()[0]
     assert validation["mapped_fields"]["category"] == "Fietsen en Brommers"
+    assert validation["mapped_fields"]["category_attributes"]["frame_size_cm"] == 57
 
     publish_response = client.post(
         f"/api/listings/{listing_id}/publish",
@@ -117,3 +119,4 @@ def test_category_mapping_is_applied_to_validation_and_publish_package():
     assert publish_response.status_code == 200, publish_response.text
     mapped_fields = publish_response.json()[0]["result"]["mapped_fields"]
     assert mapped_fields["category"] == "Fietsen en Brommers"
+    assert mapped_fields["category_attributes"]["gears"] == 7

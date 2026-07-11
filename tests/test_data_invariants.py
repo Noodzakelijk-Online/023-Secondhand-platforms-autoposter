@@ -123,3 +123,34 @@ def test_listing_rejects_unknown_condition_and_status():
     update_errors = update_response.json()["error"]["field_errors"]
     assert "condition" in update_errors
     assert "status" in update_errors
+
+
+def test_listing_category_attributes_must_be_bounded_object():
+    headers = auth_headers()
+    too_many_attributes = {f"field_{index}": "value" for index in range(31)}
+
+    response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={"title": "Invalid category attributes", "category_attributes": too_many_attributes},
+    )
+
+    assert response.status_code == 422
+    assert "category_attributes" in response.json()["error"]["field_errors"]
+
+    valid_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Vehicle with attributes",
+            "category": "Vehicles",
+            "category_attributes": {
+                "mileage_km": 42000,
+                "service_history": "dealer maintained",
+                "battery_health": "good",
+            },
+        },
+    )
+
+    assert valid_response.status_code == 200, valid_response.text
+    assert valid_response.json()["category_attributes"]["mileage_km"] == 42000

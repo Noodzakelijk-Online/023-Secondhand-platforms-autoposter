@@ -29,6 +29,7 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     assert "pickup_allowed" in listing_columns
     assert "shipping_cost_cents" in listing_columns
     assert "brand" in listing_columns
+    assert "category_attributes" in listing_columns
     assert "internal_notes" in listing_columns
     job_columns = {column["name"] for column in inspect(engine).get_columns("publishing_jobs")}
     assert "listing_revision" in job_columns

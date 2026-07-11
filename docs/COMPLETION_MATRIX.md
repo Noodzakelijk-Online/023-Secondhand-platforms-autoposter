@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 65.
-- Partial: 24.
+- Done: 66.
+- Partial: 23.
 - Not started: 0.
 
 ## Phase Status
@@ -29,7 +29,7 @@ Legend:
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Done | Request IDs, security headers, structured error envelopes, OpenAPI route tags, bounded list pagination/filtering, login throttling, and general API rate limiting exist with regression coverage. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
-| 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, revisioning, and condition/status invariants; category mapping depth still needs work. |
+| 10 | Listing Model Completion | Done | Master listing includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, category-specific attributes, notes, internal notes, revisioning, condition/status invariants, and category mapping coverage. |
 | 11 | Platform Adapter System | Done | Adapter contract, registry, assisted adapters, capability metadata, compliance notes, required fields, supported categories, and API/UI exposure exist. |
 | 12 | Platform-Specific Completion Contract | Done | See `docs/PLATFORM_COMPLETION_CONTRACTS.md`; registered adapters have tested per-platform validation, mapping, assisted publish outcomes, blocked actions, and capability metadata. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |

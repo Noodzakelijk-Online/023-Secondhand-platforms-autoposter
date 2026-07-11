@@ -33,6 +33,7 @@ COMMON_PREPARED_FIELDS = [
     "model",
     "color",
     "material",
+    "category_attributes",
     "tags",
     "image_filenames",
 ]
@@ -124,6 +125,7 @@ class AssistedPostingAdapter(PlatformAdapter):
             "model": overrides.get("model", listing.model),
             "color": overrides.get("color", listing.color),
             "material": overrides.get("material", listing.material),
+            "category_attributes": overrides.get("category_attributes", getattr(listing, "category_attributes", {})),
             "tags": overrides.get("tags", listing.tags),
             "image_filenames": [image.filename for image in listing.images],
         }

@@ -53,6 +53,22 @@ def _normalize_tags(value: list[str] | None) -> list[str] | None:
     return normalized
 
 
+def _normalize_category_attributes(value: dict[str, Any] | None) -> dict[str, Any] | None:
+    if value is None:
+        return value
+    if len(value) > 30:
+        raise ValueError("category_attributes cannot contain more than 30 fields")
+    normalized: dict[str, Any] = {}
+    for raw_key, raw_value in value.items():
+        key = str(raw_key).strip()
+        if not key:
+            raise ValueError("category_attributes keys cannot be blank")
+        if len(key) > 80:
+            raise ValueError("category_attributes keys cannot be longer than 80 characters")
+        normalized[key] = raw_value
+    return normalized
+
+
 class AuthRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
@@ -95,6 +111,7 @@ class ListingBase(BaseModel):
     model: str = ""
     color: str = ""
     material: str = ""
+    category_attributes: dict[str, Any] = Field(default_factory=dict)
     notes: str = ""
     internal_notes: str = ""
     tags: list[str] = Field(default_factory=list)
@@ -125,6 +142,11 @@ class ListingBase(BaseModel):
     def validate_tags(cls, value: list[str]) -> list[str]:
         return _normalize_tags(value) or []
 
+    @field_validator("category_attributes")
+    @classmethod
+    def validate_category_attributes(cls, value: dict[str, Any]) -> dict[str, Any]:
+        return _normalize_category_attributes(value) or {}
+
 
 class ListingCreate(ListingBase):
     pass
@@ -148,6 +170,7 @@ class ListingUpdate(BaseModel):
     model: str | None = None
     color: str | None = None
     material: str | None = None
+    category_attributes: dict[str, Any] | None = None
     notes: str | None = None
     internal_notes: str | None = None
     tags: list[str] | None = None
@@ -177,6 +200,11 @@ class ListingUpdate(BaseModel):
     @classmethod
     def validate_tags(cls, value: list[str] | None) -> list[str] | None:
         return _normalize_tags(value)
+
+    @field_validator("category_attributes")
+    @classmethod
+    def validate_category_attributes(cls, value: dict[str, Any] | None) -> dict[str, Any] | None:
+        return _normalize_category_attributes(value)
 
 
 class ListingImageOut(BaseModel):

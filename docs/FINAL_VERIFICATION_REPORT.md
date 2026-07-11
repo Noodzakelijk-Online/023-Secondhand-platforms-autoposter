@@ -2,7 +2,7 @@
 
 Date: 2026-07-12
 
-Commit verified: `ca42634`
+Verification target: current working checkout on 2026-07-12. Fresh-clone evidence remains recorded separately at `ca42634` in `docs/FRESH_CLONE_DRY_RUN.md`.
 
 ## Verification Command
 
@@ -10,13 +10,13 @@ Commit verified: `ca42634`
 python scripts/verify.py
 ```
 
-Result: passed from the working checkout and from a fresh clone. See `docs/FRESH_CLONE_DRY_RUN.md`.
+Result: passed from the working checkout. See `docs/FRESH_CLONE_DRY_RUN.md` for the earlier fresh-clone dry run.
 
 ## Gate Results
 
 - Ruff lint: passed.
 - Python compile checks: passed.
-- Pytest suite: passed, 139 tests.
+- Pytest suite: passed, 144 tests.
 - Doctor diagnostics: passed with local-development warnings.
 
 ## Expected Local Warnings
@@ -24,13 +24,13 @@ Result: passed from the working checkout and from a fresh clone. See `docs/FRESH
 The doctor command returned `warning` status for expected local-development conditions:
 
 - Development is using the default `SECRET_KEY`.
-- The local SQLite database is not stamped at Alembic head `20260703_0009`.
+- The local SQLite database is not stamped at Alembic head `20260703_0010`.
 
 These warnings do not block local verification, but they remain production launch blockers until deployment uses a strong `SECRET_KEY` and the target database is migrated to Alembic head.
 
 ## Current Release Assessment
 
-The repository passes its automated verification gate at the commit above. It is suitable for continued demo and hardening work.
+The repository passes its automated verification gate at the verification target above. It is suitable for continued demo and hardening work.
 
 It is not yet a final client launch release because the release readiness checklist still requires environment-specific evidence:
 

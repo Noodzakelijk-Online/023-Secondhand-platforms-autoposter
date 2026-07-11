@@ -496,6 +496,7 @@ function renderListings() {
   form.model.value = listing.model || "";
   form.color.value = listing.color || "";
   form.material.value = listing.material || "";
+  form.category_attributes.value = JSON.stringify(listing.category_attributes || {}, null, 2);
   form.weight_grams.value = listing.weight_grams || 0;
   form.shipping_cost.value = ((listing.shipping_cost_cents || 0) / 100).toFixed(2);
   form.pickup_allowed.checked = Boolean(listing.pickup_allowed);
@@ -1292,6 +1293,7 @@ $("#listingForm").addEventListener("submit", async (event) => {
       model: form.model.value,
       color: form.color.value,
       material: form.material.value,
+      category_attributes: parseDeliveryOptions(form.category_attributes.value),
       weight_grams: Math.round(Number(form.weight_grams.value || 0)),
       shipping_cost_cents: Math.round(Number(form.shipping_cost.value || 0) * 100),
       pickup_allowed: form.pickup_allowed.checked,

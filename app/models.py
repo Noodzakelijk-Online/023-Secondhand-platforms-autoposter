@@ -97,6 +97,7 @@ class Listing(Base, TimestampMixin):
     model: Mapped[str] = mapped_column(String(120), default="")
     color: Mapped[str] = mapped_column(String(80), default="")
     material: Mapped[str] = mapped_column(String(120), default="")
+    category_attributes: Mapped[dict] = mapped_column(JSON, default=dict)
     notes: Mapped[str] = mapped_column(Text, default="")
     internal_notes: Mapped[str] = mapped_column(Text, default="")
     tags: Mapped[list] = mapped_column(JSON, default=list)

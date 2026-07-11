@@ -7,7 +7,7 @@ This guide explains the current assisted-posting workflow for a seller using the
 1. Register or sign in with email and password.
 2. Open Listings.
 3. Select New listing.
-4. Fill the core fields: title, price, condition, category, location, description, delivery details, and optional item specifics.
+4. Fill the core fields: title, price, condition, category, location, description, delivery details, category attributes, and optional item specifics.
 5. Upload one or more product images.
 6. Save the listing.
 

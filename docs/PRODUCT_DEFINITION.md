@@ -4,7 +4,7 @@
 
 Secondhand Platforms Autoposter is a central listing manager for people who sell the same secondhand product on multiple marketplaces.
 
-The user creates one reusable master listing with title, description, price, category, condition, location, delivery options, tags, and images. The app validates that listing for each selected platform, stores platform-specific overrides, creates publishing jobs, tracks job logs, and prepares platform-ready posting packages.
+The user creates one reusable master listing with title, description, price, category, condition, location, delivery options, category-specific attributes, tags, and images. The app validates that listing for each selected platform, stores platform-specific overrides, creates publishing jobs, tracks job logs, and prepares platform-ready posting packages.
 
 Master listing condition values are normalized to `new`, `as_new`, `good`, `used`, `fair`, `damaged`, `for_parts`, or `other`. Master listing status values are normalized to `draft`, `ready`, `published`, or `archived`.
 

@@ -68,6 +68,8 @@ Use `request_id` when matching browser reports to server logs. Retry only when `
 
 Registered production platforms are assisted-only. A successful assisted job returns `needs_user_action`, not API-confirmed marketplace publication.
 
+Listing payloads include `category_attributes`, a bounded JSON object for category-specific item details such as furniture style, vehicle mileage, clothing size, or electronics accessories. These attributes are included in assisted mapped fields and JSON/CSV portability.
+
 ## Jobs
 
 | Method | Path | Purpose |

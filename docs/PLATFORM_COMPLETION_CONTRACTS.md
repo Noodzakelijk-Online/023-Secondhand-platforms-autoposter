@@ -16,11 +16,11 @@ This document defines the current completion contract for every registered marke
 
 | Platform | Current contract | Prepared fields | User-controlled boundary |
 | --- | --- | --- | --- |
-| Marktplaats | Assisted posting package with category, delivery, and pricing review. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, tags, image filenames. | Login, two-factor or anti-abuse checks, category/payment choices, paid placement, final submission. |
-| Koopplein | Assisted posting package with category and price-type review. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, tags, image filenames. | Account/session prompts, category confirmation, price type, final submission. |
+| Marktplaats | Assisted posting package with category, delivery, and pricing review. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, category attributes, tags, image filenames. | Login, two-factor or anti-abuse checks, category/payment choices, paid placement, final submission. |
+| Koopplein | Assisted posting package with category and price-type review. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, category attributes, tags, image filenames. | Account/session prompts, category confirmation, price type, final submission. |
 | Nextdoor | Assisted local listing package. | Title, description, price, currency, category, location, tags, image filenames. | Neighborhood access, local visibility, account controls, anti-abuse checks, final submission. |
-| eBay | Assisted package only; future official API candidate. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, tags, image filenames. | OAuth token exchange, seller policy setup, payment/shipping/return settings, fee confirmation, final submission. |
-| Tweedehands | Assisted/manual reference package. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, tags, image filenames. | Account session, platform-rule compliance, scraping/posting decisions, final submission. |
+| eBay | Assisted package only; future official API candidate. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, category attributes, tags, image filenames. | OAuth token exchange, seller policy setup, payment/shipping/return settings, fee confirmation, final submission. |
+| Tweedehands | Assisted/manual reference package. | Title, description, price, currency, condition, category, location, delivery options, shipping details, item details, category attributes, tags, image filenames. | Account session, platform-rule compliance, scraping/posting decisions, final submission. |
 
 ## Regression Coverage
 

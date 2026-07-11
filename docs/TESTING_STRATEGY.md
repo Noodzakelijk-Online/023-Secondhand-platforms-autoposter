@@ -34,8 +34,8 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Jobs/worker | `tests/test_worker.py`, `tests/test_job_state.py`, `tests/test_config.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, filtering/sorting/pagination, atomic claims, stale-running recovery, state transitions, and platform cooldown overrides. |
 | Listing revisions/idempotency | `tests/test_listing_revisions.py` | Revision increments and publish idempotency boundaries. |
 | Domain model | `tests/test_domain_model.py` | Listing aggregate cascade behavior for images, drafts, mappings, jobs, logs, and attempts. |
-| Data invariants | `tests/test_data_invariants.py` | Money/weight validation, currency/tag normalization, and listing condition/status choices. |
-| Data portability | `tests/test_data_portability.py` | Sanitized JSON export/import, listing CSV round trip, image ZIP export, settings, mappings, and account metadata. |
+| Data invariants | `tests/test_data_invariants.py` | Money/weight validation, currency/tag/category-attribute normalization, and listing condition/status choices. |
+| Data portability | `tests/test_data_portability.py` | Sanitized JSON export/import, listing CSV round trip including category attributes, image ZIP export, settings, mappings, and account metadata. |
 | Diagnostics/startup/migrations | `tests/test_doctor.py`, `tests/test_startup_safety.py`, `tests/test_migrations.py` | Doctor checks, startup safety guards, and migration availability. |
 | Observability | `tests/test_observability.py` | Structured JSON log formatting and request log metadata. |
 | Accessibility | `tests/test_accessibility_audit.py` | Static dashboard smoke checks for labeled controls, named buttons, image alt text, landmarks, headings, and live status regions. |

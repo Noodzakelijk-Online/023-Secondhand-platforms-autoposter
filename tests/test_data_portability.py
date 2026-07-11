@@ -50,6 +50,7 @@ def create_portable_workspace(headers):
             "category": "Furniture",
             "location": "Arnhem",
             "brand": "Vintage Co",
+            "category_attributes": {"style": "mid-century", "doors": 2},
             "shipping_allowed": True,
             "shipping_cost_cents": 1500,
             "tags": ["cabinet", "oak"],
@@ -220,6 +221,7 @@ def test_listing_csv_export_and_import_round_trip():
     assert listings[0]["title"] == "Portable cabinet"
     assert listings[0]["tags"] == ["cabinet", "oak"]
     assert listings[0]["shipping_allowed"] is True
+    assert listings[0]["category_attributes"]["style"] == "mid-century"
 
     db = SessionLocal()
     try:
