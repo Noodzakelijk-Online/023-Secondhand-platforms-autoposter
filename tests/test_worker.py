@@ -1,6 +1,7 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
+from app.adapters.base import PublishOutcome
 from app.database import Base, SessionLocal, engine
 from app.models import PublishingJob
 from app.services.jobs import claim_due_queued_job_ids, recover_stale_running_jobs
@@ -195,6 +196,65 @@ def test_platform_rate_limit_overrides_delay_same_platform_jobs(monkeypatch):
     monkeypatch.delenv("JOB_PROCESS_INLINE")
     monkeypatch.delenv("PLATFORM_RATE_LIMIT_SECONDS")
     monkeypatch.delenv("PLATFORM_RATE_LIMIT_OVERRIDES")
+    get_settings.cache_clear()
+
+
+def test_official_api_quota_headers_requeue_job(monkeypatch):
+    monkeypatch.setenv("JOB_PROCESS_INLINE", "false")
+    monkeypatch.setenv("PLATFORM_RATE_LIMIT_SECONDS", "0")
+    import app.services.jobs as job_service
+    from app.config import get_settings
+
+    class QuotaLimitedAdapter:
+        automation_mode = "official_api"
+
+        def publish_listing(self, listing, account=None, overrides=None):
+            return PublishOutcome(
+                status="failed",
+                message="Quota exhausted.",
+                data={
+                    "http_status": 429,
+                    "rate_limit_headers": {"Retry-After": "120", "X-RateLimit-Remaining": "0"},
+                },
+            )
+
+    def fake_get_adapter(platform):
+        if platform == "ebay":
+            return QuotaLimitedAdapter()
+        return original_get_adapter(platform)
+
+    get_settings.cache_clear()
+    original_get_adapter = job_service.get_adapter
+    monkeypatch.setattr(job_service, "get_adapter", fake_get_adapter)
+    headers = auth_headers()
+    listing_id = create_ready_listing(headers)
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["ebay"], "process_now": True},
+    )
+    assert publish_response.status_code == 200, publish_response.text
+    job_id = publish_response.json()[0]["id"]
+
+    assert run_once() == 1
+
+    db = SessionLocal()
+    try:
+        job = db.get(PublishingJob, job_id)
+        assert job.status == "queued"
+        assert job.attempts == 1
+        assert job.next_retry_at is not None
+        next_retry_at = job.next_retry_at
+        if next_retry_at.tzinfo is None:
+            next_retry_at = next_retry_at.replace(tzinfo=UTC)
+        assert (next_retry_at - datetime.now(UTC)).total_seconds() > 100
+        assert job.result["rate_limit"]["source"] == "official_api_headers"
+        assert any("Official API quota backoff" in log.message for log in job.logs)
+    finally:
+        db.close()
+
+    monkeypatch.delenv("JOB_PROCESS_INLINE")
+    monkeypatch.delenv("PLATFORM_RATE_LIMIT_SECONDS")
     get_settings.cache_clear()
 
 

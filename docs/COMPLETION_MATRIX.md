@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 68.
-- Partial: 21.
+- Done: 69.
+- Partial: 20.
 - Not started: 0.
 
 ## Phase Status
@@ -39,7 +39,7 @@ Legend:
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Done | Idempotency keys include user, listing, revision, platform, action, account, and operation mode; UI/API expose explicit regenerate-package flow for user-controlled fresh assisted packages. |
-| 20 | Platform Rate Limiting And Cooldowns | Partial | Global and per-platform cooldowns exist with worker tests; see `docs/RATE_LIMITS.md`. Official API quota-header handling is still future work. |
+| 20 | Platform Rate Limiting And Cooldowns | Done | Global/per-platform cooldowns and official API quota-header backoff are centralized in the worker flow; see `docs/RATE_LIMITS.md`, `app/services/platform_rate_limits.py`, and worker tests. |
 | 21 | Live Job Updates Or Polling | Done | Queue UI has controlled live polling for jobs and analytics with pause/resume, manual refresh, status text, and source-level regression coverage. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
 | 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, and validation recovery shortcuts exist; browser evidence still needs work. |

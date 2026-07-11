@@ -24,6 +24,7 @@ from app.services.job_state import (
     is_terminal_status,
     transition_job,
 )
+from app.services.platform_rate_limits import quota_backoff_payload, quota_retry_at_from_outcome
 
 
 def idempotency_key(
@@ -167,6 +168,32 @@ def process_job(db: Session, job_id: int) -> PublishingJob:
     try:
         overrides = effective_platform_overrides(db, listing, job.platform, mapping.overrides)
         outcome = adapter.publish_listing(listing, account=account, overrides=overrides)
+        quota_retry_at = quota_retry_at_from_outcome(outcome.data)
+        if quota_retry_at:
+            transition_job(job, QUEUED)
+            job.error_message = None
+            job.next_retry_at = quota_retry_at
+            job.result = {
+                **outcome.data,
+                "rate_limit": quota_backoff_payload(
+                    quota_retry_at,
+                    outcome.data.get("rate_limit_headers")
+                    or outcome.data.get("quota_headers")
+                    or outcome.data.get("response_headers")
+                    or outcome.data.get("headers")
+                    or {},
+                ),
+            }
+            add_log(
+                db,
+                job,
+                "warning",
+                "Official API quota backoff applied.",
+                job.result["rate_limit"],
+            )
+            db.commit()
+            db.refresh(job)
+            return job
         transition_job(job, outcome.status)
         job.error_message = None if outcome.status != FAILED else outcome.message
         job.result = outcome.data

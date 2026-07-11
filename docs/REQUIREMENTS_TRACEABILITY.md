@@ -29,7 +29,7 @@ Legend:
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |
 | 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |
 | 19 | Done | `app/services/jobs.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_listing_revisions.py`, `tests/test_regenerate_package_ui.py` | Keep regenerate/repost semantics explicit if future official API publishing or manual completion confirmation is added. |
-| 20 | Partial | `docs/RATE_LIMITS.md`, `tests/test_worker.py` | Add official API quota-header handling. |
+| 20 | Done | `app/services/platform_rate_limits.py`, `app/services/jobs.py`, `docs/RATE_LIMITS.md`, `tests/test_platform_rate_limits.py`, `tests/test_worker.py` | Revisit only when a live official API adapter adds platform-specific quota semantics beyond common headers. |
 | 21 | Done | `GET /api/jobs`, queue polling in `public/app.js`, `public/index.html`, `tests/test_job_polling_ui.py` | Revisit only if SSE/WebSocket delivery becomes necessary for deployment scale. |
 | 22 | Done | Static frontend in `public/`, README architecture notes | Revisit only if frontend complexity changes. |
 | 23 | Partial | `public/index.html`, `public/app.js`, `public/styles.css` | Add executed browser QA evidence. |
