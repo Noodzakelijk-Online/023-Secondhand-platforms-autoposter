@@ -38,7 +38,7 @@ Legend:
 | 26 | Done | Template variants in `app/models.py`, `app/schemas.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_template_variants.py` | Keep template variant controls aligned with export/import and UI filters. |
 | 27 | Done | Category-specific local quality rules in `app/services/quality.py`, API/UI quality flow, `tests/test_listing_quality.py` | Keep heuristics local, explainable, and user-applied as categories expand. |
 | 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
-| 29 | Partial | Export/import routes, `tests/test_data_portability.py` | Add image binary export and CSV tools. |
+| 29 | Done | JSON, CSV, and image ZIP portability routes in `app/api.py`, Settings UI controls, `tests/test_data_portability.py` | Keep JSON privacy boundary, CSV fields, and image ZIP manifest aligned as listing fields change. |
 | 30 | Partial | Data delete/export/import, audit events, retention purge | Add admin/operator audit review UI if required. |
 | 31 | Partial | Account routes/UI, eBay OAuth foundation | Add secure token setup and secret-manager exchange. |
 | 32 | Partial | `app/middleware.py`, `docs/AUTH_SECURITY_POSTURE.md` | Capture deployment web-security review. |

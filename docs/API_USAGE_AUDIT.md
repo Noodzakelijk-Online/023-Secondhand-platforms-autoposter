@@ -52,6 +52,9 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `DELETE` | `/api/category-mappings/{mapping_id}` | Settings mapping delete | `test_category_mappings.py` | Visible and tested. |
 | `GET` | `/api/export` | Settings export JSON | `test_data_portability.py` | Visible and tested. |
 | `POST` | `/api/import` | Settings import JSON | `test_data_portability.py` | Visible and tested. |
+| `GET` | `/api/export/listings.csv` | Settings export listings CSV | `test_data_portability.py` | Visible and tested. |
+| `POST` | `/api/import/listings.csv` | Settings import listings CSV | `test_data_portability.py` | Visible and tested. |
+| `GET` | `/api/export/images.zip` | Settings export images ZIP | `test_data_portability.py` | Visible and tested. |
 
 ## Required Follow-Up
 

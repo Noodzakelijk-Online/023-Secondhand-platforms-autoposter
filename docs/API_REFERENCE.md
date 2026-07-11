@@ -100,6 +100,9 @@ Registered production platforms are assisted-only. A successful assisted job ret
 | --- | --- | --- |
 | `GET` | `/api/export` | Export portable JSON data without secrets or image binaries. |
 | `POST` | `/api/import` | Import supported portable JSON data. |
+| `GET` | `/api/export/listings.csv` | Export owned listings as CSV for spreadsheet workflows. |
+| `POST` | `/api/import/listings.csv` | Import owned listings from the supported CSV format. |
+| `GET` | `/api/export/images.zip` | Export owned uploaded image binaries as a ZIP with `manifest.json`. |
 
 ## Pagination
 

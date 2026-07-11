@@ -154,6 +154,34 @@ async function apiWithMeta(path, options = {}) {
   }
 }
 
+async function downloadApiFile(path, filename) {
+  const headers = {};
+  if (state.token) headers.Authorization = `Bearer ${state.token}`;
+  setBusy(1);
+  try {
+    const response = await fetch(`/api${path}`, { headers });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({ detail: response.statusText }));
+      const envelope = payload.error || {};
+      throw new ApiError(envelope.message || payload.detail || "Download failed", {
+        code: envelope.code,
+        requestId: envelope.request_id || response.headers.get("X-Request-ID") || "",
+        retryable: envelope.retryable,
+        fieldErrors: envelope.field_errors,
+        status: response.status,
+      });
+    }
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  } finally {
+    setBusy(-1);
+  }
+}
+
 function listingQueryPath() {
   const params = new URLSearchParams({
     limit: String(state.listingQuery.limit),
@@ -1540,6 +1568,16 @@ $("#exportDataButton").addEventListener("click", async () => {
   $("#dataPortabilityMessage").textContent = "Export ready";
 });
 
+$("#exportListingsCsvButton").addEventListener("click", async () => {
+  await downloadApiFile("/export/listings.csv", `autoposter-listings-${new Date().toISOString().slice(0, 10)}.csv`);
+  $("#dataPortabilityMessage").textContent = "Listings CSV export ready";
+});
+
+$("#exportImagesZipButton").addEventListener("click", async () => {
+  await downloadApiFile("/export/images.zip", `autoposter-images-${new Date().toISOString().slice(0, 10)}.zip`);
+  $("#dataPortabilityMessage").textContent = "Images ZIP export ready";
+});
+
 $("#importDataInput").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -1554,6 +1592,26 @@ $("#importDataInput").addEventListener("change", async (event) => {
     $("#dataPortabilityMessage").textContent = [
       error.message,
       error.retryable ? "Try the import again after checking the file." : "",
+      error.requestId ? `Request ID: ${error.requestId}` : "",
+    ].filter(Boolean).join(" ");
+  } finally {
+    event.target.value = "";
+  }
+});
+
+$("#importListingsCsvInput").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const result = await api("/import/listings.csv", { method: "POST", body: formData });
+    $("#dataPortabilityMessage").textContent = `Imported ${result.listings_created} listings from CSV`;
+    await loadAll();
+  } catch (error) {
+    $("#dataPortabilityMessage").textContent = [
+      error.message,
+      error.retryable ? "Try the import again after checking the CSV file." : "",
       error.requestId ? `Request ID: ${error.requestId}` : "",
     ].filter(Boolean).join(" ");
   } finally {

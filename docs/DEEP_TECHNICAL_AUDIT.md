@@ -46,7 +46,7 @@ The adapter system is intentionally assisted-only for registered production plat
 | Storage backend | Local storage is hardened. | Add and test S3/object storage before remote production storage. |
 | Browser evidence | Source-level UI wiring and tests exist. | Execute browser, responsive, accessibility, import/export, retry, and prepublish walkthroughs. |
 | Frontend architecture | Static frontend is sufficient for current scope. | Split frontend modules only if continued growth makes state/event handling risky. |
-| Data portability | Sanitized JSON export/import exists. | Add CSV tools and image-binary export only after scope and privacy rules are explicit. |
+| Data portability | Sanitized JSON export/import, listing CSV import/export, and separate image ZIP export exist with tests. | Keep privacy rules explicit as new portable fields are added. |
 | Admin/audit review | Sanitized audit events and retention purge exist. | Add an operator review UI only if launch operations require it. |
 | Type safety | Ruff and compile gates exist. | Decide whether mypy/pyright is worth the added maintenance cost. |
 

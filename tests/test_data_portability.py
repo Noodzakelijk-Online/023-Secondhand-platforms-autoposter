@@ -1,5 +1,7 @@
+import io
 import json
 import uuid
+import zipfile
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -188,6 +190,77 @@ def test_import_recreates_user_owned_business_data():
         assert event.event_data["listings_created"] == 1
         assert event.event_data["platform_accounts_created"] == 1
         assert event.event_data["skipped"] == 0
+    finally:
+        db.close()
+
+
+def test_listing_csv_export_and_import_round_trip():
+    source_headers = auth_headers("csv-source")
+    create_portable_workspace(source_headers)
+
+    csv_response = client.get("/api/export/listings.csv", headers=source_headers)
+
+    assert csv_response.status_code == 200, csv_response.text
+    assert csv_response.headers["content-type"].startswith("text/csv")
+    csv_text = csv_response.text
+    assert "Portable cabinet" in csv_text
+    assert "cabinet, oak" in csv_text
+    assert "password_hash" not in csv_text
+
+    target_headers = auth_headers("csv-target")
+    import_response = client.post(
+        "/api/import/listings.csv",
+        headers=target_headers,
+        files={"file": ("listings.csv", csv_text.encode("utf-8"), "text/csv")},
+    )
+
+    assert import_response.status_code == 200, import_response.text
+    assert import_response.json()["listings_created"] == 1
+    listings = client.get("/api/listings", headers=target_headers).json()
+    assert listings[0]["title"] == "Portable cabinet"
+    assert listings[0]["tags"] == ["cabinet", "oak"]
+    assert listings[0]["shipping_allowed"] is True
+
+    db = SessionLocal()
+    try:
+        actions = {event.action for event in db.query(AuditEvent).all()}
+        assert "listings_csv_exported" in actions
+        assert "listings_csv_imported" in actions
+    finally:
+        db.close()
+
+
+def test_image_zip_export_contains_manifest_and_owned_images():
+    headers = auth_headers("image-export")
+    create_portable_workspace(headers)
+    listing = client.get("/api/listings", headers=headers).json()[0]
+    image_response = client.post(
+        f"/api/listings/{listing['id']}/images",
+        headers=headers,
+        files={"file": ("cabinet.png", PNG_BYTES, "image/png")},
+    )
+    assert image_response.status_code == 200, image_response.text
+
+    response = client.get("/api/export/images.zip", headers=headers)
+
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"] == "application/zip"
+    with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+        names = set(archive.namelist())
+        assert "manifest.json" in names
+        manifest = json.loads(archive.read("manifest.json"))
+        assert manifest["version"] == "1"
+        assert manifest["missing"] == []
+        assert len(manifest["images"]) == 1
+        archive_path = manifest["images"][0]["archive_path"]
+        assert archive_path in names
+        assert archive.read(archive_path) == PNG_BYTES
+        assert manifest["images"][0]["filename"] == "cabinet.png"
+
+    db = SessionLocal()
+    try:
+        event = db.query(AuditEvent).filter(AuditEvent.action == "images_exported").one()
+        assert event.event_data == {"images": 1, "missing": 0}
     finally:
         db.close()
 

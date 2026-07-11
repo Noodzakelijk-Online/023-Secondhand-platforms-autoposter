@@ -50,7 +50,7 @@ Templates help reuse description text. Use variants such as `default`, `short`, 
 
 ## Data Portability And Privacy
 
-Use Export JSON to download portable listing/configuration data. Exports exclude password hashes, sessions, platform tokens, raw secrets, and image binaries. Use Import JSON to restore supported portable data into the current account.
+Use Export JSON to download portable listing/configuration data. The JSON export excludes password hashes, sessions, platform tokens, raw secrets, and image binaries. Use Export listings CSV or Import listings CSV for spreadsheet workflows. Use Export images ZIP when you need a separate archive of uploaded image files with a manifest. Use Import JSON to restore supported portable data into the current account.
 
 Delete my account data removes owned listings, jobs, templates, mappings, accounts, sessions, and uploaded local image files.
 

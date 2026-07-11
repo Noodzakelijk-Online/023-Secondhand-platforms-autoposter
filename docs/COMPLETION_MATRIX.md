@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 54.
-- Partial: 35.
+- Done: 55.
+- Partial: 34.
 - Not started: 0.
 
 ## Phase Status
@@ -48,7 +48,7 @@ Legend:
 | 26 | Templates And Productivity Features | Done | Templates can be saved, variant-tagged, filtered, searched, sorted, applied, edited, deleted, exported, and imported; category mappings can be created/edited/deleted. |
 | 27 | Listing Quality Assistant | Done | Local deterministic quality assistant scores listings, flags buyer-readiness issues, adds category-specific guidance for electronics/furniture/fashion/vehicles, and offers reviewable title/description/tag suggestions in API and UI. |
 | 28 | Search, Filtering, Sorting, And Pagination | Done | Listing, job, account, template, and category-mapping API/UI screens expose focused search/filter/sort controls with bounded limit/offset pagination and total-count headers. |
-| 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
+| 29 | Exports And Imports | Done | JSON export/import covers listings, override drafts, templates, mappings, and sanitized accounts; listings also support CSV export/import, and uploaded image binaries can be exported separately as a manifest ZIP. |
 | 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, sanitized audit events, and audit retention purging exist; admin review UI still needs work. |
 | 31 | Platform Account Management | Partial | Account create/list/delete is wired in API and UI; secure token/account setup model still needs work. |
 | 32 | Security Headers And Web Security | Partial | Security headers middleware and documented bearer-only CSRF posture exist; broader deployment security review still needed. |

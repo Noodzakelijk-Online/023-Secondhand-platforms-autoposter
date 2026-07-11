@@ -1,7 +1,12 @@
+import csv
+import io
+import json
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, Response, UploadFile
+from pydantic import ValidationError
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
@@ -70,10 +75,33 @@ from app.services.jobs import enqueue_publish_job, get_or_create_mapping, proces
 from app.services.localization import localization_metadata
 from app.services.oauth import consume_ebay_authorization_callback, create_ebay_authorization_url
 from app.services.quality import analyze_listing_quality
-from app.storage import StoredFile, read_validated_image, store_validated_image
+from app.storage import StoredFile, read_validated_image, safe_filename, store_validated_image
 
 router = APIRouter(prefix="/api")
 SENSITIVE_CONNECTION_KEYS = ("password", "secret", "token", "api_key", "apikey", "access_key", "private_key")
+LISTING_CSV_FIELDS = [
+    "title",
+    "description",
+    "price_cents",
+    "currency",
+    "condition",
+    "category",
+    "location",
+    "pickup_allowed",
+    "shipping_allowed",
+    "shipping_cost_cents",
+    "weight_grams",
+    "brand",
+    "model",
+    "color",
+    "material",
+    "notes",
+    "internal_notes",
+    "tags",
+    "status",
+    "delivery_options_json",
+    "dimensions_json",
+]
 
 
 def get_current_session(
@@ -990,6 +1018,134 @@ def _export_listing(listing: Listing) -> dict:
     return payload
 
 
+def _listing_csv_row(listing: Listing) -> dict[str, str]:
+    return {
+        "title": listing.title or "",
+        "description": listing.description or "",
+        "price_cents": str(listing.price_cents or 0),
+        "currency": listing.currency or "EUR",
+        "condition": listing.condition or "used",
+        "category": listing.category or "",
+        "location": listing.location or "",
+        "pickup_allowed": _format_csv_bool(listing.pickup_allowed),
+        "shipping_allowed": _format_csv_bool(listing.shipping_allowed),
+        "shipping_cost_cents": str(listing.shipping_cost_cents or 0),
+        "weight_grams": str(listing.weight_grams or 0),
+        "brand": listing.brand or "",
+        "model": listing.model or "",
+        "color": listing.color or "",
+        "material": listing.material or "",
+        "notes": listing.notes or "",
+        "internal_notes": listing.internal_notes or "",
+        "tags": ", ".join(listing.tags or []),
+        "status": listing.status or "draft",
+        "delivery_options_json": json.dumps(listing.delivery_options or {}, sort_keys=True),
+        "dimensions_json": json.dumps(listing.dimensions or {}, sort_keys=True),
+    }
+
+
+def _format_csv_bool(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def _parse_csv_bool(value: str) -> bool:
+    normalized = (value or "").strip().casefold()
+    return normalized in {"1", "true", "yes", "y", "on"}
+
+
+def _parse_csv_int(value: str, field: str) -> int:
+    if value is None or value == "":
+        return 0
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise ValueError(f"{field} must be an integer") from exc
+
+
+def _parse_csv_json_object(value: str, field: str) -> dict:
+    if not value:
+        return {}
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{field} must contain valid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{field} must contain a JSON object")
+    return parsed
+
+
+def _parse_csv_tags(value: str) -> list[str]:
+    return [tag.strip() for tag in (value or "").split(",") if tag.strip()]
+
+
+def _listing_from_csv_row(row: dict[str, str]) -> ListingCreate:
+    payload = {
+        "title": row.get("title", ""),
+        "description": row.get("description", ""),
+        "price_cents": _parse_csv_int(row.get("price_cents", ""), "price_cents"),
+        "currency": row.get("currency") or "EUR",
+        "condition": row.get("condition") or "used",
+        "category": row.get("category", ""),
+        "location": row.get("location", ""),
+        "pickup_allowed": _parse_csv_bool(row.get("pickup_allowed", "true")),
+        "shipping_allowed": _parse_csv_bool(row.get("shipping_allowed", "false")),
+        "shipping_cost_cents": _parse_csv_int(row.get("shipping_cost_cents", ""), "shipping_cost_cents"),
+        "weight_grams": _parse_csv_int(row.get("weight_grams", ""), "weight_grams"),
+        "brand": row.get("brand", ""),
+        "model": row.get("model", ""),
+        "color": row.get("color", ""),
+        "material": row.get("material", ""),
+        "notes": row.get("notes", ""),
+        "internal_notes": row.get("internal_notes", ""),
+        "tags": _parse_csv_tags(row.get("tags", "")),
+        "status": row.get("status") or "draft",
+        "delivery_options": _parse_csv_json_object(row.get("delivery_options_json", ""), "delivery_options_json"),
+        "dimensions": _parse_csv_json_object(row.get("dimensions_json", ""), "dimensions_json"),
+    }
+    return ListingCreate.model_validate(payload)
+
+
+def _image_export_archive(listings: list[Listing]) -> tuple[bytes, dict]:
+    settings = get_settings()
+    upload_root = settings.upload_path.resolve()
+    manifest = {
+        "version": "1",
+        "exported_at": datetime.now(UTC).isoformat(),
+        "images": [],
+        "missing": [],
+    }
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for listing in listings:
+            for image in listing.images:
+                resolved_path = Path(image.storage_path).resolve()
+                entry = {
+                    "listing_id": listing.id,
+                    "listing_title": listing.title,
+                    "filename": image.filename,
+                    "content_type": image.content_type,
+                    "file_size": image.file_size,
+                    "checksum_sha256": image.checksum_sha256,
+                    "position": image.position,
+                }
+                try:
+                    resolved_path.relative_to(upload_root)
+                except ValueError:
+                    manifest["missing"].append({**entry, "reason": "outside_upload_directory"})
+                    continue
+                if not resolved_path.exists():
+                    manifest["missing"].append({**entry, "reason": "file_missing"})
+                    continue
+                archive_name = (
+                    f"listing-{listing.id}/"
+                    f"{image.position:03d}-{image.id}-{safe_filename(image.filename or resolved_path.name)}"
+                )
+                archive.write(resolved_path, archive_name)
+                manifest["images"].append({**entry, "archive_path": archive_name})
+        archive.writestr("manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
+    return buffer.getvalue(), manifest
+
+
 @router.get("/export", response_model=DataExportBundle, tags=["Data portability"])
 def export_data(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     listings = (
@@ -1045,6 +1201,82 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
     )
     db.commit()
     return bundle
+
+
+@router.get("/export/listings.csv", tags=["Data portability"])
+def export_listings_csv(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    listings = (
+        db.query(Listing)
+        .filter(Listing.owner_id == user.id)
+        .order_by(Listing.created_at.asc())
+        .all()
+    )
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=LISTING_CSV_FIELDS, lineterminator="\n")
+    writer.writeheader()
+    for listing in listings:
+        writer.writerow(_listing_csv_row(listing))
+    record_audit_event(db, user, "listings_csv_exported", {"listings": len(listings)})
+    db.commit()
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="autoposter-listings.csv"'},
+    )
+
+
+@router.post("/import/listings.csv", response_model=DataImportResult, tags=["Data portability"])
+async def import_listings_csv(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    content = await file.read(2_000_000)
+    if not content:
+        raise HTTPException(status_code=422, detail="CSV file is empty")
+    text = content.decode("utf-8-sig")
+    reader = csv.DictReader(io.StringIO(text))
+    if not reader.fieldnames:
+        raise HTTPException(status_code=422, detail="CSV file must include a header row")
+    missing_fields = set(LISTING_CSV_FIELDS) - set(reader.fieldnames)
+    if missing_fields:
+        raise HTTPException(status_code=422, detail=f"CSV file is missing fields: {', '.join(sorted(missing_fields))}")
+
+    result = DataImportResult()
+    for row_number, row in enumerate(reader, start=2):
+        try:
+            listing_payload = _listing_from_csv_row(row)
+        except (ValidationError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=f"CSV row {row_number}: {exc}") from exc
+        db.add(Listing(owner_id=user.id, **listing_payload.model_dump()))
+        result.listings_created += 1
+    record_audit_event(db, user, "listings_csv_imported", {"listings_created": result.listings_created})
+    db.commit()
+    return result
+
+
+@router.get("/export/images.zip", tags=["Data portability"])
+def export_images_zip(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    listings = (
+        db.query(Listing)
+        .options(selectinload(Listing.images))
+        .filter(Listing.owner_id == user.id)
+        .order_by(Listing.created_at.asc())
+        .all()
+    )
+    archive_bytes, manifest = _image_export_archive(listings)
+    record_audit_event(
+        db,
+        user,
+        "images_exported",
+        {"images": len(manifest["images"]), "missing": len(manifest["missing"])},
+    )
+    db.commit()
+    return Response(
+        content=archive_bytes,
+        media_type="application/zip",
+        headers={"Content-Disposition": 'attachment; filename="autoposter-images.zip"'},
+    )
 
 
 @router.post("/import", response_model=DataImportResult, tags=["Data portability"])
