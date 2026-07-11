@@ -225,6 +225,14 @@ class PlatformAccountCreate(BaseModel):
     connection_data: dict[str, Any] = Field(default_factory=dict)
 
 
+class PlatformAccountUpdate(BaseModel):
+    platform: str | None = None
+    display_name: str | None = None
+    mode: str | None = None
+    status: str | None = None
+    connection_data: dict[str, Any] | None = None
+
+
 class PlatformAccountOut(PlatformAccountCreate):
     model_config = ConfigDict(from_attributes=True)
 

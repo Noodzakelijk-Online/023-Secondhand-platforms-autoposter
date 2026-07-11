@@ -53,6 +53,7 @@ The app now includes a guarded OAuth consent foundation:
 - `GET /api/accounts/ebay/oauth/callback` validates state and records an eBay platform account as `mode=official_api` and `status=needs_token_exchange`.
 - The callback does not store raw authorization codes, access tokens, refresh tokens, client secrets, or token payloads in app tables.
 - `PlatformAccount.secret_ref` records the expected secret-manager location prefix from `EBAY_TOKEN_SECRET_REF_PREFIX`; it is not exposed in API responses or data exports.
+- Manual platform account create/update flows scrub token-like keys from `connection_data`; use external secret storage for real credentials.
 
 This is not a complete eBay API integration. The next production-hardening slice must exchange the authorization code through a secret-manager-backed token service, persist only external secret references, refresh tokens safely, and prove sandbox Inventory API behavior before any adapter can mark jobs as published.
 

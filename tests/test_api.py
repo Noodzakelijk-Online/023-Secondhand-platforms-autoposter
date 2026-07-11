@@ -144,6 +144,52 @@ def test_accounts_and_templates():
     assert client.get("/api/accounts", headers=headers).json() == []
 
 
+def test_accounts_can_be_updated_and_scrub_secret_connection_data():
+    owner_headers = auth_headers()
+    create_response = client.post(
+        "/api/accounts",
+        headers=owner_headers,
+        json={
+            "platform": "ebay",
+            "display_name": "Draft eBay",
+            "status": "needs_setup",
+            "connection_data": {"store": "main", "access_token": "do-not-store"},
+        },
+    )
+    assert create_response.status_code == 200, create_response.text
+    account = create_response.json()
+    assert account["connection_data"] == {"store": "main"}
+
+    update_response = client.patch(
+        f"/api/accounts/{account['id']}",
+        headers=owner_headers,
+        json={
+            "display_name": "Ready eBay",
+            "status": "ready",
+            "connection_data": {"store": "main", "refresh_token": "do-not-store-either"},
+        },
+    )
+    assert update_response.status_code == 200, update_response.text
+    updated = update_response.json()
+    assert updated["display_name"] == "Ready eBay"
+    assert updated["status"] == "ready"
+    assert updated["connection_data"] == {"store": "main"}
+
+    other_headers = {
+        "Authorization": "Bearer "
+        + client.post(
+            "/api/auth/register",
+            json={"email": "account-other@example.com", "password": "correct-password", "name": "Other"},
+        ).json()["token"]
+    }
+    other_update_response = client.patch(
+        f"/api/accounts/{account['id']}",
+        headers=other_headers,
+        json={"display_name": "Stolen"},
+    )
+    assert other_update_response.status_code == 404
+
+
 def test_templates_can_be_updated_deleted_and_are_owner_scoped():
     owner_headers = auth_headers()
     template_response = client.post(

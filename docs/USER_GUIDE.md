@@ -44,7 +44,7 @@ Retry only after fixing the listing, platform account, or validation issue that 
 
 ## Accounts, Templates, And Mappings
 
-Accounts identify the platform account context, but the current app does not store raw platform passwords or active marketplace tokens.
+Accounts identify the platform account context and setup status. You can create, edit, disable, or delete account metadata. The app strips token-like keys from manual connection metadata and does not expose raw platform passwords, active marketplace tokens, or secret references.
 
 Templates help reuse description text. Use variants such as `default`, `short`, `seasonal`, or platform-specific copy styles to keep multiple reusable versions under clear labels. Category mappings translate a master listing category into a platform-specific category. Both settings screens support search/filter/sort/page controls.
 

@@ -53,6 +53,7 @@ from app.schemas import (
     OAuthStartResponse,
     PlatformAccountCreate,
     PlatformAccountOut,
+    PlatformAccountUpdate,
     PlatformMappingOut,
     PlatformOverrideUpdate,
     PublishingJobOut,
@@ -747,8 +748,36 @@ def create_account(
     db: Session = Depends(get_db),
 ):
     get_adapter(payload.platform)
-    account = PlatformAccount(owner_id=user.id, **payload.model_dump())
+    account_data = payload.model_dump()
+    account_data["connection_data"] = _sanitize_connection_data(account_data["connection_data"])
+    account = PlatformAccount(owner_id=user.id, **account_data)
     db.add(account)
+    db.commit()
+    db.refresh(account)
+    return account
+
+
+@router.patch("/accounts/{account_id}", response_model=PlatformAccountOut, tags=["Accounts"])
+def update_account(
+    account_id: int,
+    payload: PlatformAccountUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    account = (
+        db.query(PlatformAccount)
+        .filter(PlatformAccount.id == account_id, PlatformAccount.owner_id == user.id)
+        .one_or_none()
+    )
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    data = payload.model_dump(exclude_unset=True)
+    if "platform" in data:
+        get_adapter(data["platform"])
+    if "connection_data" in data:
+        data["connection_data"] = _sanitize_connection_data(data["connection_data"] or {})
+    for key, value in data.items():
+        setattr(account, key, value)
     db.commit()
     db.refresh(account)
     return account

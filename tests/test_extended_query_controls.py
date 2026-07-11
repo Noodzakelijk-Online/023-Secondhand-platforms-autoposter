@@ -85,6 +85,7 @@ def test_frontend_exposes_extended_query_controls():
         "accountSort",
         "accountPrevPage",
         "accountNextPage",
+        "cancelAccountEditButton",
         "templateSearch",
         "templatePlatformFilter",
         "templateVariantFilter",
@@ -102,5 +103,6 @@ def test_frontend_exposes_extended_query_controls():
         assert f'$("#{element_id}")' in script
 
     assert "accountQueryPath()" in script
+    assert "data-edit-account" in script
     assert "templateQueryPath()" in script
     assert "mappingQueryPath()" in script

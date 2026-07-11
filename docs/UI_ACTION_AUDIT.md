@@ -69,6 +69,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 | UI action | Handler | Backend behavior | Status |
 | --- | --- | --- | --- |
 | Save account | `#accountForm submit` | `POST /api/accounts` | Wired |
+| Edit account | `#accountList click` / `#accountForm submit` | `PATCH /api/accounts/{account_id}` | Wired |
 | Delete account | `#accountList click` | `DELETE /api/accounts/{id}` | Wired |
 
 ## Settings

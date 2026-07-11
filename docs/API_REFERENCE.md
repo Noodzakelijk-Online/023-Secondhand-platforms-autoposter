@@ -82,6 +82,7 @@ Registered production platforms are assisted-only. A successful assisted job ret
 | --- | --- | --- |
 | `GET` | `/api/accounts` | List platform accounts with platform/status/sort/page controls. |
 | `POST` | `/api/accounts` | Create a platform account record. |
+| `PATCH` | `/api/accounts/{account_id}` | Update owned platform account metadata, setup status, and sanitized connection metadata. |
 | `DELETE` | `/api/accounts/{account_id}` | Delete a platform account record. |
 | `POST` | `/api/accounts/ebay/oauth/start` | Start eBay OAuth consent foundation when configured. |
 | `GET` | `/api/accounts/ebay/oauth/callback` | Consume eBay OAuth callback state and record setup handoff. |

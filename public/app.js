@@ -836,7 +836,10 @@ function renderAccounts() {
     <article class="list-item">
       <div class="pane-head">
         <strong>${escapeHtml(account.display_name)}</strong>
-        <button class="ghost" data-delete-account="${account.id}">Delete</button>
+        <div class="row compact-actions">
+          <button class="ghost" data-edit-account="${account.id}">Edit</button>
+          <button class="ghost" data-delete-account="${account.id}">Delete</button>
+        </div>
       </div>
       <span class="muted">${escapeHtml(account.platform)} · ${escapeHtml(account.mode)}</span>
       <span class="${statusClass(account.status)}">${escapeHtml(account.status)}</span>
@@ -1465,8 +1468,9 @@ function jobRetryGuidance(job) {
 
 $("#accountForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  await api("/accounts", {
-    method: "POST",
+  const accountId = event.currentTarget.dataset.accountId;
+  await api(accountId ? `/accounts/${accountId}` : "/accounts", {
+    method: accountId ? "PATCH" : "POST",
     body: JSON.stringify({
       platform: $("#accountPlatform").value,
       display_name: $("#accountName").value,
@@ -1476,14 +1480,36 @@ $("#accountForm").addEventListener("submit", async (event) => {
     }),
   });
   $("#accountName").value = "";
+  delete event.currentTarget.dataset.accountId;
+  $("#accountForm button[type='submit']").textContent = "Save account";
+  $("#cancelAccountEditButton").classList.add("hidden");
   state.accountQuery.offset = 0;
   await loadAll();
 });
 
+$("#cancelAccountEditButton").addEventListener("click", () => {
+  $("#accountName").value = "";
+  delete $("#accountForm").dataset.accountId;
+  $("#accountForm button[type='submit']").textContent = "Save account";
+  $("#cancelAccountEditButton").classList.add("hidden");
+});
+
 $("#accountList").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-delete-account]");
-  if (!button) return;
-  await api(`/accounts/${button.dataset.deleteAccount}`, { method: "DELETE" });
+  const editButton = event.target.closest("[data-edit-account]");
+  if (editButton) {
+    const account = state.accounts.find((candidate) => candidate.id === Number(editButton.dataset.editAccount));
+    if (!account) return;
+    $("#accountPlatform").value = account.platform;
+    $("#accountName").value = account.display_name;
+    $("#accountStatus").value = account.status;
+    $("#accountForm").dataset.accountId = account.id;
+    $("#accountForm button[type='submit']").textContent = "Update account";
+    $("#cancelAccountEditButton").classList.remove("hidden");
+    return;
+  }
+  const deleteButton = event.target.closest("[data-delete-account]");
+  if (!deleteButton) return;
+  await api(`/accounts/${deleteButton.dataset.deleteAccount}`, { method: "DELETE" });
   await loadAll();
 });
 

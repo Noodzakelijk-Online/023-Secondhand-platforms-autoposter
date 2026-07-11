@@ -250,6 +250,8 @@
                       <select id="accountStatusFilter">
                         <option value="">All statuses</option>
                         <option value="needs_setup">Needs setup</option>
+                        <option value="needs_token_exchange">Needs token exchange</option>
+                        <option value="ready">Ready</option>
                         <option value="connected">Connected</option>
                         <option value="disabled">Disabled</option>
                       </select>
@@ -279,11 +281,16 @@
                   <label>Status
                     <select id="accountStatus">
                       <option value="needs_setup">Needs setup</option>
+                      <option value="needs_token_exchange">Needs token exchange</option>
+                      <option value="ready">Ready</option>
                       <option value="connected">Connected</option>
                       <option value="disabled">Disabled</option>
                     </select>
                   </label>
-                  <button type="submit">Save account</button>
+                  <div class="row compact-actions">
+                    <button type="submit">Save account</button>
+                    <button type="button" id="cancelAccountEditButton" class="ghost hidden">Cancel</button>
+                  </div>
                 </form>
               </section>
             </div>

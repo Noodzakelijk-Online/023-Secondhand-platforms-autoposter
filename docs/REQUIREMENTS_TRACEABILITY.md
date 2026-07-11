@@ -40,7 +40,7 @@ Legend:
 | 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
 | 29 | Done | JSON, CSV, and image ZIP portability routes in `app/api.py`, Settings UI controls, `tests/test_data_portability.py` | Keep JSON privacy boundary, CSV fields, and image ZIP manifest aligned as listing fields change. |
 | 30 | Done | Data delete/export/import audit events, owner-scoped `/api/audit-events`, Settings privacy activity UI, retention purge, `tests/test_data_portability.py` | Keep audit events sanitized and scoped as new privacy-sensitive actions are added. |
-| 31 | Partial | Account routes/UI, eBay OAuth foundation | Add secure token setup and secret-manager exchange. |
+| 31 | Done | Account CRUD/status routes and UI, connection metadata scrubbing, eBay OAuth handoff records, `tests/test_api.py`, `tests/test_ebay_oauth.py` | Keep raw platform secrets out of app tables/API responses; real token exchange remains tracked under phase 16. |
 | 32 | Partial | `app/middleware.py`, `docs/AUTH_SECURITY_POSTURE.md` | Capture deployment web-security review. |
 | 33 | Done | `docs/ERROR_HANDLING_UX.md`, `app/middleware.py`, `public/app.js`, `tests/test_api_hardening.py`, `tests/test_frontend_error_ux.py` | Keep error codes, retryability, and frontend display aligned when new error classes are introduced. |
 | 34 | Partial | Global message/banner, import error handling, retry guidance, and field recovery in `public/app.js` | Add executed browser evidence for error, retry, import, and validation recovery flows. |

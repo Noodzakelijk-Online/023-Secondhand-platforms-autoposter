@@ -60,6 +60,7 @@ def test_openapi_routes_are_grouped_with_tags():
     assert paths["/api/listings/{listing_id}/images"]["post"]["tags"] == ["Images"]
     assert paths["/api/listings/{listing_id}/publish"]["post"]["tags"] == ["Publishing"]
     assert paths["/api/jobs"]["get"]["tags"] == ["Jobs"]
+    assert paths["/api/accounts/{account_id}"]["patch"]["tags"] == ["Accounts"]
     assert paths["/api/templates/{template_id}"]["patch"]["tags"] == ["Templates"]
     assert paths["/api/export"]["get"]["tags"] == ["Data portability"]
     assert paths["/api/audit-events"]["get"]["tags"] == ["Privacy"]
