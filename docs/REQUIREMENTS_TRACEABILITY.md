@@ -17,7 +17,7 @@ Legend:
 | 5 | Partial | `app/config.py`, `.env.example`, `tests/test_startup_safety.py` | Capture deployment-specific env evidence. |
 | 6 | Partial | `app/security.py`, `app/rate_limit.py`, `tests/test_auth_security.py` | Add edge/proxy rate-limit evidence. |
 | 7 | Done | `tests/test_owner_isolation.py`, owner filters in `app/api.py` | Keep coverage aligned with new owner-owned routes. |
-| 8 | Partial | `app/middleware.py`, `tests/test_api_hardening.py` | Add broader endpoint throttling if needed. |
+| 8 | Done | `app/middleware.py`, `app/rate_limit.py`, `tests/test_api_hardening.py`, `tests/test_api_rate_limit.py` | Keep API limits aligned with deployment edge throttling and traffic patterns. |
 | 9 | Partial | `app/storage.py`, `tests/test_storage_uploads.py` | Add object storage adapter and image-processing policy. |
 | 10 | Partial | `app/models.py`, `app/schemas.py`, `tests/test_data_invariants.py` | Expand category-specific field depth. |
 | 11 | Done | `app/adapters/base.py`, `app/adapters/assisted.py`, `app/adapters/registry.py`, `tests/test_api.py` | Keep capability metadata aligned when adapters or platform modes change. |

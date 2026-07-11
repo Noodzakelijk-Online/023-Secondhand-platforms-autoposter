@@ -114,3 +114,7 @@ Registered production platforms are assisted-only. A successful assisted job ret
 ## Pagination
 
 List endpoints return `X-Total-Count`, `X-Limit`, and `X-Offset` headers. Use `limit` and `offset` to page through results.
+
+## Rate Limiting
+
+API requests are throttled per bearer token or client IP using `API_RATE_LIMIT_REQUESTS` and `API_RATE_LIMIT_WINDOW_SECONDS`. Rate-limited responses use the structured error envelope with `code=RATE_LIMITED` and include a `Retry-After` header.

@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     auth_transport: str = "bearer"
     login_rate_limit_attempts: int = 5
     login_rate_limit_window_seconds: int = 300
+    api_rate_limit_requests: int = 300
+    api_rate_limit_window_seconds: int = 60
     auto_create_tables: bool = True
     job_process_inline: bool = True
     job_worker_poll_seconds: int = 5
@@ -124,6 +126,10 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("LOGIN_RATE_LIMIT_ATTEMPTS must be positive")
     if settings.login_rate_limit_window_seconds <= 0:
         problems.append("LOGIN_RATE_LIMIT_WINDOW_SECONDS must be positive")
+    if settings.api_rate_limit_requests <= 0:
+        problems.append("API_RATE_LIMIT_REQUESTS must be positive")
+    if settings.api_rate_limit_window_seconds <= 0:
+        problems.append("API_RATE_LIMIT_WINDOW_SECONDS must be positive")
     if settings.job_worker_poll_seconds <= 0:
         problems.append("JOB_WORKER_POLL_SECONDS must be positive")
     if settings.job_worker_batch_size <= 0:

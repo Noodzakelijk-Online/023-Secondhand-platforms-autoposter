@@ -35,6 +35,7 @@ HTTPS requests also receive `Strict-Transport-Security: max-age=31536000; includ
 - Serve the app only over HTTPS so bearer tokens are not sent over plaintext connections.
 - Terminate TLS at the deployment edge and preserve HTTPS scheme forwarding so HSTS is emitted for browser traffic.
 - Store bearer tokens only in the frontend runtime needed by the static dashboard; do not copy them into logs, URLs, analytics, screenshots, or exports.
+- Keep `API_RATE_LIMIT_REQUESTS` and `API_RATE_LIMIT_WINDOW_SECONDS` enabled for general API throttling in addition to login-specific throttling.
 - Use `POST /api/auth/logout` to revoke a session when the user signs out.
 
 ## If Cookie Auth Is Added Later

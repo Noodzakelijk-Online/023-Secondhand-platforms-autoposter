@@ -49,6 +49,8 @@ def test_invalid_runtime_configuration_values_are_rejected():
         max_upload_size_mb=0,
         login_rate_limit_attempts=0,
         login_rate_limit_window_seconds=0,
+        api_rate_limit_requests=0,
+        api_rate_limit_window_seconds=0,
         job_worker_poll_seconds=0,
         job_worker_batch_size=0,
         job_stale_running_seconds=-1,
@@ -66,6 +68,8 @@ def test_invalid_runtime_configuration_values_are_rejected():
     assert "MAX_UPLOAD_SIZE_MB must be positive" in message
     assert "LOGIN_RATE_LIMIT_ATTEMPTS must be positive" in message
     assert "LOGIN_RATE_LIMIT_WINDOW_SECONDS must be positive" in message
+    assert "API_RATE_LIMIT_REQUESTS must be positive" in message
+    assert "API_RATE_LIMIT_WINDOW_SECONDS must be positive" in message
     assert "JOB_WORKER_POLL_SECONDS must be positive" in message
     assert "JOB_WORKER_BATCH_SIZE must be positive" in message
     assert "JOB_STALE_RUNNING_SECONDS must be non-negative" in message

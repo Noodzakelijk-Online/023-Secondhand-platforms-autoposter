@@ -48,3 +48,14 @@ def test_supported_locale_list_is_normalized():
     settings = Settings(supported_locales="en, NL, de")
 
     assert settings.supported_locale_list == ["en", "nl", "de"]
+
+
+def test_api_rate_limit_config_must_be_positive():
+    settings = Settings(api_rate_limit_requests=0, api_rate_limit_window_seconds=0)
+
+    with pytest.raises(RuntimeError) as exc:
+        validate_startup_safety(settings)
+
+    message = str(exc.value)
+    assert "API_RATE_LIMIT_REQUESTS must be positive" in message
+    assert "API_RATE_LIMIT_WINDOW_SECONDS must be positive" in message

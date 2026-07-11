@@ -1,5 +1,6 @@
 import uuid
 
+import app.middleware as middleware
 from tests.test_api import client
 
 
@@ -50,6 +51,20 @@ def test_validation_errors_use_structured_envelope():
     payload = response.json()
     assert payload["error"]["code"] == "VALIDATION_ERROR"
     assert "query.limit" in payload["error"]["field_errors"]
+
+
+def test_general_api_rate_limit_returns_retryable_429(monkeypatch):
+    monkeypatch.setattr(middleware, "check_api_rate_limit", lambda *args, **kwargs: 12)
+
+    response = client.get("/api/listings", headers={"X-Request-ID": "rate-limited-request"})
+
+    assert response.status_code == 429
+    assert response.headers["Retry-After"] == "12"
+    assert response.headers["X-Request-ID"] == "rate-limited-request"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    payload = response.json()
+    assert payload["error"]["code"] == "RATE_LIMITED"
+    assert payload["error"]["retryable"] is True
 
 
 def test_openapi_routes_are_grouped_with_tags():

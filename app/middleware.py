@@ -8,6 +8,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
+from app.config import get_settings
+from app.rate_limit import check_api_rate_limit
+
 request_logger = logging.getLogger("autoposter.requests")
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
@@ -58,8 +61,20 @@ def setup_middleware(app: FastAPI) -> None:
         started_at = time.perf_counter()
         status_code = 500
         try:
-            response = await call_next(request)
-            status_code = response.status_code
+            rate_limited = api_retry_after(request)
+            if rate_limited is not None:
+                status_code = 429
+                response = error_response(
+                    request,
+                    status_code=429,
+                    code="RATE_LIMITED",
+                    message="Too many requests. Please slow down and try again shortly.",
+                    retryable=True,
+                )
+                response.headers["Retry-After"] = str(rate_limited)
+            else:
+                response = await call_next(request)
+                status_code = response.status_code
         finally:
             duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
             request_logger.info(
@@ -141,3 +156,19 @@ def http_error_code(status_code: int) -> str:
 
 def http_error_retryable(status_code: int) -> bool:
     return status_code in {408, 429, 500, 502, 503, 504}
+
+
+def api_retry_after(request: Request) -> int | None:
+    if not request.url.path.startswith("/api/"):
+        return None
+    if request.url.path == "/api/health":
+        return None
+    settings = get_settings()
+    authorization = request.headers.get("Authorization", "")
+    client_host = request.client.host if request.client else "unknown"
+    identifier = authorization or f"ip:{client_host}"
+    return check_api_rate_limit(
+        identifier,
+        settings.api_rate_limit_requests,
+        settings.api_rate_limit_window_seconds,
+    )

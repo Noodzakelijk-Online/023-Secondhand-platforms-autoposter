@@ -61,6 +61,8 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `AUTH_TRANSPORT`: supported value is `bearer`; cookie sessions are not enabled.
 - `LOGIN_RATE_LIMIT_ATTEMPTS`: failed login attempts allowed per email/IP window.
 - `LOGIN_RATE_LIMIT_WINDOW_SECONDS`: failed login throttle window.
+- `API_RATE_LIMIT_REQUESTS`: API requests allowed per bearer token or client IP window.
+- `API_RATE_LIMIT_WINDOW_SECONDS`: API throttle window.
 - `AUTO_CREATE_TABLES`: local development helper. Must be `false` in production.
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `JOB_WORKER_POLL_SECONDS`: worker polling interval.

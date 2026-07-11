@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 60.
-- Partial: 29.
+- Done: 61.
+- Partial: 28.
 - Not started: 0.
 
 ## Phase Status
@@ -27,7 +27,7 @@ Legend:
 | 5 | Configuration And Startup Safety | Partial | `.env.example`, production startup guards, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed failed-login throttling exist; external edge rate limits still need deployment-specific evidence. |
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
-| 8 | API Hardening | Partial | Request IDs, security headers, structured error envelope, OpenAPI route tags, and bounded list pagination/filtering exist; broader rate limiting still needed. |
+| 8 | API Hardening | Done | Request IDs, security headers, structured error envelopes, OpenAPI route tags, bounded list pagination/filtering, login throttling, and general API rate limiting exist with regression coverage. |
 | 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
 | 10 | Listing Model Completion | Partial | Master listing now includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, notes, internal notes, revisioning, and condition/status invariants; category mapping depth still needs work. |
 | 11 | Platform Adapter System | Done | Adapter contract, registry, assisted adapters, capability metadata, compliance notes, required fields, supported categories, and API/UI exposure exist. |

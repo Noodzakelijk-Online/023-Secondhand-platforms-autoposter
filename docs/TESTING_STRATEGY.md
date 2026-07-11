@@ -27,7 +27,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | --- | --- | --- |
 | API smoke and route contract | `tests/test_api.py`, `tests/test_api_hardening.py` | Core listing/account/template flow, platform metadata, direct detail/delete routes, request IDs, metrics, pagination, filters, and structured errors. |
 | Owner isolation | `tests/test_owner_isolation.py` | Cross-user visibility and mutation boundaries for owned listings, jobs, accounts, templates, and category mappings. |
-| Auth/security | `tests/test_auth_security.py` | Password hashing, login/logout/session behavior, token revocation, bearer-only auth posture, and failed-login throttling. |
+| Auth/security | `tests/test_auth_security.py`, `tests/test_api_rate_limit.py` | Password hashing, login/logout/session behavior, token revocation, bearer-only auth posture, failed-login throttling, and general API throttling. |
 | Storage | `tests/test_storage_uploads.py` | Filename sanitization, MIME/signature validation, duplicate detection, delete/reorder behavior, and metadata persistence. |
 | Category mappings | `tests/test_category_mappings.py` | Mapping CRUD/upsert/patch behavior and mapping use in validation/publish output. |
 | Jobs/worker | `tests/test_worker.py`, `tests/test_job_state.py`, `tests/test_config.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, filtering/sorting/pagination, atomic claims, stale-running recovery, state transitions, and platform cooldown overrides. |

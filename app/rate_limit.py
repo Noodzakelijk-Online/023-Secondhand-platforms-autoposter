@@ -16,7 +16,14 @@ class LoginBucket:
     window_started_at: datetime
 
 
+@dataclass
+class ApiBucket:
+    requests: int
+    window_started_at: datetime
+
+
 login_buckets: dict[str, LoginBucket] = {}
+api_buckets: dict[str, ApiBucket] = {}
 
 
 def _identifier_hash(identifier: str) -> str:
@@ -82,3 +89,18 @@ def record_successful_login(db: Session, identifier: str) -> None:
     if bucket:
         db.delete(bucket)
         db.commit()
+
+
+def check_api_rate_limit(identifier: str, limit: int, window_seconds: int) -> int | None:
+    now = datetime.now(UTC)
+    window = timedelta(seconds=window_seconds)
+    bucket_key = _identifier_hash(identifier)
+    bucket = api_buckets.get(bucket_key)
+    if not bucket or now - bucket.window_started_at > window:
+        api_buckets[bucket_key] = ApiBucket(requests=1, window_started_at=now)
+        return None
+    if bucket.requests >= limit:
+        retry_after = window_seconds - int((now - bucket.window_started_at).total_seconds())
+        return max(1, retry_after)
+    bucket.requests += 1
+    return None
