@@ -507,6 +507,24 @@ textarea {
   padding: 4px 8px;
 }
 
+.compliance-panel {
+  border: 1px solid var(--line);
+  background: #fbfcfd;
+  padding: 8px;
+}
+
+.compliance-panel strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.compliance-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
 .quality-assistant {
   display: grid;
   gap: 12px;

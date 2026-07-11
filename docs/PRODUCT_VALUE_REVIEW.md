@@ -12,7 +12,7 @@ A non-technical secondhand seller wants to create one good listing, reuse it acr
 | --- | --- | --- |
 | Create one reusable listing | Master listing model with images, pricing, condition, category, delivery, brand/model, tags, notes, and revisions. | `app/models.py`, `app/schemas.py`, listing editor |
 | Improve listing quality | Local quality assistant scores readiness, adds category-specific guidance, and offers reviewable title, description, and tag suggestions. | `app/services/quality.py`, `tests/test_listing_quality.py` |
-| Prepare for multiple platforms | Assisted adapters map fields, validate required data, and expose copy-ready packages. | `app/adapters/`, prepublish review UI |
+| Prepare for multiple platforms | Assisted adapters map fields, validate required data, expose compliance notes, and show copy-ready packages. | `app/adapters/`, prepublish review UI |
 | Avoid false automation | The product clearly stays assisted unless official API evidence exists. | `docs/FALSE_COMPLETION_PREVENTION.md`, `docs/AUTONOMY_FIRST_DESIGN.md` |
 | Track posting work | Persistent jobs, logs, attempts, idempotency, retry, cooldowns, and queue UI exist. | `app/services/jobs.py`, `tests/test_worker.py` |
 | Keep data portable and private | Export, import, account deletion, audit events, and local analytics exist. | `tests/test_data_portability.py`, `app/services/analytics.py` |

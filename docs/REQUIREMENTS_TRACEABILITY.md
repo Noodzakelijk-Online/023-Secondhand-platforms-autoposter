@@ -76,7 +76,7 @@ Legend:
 | 64 | Done | Schema validators, `tests/test_data_invariants.py` | Keep invariants aligned with new fields. |
 | 65 | Partial | Central frontend state object in `public/app.js` | Add deeper consistency rules/tests. |
 | 66 | Partial | Prepublish review panel in UI | Add executed walkthrough evidence. |
-| 67 | Partial | Adapter compliance notes in UI metadata | Add richer compliance UI if required. |
+| 67 | Done | Adapter compliance notes from `GET /api/platforms`, platform/prepublish UI in `public/app.js`, `tests/test_ui_wording.py` | Keep notes visible when adapters or compliance language change. |
 | 68 | Done | `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Update with each official API candidate. |
 | 69 | Done | Performance indexes migration and docs | Benchmark against production-like data later. |
 | 70 | Partial | `docs/RELEASE_READINESS.md` | Capture final launch evidence. |

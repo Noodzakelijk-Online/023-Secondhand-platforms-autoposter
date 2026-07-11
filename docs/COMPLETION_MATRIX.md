@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 58.
-- Partial: 31.
+- Done: 59.
+- Partial: 30.
 - Not started: 0.
 
 ## Phase Status
@@ -86,7 +86,7 @@ Legend:
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Partial | Basic state object exists; deeper consistency rules needed. |
 | 66 | Prepublish Safety Review | Partial | Validation now feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, and mapped-field copy buttons; executed walkthrough evidence still needed. |
-| 67 | Platform Compliance UI | Partial | Compliance notes exist in metadata; richer UI needed. |
+| 67 | Platform Compliance UI | Done | Platform cards and prepublish review cards display adapter compliance notes alongside capabilities, posting links, validation warnings, and copy-ready package controls. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
 | 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates; final launch evidence still needed. |

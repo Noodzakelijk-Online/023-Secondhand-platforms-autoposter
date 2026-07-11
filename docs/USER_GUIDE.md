@@ -22,7 +22,7 @@ Use Quality assistant from the listing editor. It scores buyer-readiness, flags 
 1. Select the target platforms.
 2. Add a platform-specific description variant if needed.
 3. Select Validate.
-4. Review the prepublish cards.
+4. Review platform capabilities, compliance notes, and the prepublish cards.
 5. Fix missing fields or copy mapped fields from the review panel.
 6. Select Queue assisted package.
 

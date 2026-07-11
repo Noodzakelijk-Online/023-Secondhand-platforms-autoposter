@@ -37,3 +37,13 @@ def test_frontend_avoids_automatic_publishing_claims():
     ]
     for phrase in blocked_phrases:
         assert phrase not in content
+
+
+def test_frontend_surfaces_platform_compliance_notes():
+    script = Path("public/app.js").read_text(encoding="utf-8")
+    styles = Path("public/styles.css").read_text(encoding="utf-8")
+
+    assert "complianceNotesHtml" in script
+    assert "platform.compliance_notes" in script
+    assert "Compliance" in script
+    assert ".compliance-panel" in styles

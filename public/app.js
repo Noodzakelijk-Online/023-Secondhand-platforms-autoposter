@@ -596,6 +596,7 @@ function renderPlatforms(listing) {
     const override = mapping?.overrides?.description || "";
     const errors = mapping?.validation_errors?.length ? `Missing: ${mapping.validation_errors.join(", ")}` : "Ready for validation";
     const capabilities = platform.capabilities || {};
+    const complianceNotes = platform.compliance_notes || [];
     return `
       <article class="platform-card">
         <label><input type="checkbox" data-platform="${platform.key}" ${checked} /> ${escapeHtml(platform.name)}</label>
@@ -605,6 +606,7 @@ function renderPlatforms(listing) {
           ${capabilityChipHtml(capabilities.requires_user_final_submission ? "manual submit" : "API submit")}
           ${capabilities.official_api_candidate ? capabilityChipHtml("API candidate") : ""}
         </div>
+        ${complianceNotesHtml(complianceNotes)}
         <textarea data-platform-description="${platform.key}" placeholder="Platform description variant">${escapeHtml(override)}</textarea>
         <small class="muted">${escapeHtml(errors)}</small>
       </article>
@@ -615,6 +617,16 @@ function renderPlatforms(listing) {
 
 function capabilityChipHtml(label) {
   return `<span>${escapeHtml(label)}</span>`;
+}
+
+function complianceNotesHtml(notes) {
+  if (!notes?.length) return "";
+  return `
+    <div class="compliance-panel">
+      <strong>Compliance</strong>
+      <ul>${notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>
+    </div>
+  `;
 }
 
 function renderPrepublishReview(listing) {
@@ -653,7 +665,7 @@ function reviewCardHtml(platformKey) {
         </div>
         <p class="muted">Run validation to build the copy-ready posting package.</p>
         ${platform.posting_url ? `<a href="${escapeHtml(platform.posting_url)}" target="_blank" rel="noreferrer">Open platform</a>` : ""}
-        ${notes.length ? `<ul class="review-notes">${notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>` : ""}
+        ${complianceNotesHtml(notes)}
       </article>
     `;
   }
@@ -675,7 +687,7 @@ function reviewCardHtml(platformKey) {
         </div>
       ` : `<p class="muted">Required fields are present.</p>`}
       ${warnings.length ? `<ul class="review-notes">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>` : ""}
-      ${notes.length ? `<ul class="review-notes">${notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>` : ""}
+      ${complianceNotesHtml(notes)}
       <div class="review-actions">
         <button type="button" class="ghost" data-copy-package="${platformKey}">Copy package</button>
       </div>

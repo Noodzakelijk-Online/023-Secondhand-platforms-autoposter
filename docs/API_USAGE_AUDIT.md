@@ -23,7 +23,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `GET` | `/api/auth/me` | Boot current user | `test_auth_security.py` | Visible through user email. |
 | `DELETE` | `/api/auth/me` | Settings privacy delete action | `test_data_portability.py` | Visible and tested. |
 | `GET` | `/api/audit-events` | Settings privacy activity review | `test_data_portability.py` | Visible and tested; owner-scoped and sanitized. |
-| `GET` | `/api/platforms` | Account, template, mapping, listing platform controls | `test_api.py` | Visible and tested. |
+| `GET` | `/api/platforms` | Account, template, mapping, listing platform controls and compliance notes | `test_api.py`, `test_ui_wording.py` | Visible and tested. |
 | `GET` | `/api/listings` | Dashboard/listing list with search/filter/sort/page controls | `test_api_hardening.py` | Visible and tested. |
 | `POST` | `/api/listings` | New listing button | `test_api.py` | Visible and tested. |
 | `GET` | `/api/listings/{listing_id}` | Not directly used | `test_api.py` | Useful for future deep-linking. |
