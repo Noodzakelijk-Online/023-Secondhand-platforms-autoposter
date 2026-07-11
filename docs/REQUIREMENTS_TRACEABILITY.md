@@ -18,7 +18,7 @@ Legend:
 | 6 | Partial | `app/security.py`, `app/rate_limit.py`, `tests/test_auth_security.py` | Add edge/proxy rate-limit evidence. |
 | 7 | Done | `tests/test_owner_isolation.py`, owner filters in `app/api.py` | Keep coverage aligned with new owner-owned routes. |
 | 8 | Done | `app/middleware.py`, `app/rate_limit.py`, `tests/test_api_hardening.py`, `tests/test_api_rate_limit.py` | Keep API limits aligned with deployment edge throttling and traffic patterns. |
-| 9 | Partial | `app/storage.py`, `tests/test_storage_uploads.py` | Add object storage adapter and image-processing policy. |
+| 9 | Done | `app/storage.py`, `app/config.py`, `docs/IMAGE_STORAGE.md`, `tests/test_storage_uploads.py`, `tests/test_startup_safety.py`, `tests/test_data_portability.py` | Revisit only when adding signed URL delivery, image transformations, or a deployment-specific bucket policy. |
 | 10 | Done | `app/models.py`, `app/schemas.py`, `app/api.py`, `migrations/versions/20260703_0010_listing_category_attributes.py`, `tests/test_data_invariants.py`, `tests/test_category_mappings.py`, `tests/test_data_portability.py` | Keep category attributes aligned with adapter fields, portability formats, and UI controls. |
 | 11 | Done | `app/adapters/base.py`, `app/adapters/assisted.py`, `app/adapters/registry.py`, `tests/test_api.py` | Keep capability metadata aligned when adapters or platform modes change. |
 | 12 | Done | `docs/PLATFORM_COMPLETION_CONTRACTS.md`, `tests/test_platform_contracts.py`, `app/adapters/` | Keep platform contracts current when adapters, categories, blocked actions, or official API modes change. |

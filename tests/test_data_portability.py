@@ -10,6 +10,7 @@ from app.models import (
     AuditEvent,
     CategoryMapping,
     Listing,
+    ListingImage,
     ListingTemplate,
     PlatformAccount,
     PlatformOAuthState,
@@ -265,6 +266,37 @@ def test_image_zip_export_contains_manifest_and_owned_images():
         assert event.event_data == {"images": 1, "missing": 0}
     finally:
         db.close()
+
+
+def test_image_zip_export_reports_object_storage_images_in_manifest():
+    headers = auth_headers("s3-image-export")
+    create_portable_workspace(headers)
+    listing = client.get("/api/listings", headers=headers).json()[0]
+    db = SessionLocal()
+    try:
+        db.add(
+            ListingImage(
+                listing_id=listing["id"],
+                filename="remote.png",
+                storage_path="s3://autoposter-images/uploads/1/remote.png",
+                content_type="image/png",
+                file_size=123,
+                checksum_sha256="b" * 64,
+                position=0,
+            )
+        )
+        db.commit()
+    finally:
+        db.close()
+
+    response = client.get("/api/export/images.zip", headers=headers)
+
+    assert response.status_code == 200, response.text
+    with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+        manifest = json.loads(archive.read("manifest.json"))
+        assert manifest["images"] == []
+        assert manifest["missing"][0]["filename"] == "remote.png"
+        assert manifest["missing"][0]["reason"] == "object_storage_not_exportable"
 
 
 def test_privacy_audit_events_are_reviewable_and_owner_scoped():

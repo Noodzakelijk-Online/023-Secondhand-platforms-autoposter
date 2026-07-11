@@ -42,9 +42,15 @@ def test_supported_runtime_configuration_modes_are_accepted():
     validate_startup_safety(settings)
 
 
+def test_s3_storage_configuration_mode_is_accepted():
+    settings = Settings(storage_backend="s3", s3_bucket="autoposter-images")
+
+    validate_startup_safety(settings)
+
+
 def test_invalid_runtime_configuration_values_are_rejected():
     settings = Settings(
-        storage_backend="s3",
+        storage_backend="ftp",
         log_format="xml",
         max_upload_size_mb=0,
         login_rate_limit_attempts=0,
@@ -63,7 +69,7 @@ def test_invalid_runtime_configuration_values_are_rejected():
         validate_startup_safety(settings)
 
     message = str(exc.value)
-    assert "STORAGE_BACKEND must be local" in message
+    assert "STORAGE_BACKEND must be local or s3" in message
     assert "LOG_FORMAT must be text or json" in message
     assert "MAX_UPLOAD_SIZE_MB must be positive" in message
     assert "LOGIN_RATE_LIMIT_ATTEMPTS must be positive" in message
@@ -76,6 +82,13 @@ def test_invalid_runtime_configuration_values_are_rejected():
     assert "PLATFORM_RATE_LIMIT_SECONDS must be non-negative" in message
     assert "SESSION_EXPIRE_HOURS must be positive" in message
     assert "AUDIT_RETENTION_DAYS must be non-negative" in message
+
+
+def test_s3_storage_requires_bucket():
+    settings = Settings(storage_backend="s3", s3_bucket="")
+
+    with pytest.raises(RuntimeError, match="S3_BUCKET"):
+        validate_startup_safety(settings)
 
 
 def test_feature_flags_are_reported_from_settings():

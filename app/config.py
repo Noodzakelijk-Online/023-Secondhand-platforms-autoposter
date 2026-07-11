@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     public_base_url: str = "http://127.0.0.1:8000"
     upload_dir: str = "./data/uploads"
     storage_backend: str = "local"
+    s3_bucket: str = ""
+    s3_region: str = ""
+    s3_endpoint_url: str = ""
+    s3_key_prefix: str = "uploads"
     max_upload_size_mb: int = 10
     allowed_image_types: str = "image/jpeg,image/png,image/gif,image/webp"
     cors_origins: str = "*"
@@ -142,8 +146,10 @@ def validate_startup_safety(settings: Settings) -> None:
     problems: list[str] = []
     if settings.auth_transport.lower() != "bearer":
         problems.append("AUTH_TRANSPORT must be bearer")
-    if settings.storage_backend.lower() != "local":
-        problems.append("STORAGE_BACKEND must be local")
+    if settings.storage_backend.lower() not in {"local", "s3"}:
+        problems.append("STORAGE_BACKEND must be local or s3")
+    if settings.storage_backend.lower() == "s3" and not settings.s3_bucket.strip():
+        problems.append("S3_BUCKET must be set when STORAGE_BACKEND=s3")
     if settings.log_format.lower() not in {"text", "json"}:
         problems.append("LOG_FORMAT must be text or json")
     if settings.max_upload_size_mb <= 0:

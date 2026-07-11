@@ -55,7 +55,8 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `SECRET_KEY`: set to a long random value in production.
 - `DATABASE_URL`: SQLAlchemy database URL. Default: `sqlite:///./data/autoposter.db`.
 - `UPLOAD_DIR`: image upload directory. Default: `./data/uploads`.
-- `STORAGE_BACKEND`: storage adapter. Current supported value: `local`.
+- `STORAGE_BACKEND`: storage adapter. Supported values: `local`, `s3`.
+- `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT_URL`, `S3_KEY_PREFIX`: optional S3-compatible object storage settings used when `STORAGE_BACKEND=s3`.
 - `MAX_UPLOAD_SIZE_MB`: maximum image upload size.
 - `ALLOWED_IMAGE_TYPES`: comma-separated accepted image MIME types.
 - `CORS_ORIGINS`: comma-separated allowed origins or `*` for local development.
@@ -160,8 +161,11 @@ Image uploads are validated before storage:
 - SHA-256 checksum is stored
 - duplicate images on the same listing are ignored
 - local storage is isolated under `UPLOAD_DIR/{listing_id}/`
+- S3-compatible storage can be enabled with `STORAGE_BACKEND=s3`
 
 Only JPEG, PNG, GIF, and WebP are enabled by default.
+
+See `docs/IMAGE_STORAGE.md` for the storage backend and image policy details.
 
 ## Platform support
 

@@ -42,8 +42,8 @@ The adapter system is intentionally assisted-only for registered production plat
 | --- | --- | --- |
 | Deployment database | SQLite/local verification is strong; migrations exist. | Prove Alembic migration and worker behavior against the target PostgreSQL database. |
 | Edge security | App-level auth, CSP/security headers, bearer-only posture, and throttling exist. | Capture host/proxy/WAF rate-limit evidence as a release-readiness item. |
-| Official APIs | eBay OAuth consent foundation exists. | Token exchange, refresh, secret-manager storage, sandbox publish proof, quota handling, and official adapter behavior remain unimplemented. |
-| Storage backend | Local storage is hardened. | Add and test S3/object storage before remote production storage. |
+| Official APIs | eBay OAuth/token foundations exist. | Seller policy checks, sandbox publish proof, and official adapter behavior remain unimplemented. |
+| Storage backend | Local and S3-compatible storage paths are implemented with validation and tests. | Add signed URL delivery or image transformations only if product/deployment scope requires them. |
 | Browser evidence | Source-level UI wiring and tests exist. | Execute browser, responsive, accessibility, import/export, retry, and prepublish walkthroughs. |
 | Frontend architecture | Static frontend is sufficient for current scope. | Split frontend modules only if continued growth makes state/event handling risky. |
 | Data portability | Sanitized JSON export/import, listing CSV import/export, and separate image ZIP export exist with tests. | Keep privacy rules explicit as new portable fields are added. |

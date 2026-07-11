@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 70.
-- Partial: 19.
+- Done: 71.
+- Partial: 18.
 - Not started: 0.
 
 ## Phase Status
@@ -28,7 +28,7 @@ Legend:
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed failed-login throttling exist; external edge rate limits still need deployment-specific evidence. |
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Done | Request IDs, security headers, structured error envelopes, OpenAPI route tags, bounded list pagination/filtering, login throttling, and general API rate limiting exist with regression coverage. |
-| 9 | Secure Image And File Storage | Partial | Local storage abstraction, safe filenames, size/MIME/signature validation, checksums, duplicate detection, and image reordering exist; S3 adapter and deeper image processing still needed. |
+| 9 | Secure Image And File Storage | Done | Local and S3-compatible storage backends, safe filenames, size/MIME/signature validation, checksums, duplicate detection, image reordering, delete cleanup, image ZIP manifest handling, and storage policy docs exist. |
 | 10 | Listing Model Completion | Done | Master listing includes delivery flags, shipping cost, dimensions, weight, brand, model, color, material, category-specific attributes, notes, internal notes, revisioning, condition/status invariants, and category mapping coverage. |
 | 11 | Platform Adapter System | Done | Adapter contract, registry, assisted adapters, capability metadata, compliance notes, required fields, supported categories, and API/UI exposure exist. |
 | 12 | Platform-Specific Completion Contract | Done | See `docs/PLATFORM_COMPLETION_CONTRACTS.md`; registered adapters have tested per-platform validation, mapping, assisted publish outcomes, blocked actions, and capability metadata. |

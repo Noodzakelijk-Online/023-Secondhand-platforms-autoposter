@@ -3,6 +3,7 @@ import re
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol
 
 from fastapi import HTTPException, UploadFile
 
@@ -35,23 +36,99 @@ class ValidatedUpload:
     extension: str
 
 
+class StorageBackend(Protocol):
+    def save_listing_image(self, listing_id: int, filename: str, upload: ValidatedUpload) -> str:
+        raise NotImplementedError
+
+    def delete(self, storage_path: str) -> None:
+        raise NotImplementedError
+
+    def read_local_file(self, storage_path: str) -> Path | None:
+        raise NotImplementedError
+
+
 class LocalStorage:
     def __init__(self, root: Path):
         self.root = root
 
-    def save_listing_image(self, listing_id: int, filename: str, content: bytes) -> Path:
+    def save_listing_image(self, listing_id: int, filename: str, upload: ValidatedUpload) -> str:
         listing_dir = self.root / str(listing_id)
         listing_dir.mkdir(parents=True, exist_ok=True)
         target = listing_dir / filename
-        target.write_bytes(content)
+        target.write_bytes(upload.content)
+        return str(target)
+
+    def delete(self, storage_path: str) -> None:
+        remove_local_file(storage_path)
+
+    def read_local_file(self, storage_path: str) -> Path | None:
+        target = Path(storage_path).resolve()
+        upload_root = self.root.resolve()
+        try:
+            target.relative_to(upload_root)
+        except ValueError:
+            return None
+        if not target.exists():
+            return None
         return target
 
 
-def get_storage(settings: Settings | None = None) -> LocalStorage:
+class S3Storage:
+    def __init__(self, settings: Settings):
+        try:
+            import boto3
+        except ImportError as exc:  # pragma: no cover - dependency is present in supported installs
+            raise RuntimeError("boto3 is required when STORAGE_BACKEND=s3") from exc
+        self.bucket = settings.s3_bucket
+        self.prefix = settings.s3_key_prefix.strip("/")
+        self.client = boto3.client(
+            "s3",
+            region_name=settings.s3_region or None,
+            endpoint_url=settings.s3_endpoint_url or None,
+        )
+
+    def save_listing_image(self, listing_id: int, filename: str, upload: ValidatedUpload) -> str:
+        key = self._key(listing_id, filename)
+        self.client.put_object(
+            Bucket=self.bucket,
+            Key=key,
+            Body=upload.content,
+            ContentType=upload.content_type,
+            Metadata={
+                "original-filename": upload.original_filename,
+                "checksum-sha256": upload.checksum_sha256,
+            },
+        )
+        return f"s3://{self.bucket}/{key}"
+
+    def delete(self, storage_path: str) -> None:
+        parsed = parse_s3_uri(storage_path)
+        if not parsed:
+            return
+        bucket, key = parsed
+        if bucket != self.bucket:
+            return
+        self.client.delete_object(Bucket=bucket, Key=key)
+
+    def read_local_file(self, storage_path: str) -> Path | None:
+        return None
+
+    def _key(self, listing_id: int, filename: str) -> str:
+        key = f"{listing_id}/{filename}"
+        if self.prefix:
+            return f"{self.prefix}/{key}"
+        return key
+
+
+def get_storage(settings: Settings | None = None) -> StorageBackend:
     settings = settings or get_settings()
-    if settings.storage_backend != "local":
+    backend = settings.storage_backend.lower()
+    if backend == "local":
+        return LocalStorage(settings.upload_path)
+    if backend == "s3":
+        return S3Storage(settings)
+    else:
         raise RuntimeError(f"Unsupported storage backend: {settings.storage_backend}")
-    return LocalStorage(settings.upload_path)
 
 
 async def validate_and_store_image(
@@ -60,14 +137,7 @@ async def validate_and_store_image(
     settings: Settings | None = None,
 ) -> StoredFile:
     validated = await read_validated_image(file, settings)
-    target = store_validated_image(validated, listing_id, settings)
-    return StoredFile(
-        original_filename=validated.original_filename,
-        storage_path=str(target),
-        content_type=validated.content_type,
-        file_size=validated.file_size,
-        checksum_sha256=validated.checksum_sha256,
-    )
+    return store_validated_image(validated, listing_id, settings)
 
 
 async def read_validated_image(
@@ -106,10 +176,17 @@ def store_validated_image(
     upload: ValidatedUpload,
     listing_id: int,
     settings: Settings | None = None,
-) -> Path:
+) -> StoredFile:
     stem = Path(upload.original_filename).stem or "image"
     stored_name = f"{stem}-{uuid.uuid4().hex}{upload.extension}"
-    return get_storage(settings).save_listing_image(listing_id, stored_name, upload.content)
+    storage_path = get_storage(settings).save_listing_image(listing_id, stored_name, upload)
+    return StoredFile(
+        original_filename=upload.original_filename,
+        storage_path=storage_path,
+        content_type=upload.content_type,
+        file_size=upload.file_size,
+        checksum_sha256=upload.checksum_sha256,
+    )
 
 
 def detect_image_type(content: bytes) -> tuple[str, str]:
@@ -141,3 +218,23 @@ def remove_local_file(path: str) -> None:
             parent.rmdir()
     except OSError:
         return
+
+
+def delete_stored_file(storage_path: str, settings: Settings | None = None) -> None:
+    get_storage(settings).delete(storage_path)
+
+
+def local_storage_path(storage_path: str, settings: Settings | None = None) -> Path | None:
+    return get_storage(settings).read_local_file(storage_path)
+
+
+def parse_s3_uri(storage_path: str) -> tuple[str, str] | None:
+    if not storage_path.startswith("s3://"):
+        return None
+    remainder = storage_path[5:]
+    if "/" not in remainder:
+        return None
+    bucket, key = remainder.split("/", 1)
+    if not bucket or not key:
+        return None
+    return bucket, key

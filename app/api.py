@@ -3,7 +3,6 @@ import io
 import json
 import zipfile
 from datetime import UTC, datetime
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile
 from pydantic import ValidationError
@@ -56,7 +55,13 @@ from app.services.audit import record_audit_event
 from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
 from app.services.oauth import consume_ebay_authorization_callback, create_ebay_authorization_url
 from app.services.quality import analyze_listing_quality
-from app.storage import StoredFile, read_validated_image, safe_filename, store_validated_image
+from app.storage import (
+    delete_stored_file,
+    local_storage_path,
+    read_validated_image,
+    safe_filename,
+    store_validated_image,
+)
 
 router = APIRouter(prefix="/api")
 SENSITIVE_CONNECTION_KEYS = ("password", "secret", "token", "api_key", "apikey", "access_key", "private_key")
@@ -257,14 +262,7 @@ async def upload_image(
     )
     if duplicate:
         return _load_listing(db, user.id, listing.id)
-    target = store_validated_image(validated, listing.id)
-    stored_file = StoredFile(
-        original_filename=validated.original_filename,
-        storage_path=str(target),
-        content_type=validated.content_type,
-        file_size=validated.file_size,
-        checksum_sha256=validated.checksum_sha256,
-    )
+    stored_file = store_validated_image(validated, listing.id)
     position = len(listing.images)
     db.add(
         ListingImage(
@@ -308,6 +306,7 @@ def delete_image(
     image = next((item for item in listing.images if item.id == image_id), None)
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
+    delete_stored_file(image.storage_path)
     db.delete(image)
     db.commit()
     return _load_listing(db, user.id, listing.id)
@@ -939,7 +938,6 @@ def _listing_from_csv_row(row: dict[str, str]) -> ListingCreate:
 
 def _image_export_archive(listings: list[Listing]) -> tuple[bytes, dict]:
     settings = get_settings()
-    upload_root = settings.upload_path.resolve()
     manifest = {
         "version": "1",
         "exported_at": datetime.now(UTC).isoformat(),
@@ -950,7 +948,7 @@ def _image_export_archive(listings: list[Listing]) -> tuple[bytes, dict]:
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for listing in listings:
             for image in listing.images:
-                resolved_path = Path(image.storage_path).resolve()
+                local_path = local_storage_path(image.storage_path, settings)
                 entry = {
                     "listing_id": listing.id,
                     "listing_title": listing.title,
@@ -960,19 +958,17 @@ def _image_export_archive(listings: list[Listing]) -> tuple[bytes, dict]:
                     "checksum_sha256": image.checksum_sha256,
                     "position": image.position,
                 }
-                try:
-                    resolved_path.relative_to(upload_root)
-                except ValueError:
-                    manifest["missing"].append({**entry, "reason": "outside_upload_directory"})
-                    continue
-                if not resolved_path.exists():
-                    manifest["missing"].append({**entry, "reason": "file_missing"})
+                if not local_path:
+                    reason = (
+                        "object_storage_not_exportable" if image.storage_path.startswith("s3://") else "file_missing"
+                    )
+                    manifest["missing"].append({**entry, "reason": reason})
                     continue
                 archive_name = (
                     f"listing-{listing.id}/"
-                    f"{image.position:03d}-{image.id}-{safe_filename(image.filename or resolved_path.name)}"
+                    f"{image.position:03d}-{image.id}-{safe_filename(image.filename or local_path.name)}"
                 )
-                archive.write(resolved_path, archive_name)
+                archive.write(local_path, archive_name)
                 manifest["images"].append({**entry, "archive_path": archive_name})
         archive.writestr("manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
     return buffer.getvalue(), manifest

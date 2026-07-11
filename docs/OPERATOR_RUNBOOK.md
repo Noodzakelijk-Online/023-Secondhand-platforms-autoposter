@@ -80,7 +80,7 @@ Expected production status is `ok`. A warning requires operator review. An error
 - Use job retry only after confirming the listing and platform account state.
 - eBay OAuth consent can create an account with `status=needs_token_exchange` when `EBAY_OAUTH_CLIENT_SECRET` is absent, or `status=connected` when token exchange succeeds through the configured secret store. Official eBay listing publication remains disabled until live sandbox listing proof and seller-policy checks are added.
 - Investigate repeated stale-running recovery logs; they can indicate worker crashes, timeouts, or deployment restarts during publishing work.
-- Keep uploads on persistent storage and include them in backups.
+- Keep uploads on persistent local storage or private S3-compatible object storage and include that storage in backups.
 - Keep database backups separate from application deploy artifacts.
 - Run `python -m app.audit_retention` on the chosen retention schedule to purge audit events older than `AUDIT_RETENTION_DAYS`.
 - Do not run legacy Selenium scripts inside the web or worker process.

@@ -1,5 +1,9 @@
 import uuid
+from pathlib import Path
+from types import SimpleNamespace
 
+from app.config import Settings
+from app.storage import S3Storage, ValidatedUpload, parse_s3_uri
 from tests.test_api import client
 
 PNG_BYTES = (
@@ -115,3 +119,85 @@ def test_images_can_be_reordered():
     reordered = reorder_response.json()["images"]
     assert [image["id"] for image in reordered] == list(reversed(image_ids))
     assert [image["position"] for image in reordered] == [0, 1]
+
+
+def test_delete_image_removes_local_file():
+    headers = auth_headers()
+    listing_id = create_listing(headers)
+    upload_response = client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=headers,
+        files={"file": ("delete-me.png", PNG_BYTES, "image/png")},
+    )
+    assert upload_response.status_code == 200, upload_response.text
+    image = upload_response.json()["images"][0]
+
+    delete_response = client.delete(f"/api/listings/{listing_id}/images/{image['id']}", headers=headers)
+
+    assert delete_response.status_code == 200, delete_response.text
+    assert not Path(image["storage_path"]).exists()
+
+
+def test_s3_storage_writes_metadata_and_deletes_objects(monkeypatch):
+    calls = []
+
+    class FakeS3Client:
+        def put_object(self, **kwargs):
+            calls.append(("put", kwargs))
+
+        def delete_object(self, **kwargs):
+            calls.append(("delete", kwargs))
+
+    def fake_client(service, region_name=None, endpoint_url=None):
+        assert service == "s3"
+        assert region_name == "eu-west-1"
+        assert endpoint_url == "https://s3.example.test"
+        return FakeS3Client()
+
+    monkeypatch.setitem(
+        __import__("sys").modules,
+        "boto3",
+        SimpleNamespace(client=fake_client),
+    )
+    settings = Settings(
+        storage_backend="s3",
+        s3_bucket="autoposter-images",
+        s3_region="eu-west-1",
+        s3_endpoint_url="https://s3.example.test",
+        s3_key_prefix="tenant-a/uploads",
+    )
+    upload = ValidatedUpload(
+        original_filename="chair.png",
+        content=PNG_BYTES,
+        content_type="image/png",
+        file_size=len(PNG_BYTES),
+        checksum_sha256="a" * 64,
+        extension=".png",
+    )
+    storage = S3Storage(settings)
+
+    uri = storage.save_listing_image(42, "chair-uuid.png", upload)
+    storage.delete(uri)
+
+    assert uri == "s3://autoposter-images/tenant-a/uploads/42/chair-uuid.png"
+    assert parse_s3_uri(uri) == ("autoposter-images", "tenant-a/uploads/42/chair-uuid.png")
+    assert calls[0] == (
+        "put",
+        {
+            "Bucket": "autoposter-images",
+            "Key": "tenant-a/uploads/42/chair-uuid.png",
+            "Body": PNG_BYTES,
+            "ContentType": "image/png",
+            "Metadata": {
+                "original-filename": "chair.png",
+                "checksum-sha256": "a" * 64,
+            },
+        },
+    )
+    assert calls[1] == (
+        "delete",
+        {
+            "Bucket": "autoposter-images",
+            "Key": "tenant-a/uploads/42/chair-uuid.png",
+        },
+    )

@@ -27,7 +27,7 @@ Before `alembic upgrade head` in production:
 
 1. Stop the worker.
 2. Take a database backup.
-3. Snapshot/copy uploads.
+3. Snapshot/copy uploads or export the configured S3-compatible image bucket/prefix.
 4. Record current git SHA and Alembic revision.
 5. Run the migration.
 6. Run `python -m app.doctor --json`.
@@ -37,7 +37,7 @@ Before `alembic upgrade head` in production:
 
 1. Stop worker and web processes.
 2. Restore database.
-3. Restore uploads to the configured `UPLOAD_DIR`.
+3. Restore uploads to the configured `UPLOAD_DIR`, or restore the configured S3-compatible bucket/prefix.
 4. Deploy the matching git commit, or a commit known to support the restored schema.
 5. Run `alembic upgrade head`.
 6. Run `python -m app.doctor --json`.
