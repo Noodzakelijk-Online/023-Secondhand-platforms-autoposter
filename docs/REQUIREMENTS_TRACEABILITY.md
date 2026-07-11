@@ -12,7 +12,7 @@ Legend:
 | 0 | Done | `docs/REPOSITORY_PROVENANCE.md`, `docs/COMPLETION_MATRIX.md`, `git status` practice in local verification | Refresh provenance when branch, remote, or release baseline changes. |
 | 1 | Done | `docs/DEEP_TECHNICAL_AUDIT.md`, `docs/RED_TEAM_REVIEW.md`, `docs/TECHNICAL_DEBT_REGISTER.md`, `tests/test_deep_technical_audit.py` | Refresh audit after major route, model, storage, auth, adapter, worker, or deployment changes. |
 | 2 | Done | `docs/PRODUCT_DEFINITION.md` | Keep aligned when product scope changes. |
-| 3 | Partial | `app/main.py`, `app/api.py`, `app/services/` | Split large route module if product surface grows. |
+| 3 | Done | `app/main.py`, `app/routes/auth.py`, `app/routes/system.py`, `app/dependencies.py`, `app/api.py`, `docs/ARCHITECTURE.md`, `tests/test_architecture.py` | Keep route modules aligned when new product areas are added. |
 | 4 | Partial | `app/models.py`, `migrations/versions/`, `tests/test_migrations.py` | Prove migrations on PostgreSQL target. |
 | 5 | Partial | `app/config.py`, `.env.example`, `tests/test_startup_safety.py` | Capture deployment-specific env evidence. |
 | 6 | Partial | `app/security.py`, `app/rate_limit.py`, `tests/test_auth_security.py` | Add edge/proxy rate-limit evidence. |

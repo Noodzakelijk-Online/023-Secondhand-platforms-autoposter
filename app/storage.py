@@ -128,3 +128,16 @@ def safe_filename(filename: str) -> str:
     name = Path(filename).name
     name = re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip(".-")
     return name[:180] or "upload"
+
+
+def remove_local_file(path: str) -> None:
+    if not path:
+        return
+    try:
+        target = Path(path)
+        target.unlink(missing_ok=True)
+        parent = target.parent
+        if parent.exists() and not any(parent.iterdir()):
+            parent.rmdir()
+    except OSError:
+        return

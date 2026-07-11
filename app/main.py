@@ -4,11 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api import router
+from app.api import router as product_router
 from app.config import get_settings, validate_startup_safety
 from app.database import init_db
 from app.middleware import setup_middleware
 from app.observability import configure_logging
+from app.routes.auth import router as auth_router
+from app.routes.system import router as system_router
 
 
 def create_app() -> FastAPI:
@@ -29,7 +31,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.include_router(router)
+    app.include_router(system_router)
+    app.include_router(auth_router)
+    app.include_router(product_router)
 
     public_dir = Path(__file__).resolve().parent.parent / "public"
     app.mount("/uploads", StaticFiles(directory=settings.upload_path), name="uploads")

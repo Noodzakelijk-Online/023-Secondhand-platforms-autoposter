@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 67.
-- Partial: 22.
+- Done: 68.
+- Partial: 21.
 - Not started: 0.
 
 ## Phase Status
@@ -22,7 +22,7 @@ Legend:
 | 0 | Repository Integrity And Starting Point Verification | Done | See `docs/REPOSITORY_PROVENANCE.md`; branch, remote, baseline commit, verification commands, and release cleanliness rules are recorded. |
 | 1 | Deep Technical Audit | Done | See `docs/DEEP_TECHNICAL_AUDIT.md`; route/model/storage/auth/adapter/job/frontend/test risks are reviewed with remaining deployment gates called out. |
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
-| 3 | Architecture Cleanup | Partial | FastAPI structure exists; route modules are not split as deeply as requested. |
+| 3 | Architecture Cleanup | Done | Route modules are split by responsibility across `app/routes/auth.py`, `app/routes/system.py`, `app/api.py`, and shared dependencies in `app/dependencies.py`; see `docs/ARCHITECTURE.md` and `tests/test_architecture.py`. |
 | 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
 | 5 | Configuration And Startup Safety | Partial | `.env.example`, production startup guards, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
 | 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed failed-login throttling exist; external edge rate limits still need deployment-specific evidence. |

@@ -17,6 +17,8 @@ Legacy Selenium scripts remain in the repository as reference/manual tooling, bu
 
 Install `requirements-legacy.txt` only if you need to run the old Selenium scripts in a compatible Python environment.
 
+See `docs/ARCHITECTURE.md` for the current backend route/module layout.
+
 ## Local setup
 
 ```bash

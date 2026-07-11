@@ -25,6 +25,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 
 | Layer | Files | Purpose |
 | --- | --- | --- |
+| Architecture boundaries | `tests/test_architecture.py` | Verifies auth/system routes and shared request dependencies stay split from product routes. |
 | API smoke and route contract | `tests/test_api.py`, `tests/test_api_hardening.py` | Core listing/account/template flow, platform metadata, direct detail/delete routes, request IDs, metrics, pagination, filters, and structured errors. |
 | Acceptance workflow | `tests/test_acceptance_workflow.py` | Seller setup-to-portability API acceptance flow covering accounts, templates, mappings, listing/image creation, quality, validation, assisted jobs, analytics, export/import, and audit activity. |
 | Owner isolation | `tests/test_owner_isolation.py` | Cross-user visibility and mutation boundaries for owned listings, jobs, accounts, templates, and category mappings. |
