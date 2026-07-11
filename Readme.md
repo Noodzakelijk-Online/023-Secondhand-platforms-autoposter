@@ -303,6 +303,7 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Release readiness: `docs/RELEASE_READINESS.md`
 - Supply chain and dependencies: `docs/SUPPLY_CHAIN.md`
 - State machines: `docs/STATE_MACHINES.md`
+- Domain model: `docs/DOMAIN_MODEL.md`
 - Feature flags: `docs/FEATURE_FLAGS.md`
 - Demo mode: `docs/DEMO_MODE.md`
 - Fake provider lab: `docs/FAKE_PROVIDER_LAB.md`

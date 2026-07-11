@@ -72,7 +72,7 @@ Legend:
 | 60 | Partial | `app/services/localization.py`, `/api/localization`, `docs/INTERNATIONALIZATION.md`, `tests/test_internationalization.py` | Add full frontend copy catalog, user locale preference, translated messages, and browser evidence. |
 | 61 | Done | `app/feature_flags.py`, `docs/FEATURE_FLAGS.md` | Keep flags safety-reviewed. |
 | 62 | Done | `app/services/job_state.py`, `docs/STATE_MACHINES.md` | Keep transition docs aligned. |
-| 63 | Partial | SQLAlchemy domain models and schema invariants | Refine aggregate boundaries if needed. |
+| 63 | Done | `docs/DOMAIN_MODEL.md`, `app/models.py`, `tests/test_domain_model.py`, `tests/test_data_invariants.py`, `tests/test_listing_revisions.py` | Keep aggregate cascade and invariant coverage aligned with new domain entities. |
 | 64 | Done | Schema validators, `tests/test_data_invariants.py` | Keep invariants aligned with new fields. |
 | 65 | Done | Explicit listing state transition helpers in `public/app.js`, `tests/test_frontend_state_consistency.py` | Keep stale review-state invalidation aligned with new listing mutation paths. |
 | 66 | Partial | Prepublish review panel in UI | Add executed walkthrough evidence. |

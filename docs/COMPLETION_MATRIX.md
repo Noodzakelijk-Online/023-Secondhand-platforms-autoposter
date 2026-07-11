@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 63.
-- Partial: 26.
+- Done: 64.
+- Partial: 25.
 - Not started: 0.
 
 ## Phase Status
@@ -82,7 +82,7 @@ Legend:
 | 60 | Internationalization | Partial | Locale configuration, startup validation, `/api/localization`, and `docs/INTERNATIONALIZATION.md` exist; visible UI copy is still mostly English and full locale catalogs are future work. |
 | 61 | Feature Flags | Done | `app.feature_flags` centralizes runtime flags, production safety checks, doctor output, and docs. |
 | 62 | State Machines | Done | Publishing job transitions are centralized in `app.services.job_state` with tests and docs. |
-| 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |
+| 63 | Domain Model | Done | See `docs/DOMAIN_MODEL.md`; listing aggregate ownership, schema invariants, revisioning, idempotency, owner scoping, and cascade deletion have regression coverage. |
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Done | Listing selection, listing mutations, image changes, platform selection, and platform description edits now use explicit state-transition helpers that clear stale validation/quality/prepublish state with regression coverage. |
 | 66 | Prepublish Safety Review | Partial | Validation now feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, and mapped-field copy buttons; executed walkthrough evidence still needed. |

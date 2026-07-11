@@ -39,7 +39,7 @@ class User(Base, TimestampMixin):
     sessions: Mapped[list["UserSession"]] = relationship(
         cascade="all, delete-orphan", back_populates="user"
     )
-    listings: Mapped[list["Listing"]] = relationship(back_populates="owner")
+    listings: Mapped[list["Listing"]] = relationship(cascade="all, delete-orphan", back_populates="owner")
 
 
 class UserSession(Base):
@@ -110,7 +110,7 @@ class Listing(Base, TimestampMixin):
     platform_mappings: Mapped[list["PlatformListingMapping"]] = relationship(
         cascade="all, delete-orphan", back_populates="listing"
     )
-    jobs: Mapped[list["PublishingJob"]] = relationship(back_populates="listing")
+    jobs: Mapped[list["PublishingJob"]] = relationship(cascade="all, delete-orphan", back_populates="listing")
     drafts: Mapped[list["ListingDraft"]] = relationship(
         cascade="all, delete-orphan", back_populates="listing"
     )
@@ -231,6 +231,9 @@ class PublishingJob(Base, TimestampMixin):
     logs: Mapped[list["PublishingJobLog"]] = relationship(
         cascade="all, delete-orphan", back_populates="job", order_by="PublishingJobLog.created_at"
     )
+    publication_attempts: Mapped[list["PublicationAttempt"]] = relationship(
+        cascade="all, delete-orphan", back_populates="job"
+    )
 
 
 class PublishingJobLog(Base):
@@ -285,6 +288,8 @@ class PublicationAttempt(Base):
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     payload_snapshot: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+    job: Mapped[PublishingJob] = relationship(back_populates="publication_attempts")
 
 
 class AuditEvent(Base):
