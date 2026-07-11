@@ -261,6 +261,20 @@ function platformByKey(key) {
   return state.platforms.find((platform) => platform.key === key) || { key, name: key, compliance_notes: [] };
 }
 
+function resetListingReviewState() {
+  state.validationResults = {};
+  state.qualityResult = null;
+}
+
+function selectListing(listingId, { resetReview = true } = {}) {
+  state.selectedListingId = listingId ? Number(listingId) : null;
+  if (resetReview) resetListingReviewState();
+}
+
+function markSelectedListingMutated() {
+  resetListingReviewState();
+}
+
 async function loadAll() {
   const [
     platforms,
@@ -297,11 +311,9 @@ async function loadAll() {
   );
   state.analytics = analytics;
   if (state.selectedListingId && !state.listings.some((listing) => listing.id === state.selectedListingId)) {
-    state.selectedListingId = null;
-    state.validationResults = {};
-    state.qualityResult = null;
+    selectListing(null);
   }
-  if (!state.selectedListingId && state.listings.length) state.selectedListingId = state.listings[0].id;
+  if (!state.selectedListingId && state.listings.length) selectListing(state.listings[0].id, { resetReview: false });
   render();
   scheduleJobPolling();
 }
@@ -1062,7 +1074,7 @@ $("#newListingButton").addEventListener("click", async () => {
     method: "POST",
     body: JSON.stringify({ title: "Untitled listing", status: "draft" }),
   });
-  state.selectedListingId = listing.id;
+  selectListing(listing.id);
   state.listingQuery.search = "";
   state.listingQuery.status = "";
   state.listingQuery.sort = "-updated_at";
@@ -1251,18 +1263,14 @@ $("#mappingNextPage").addEventListener("click", async () => {
 $("#listingList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");
   if (!item) return;
-  state.selectedListingId = Number(item.dataset.listingId);
-  state.validationResults = {};
-  state.qualityResult = null;
+  selectListing(item.dataset.listingId);
   renderListings();
 });
 
 $("#recentListings").addEventListener("click", (event) => {
   const item = event.target.closest("[data-listing-id]");
   if (!item) return;
-  state.selectedListingId = Number(item.dataset.listingId);
-  state.validationResults = {};
-  state.qualityResult = null;
+  selectListing(item.dataset.listingId);
   show("listings");
   renderListings();
 });
@@ -1298,7 +1306,7 @@ $("#listingForm").addEventListener("submit", async (event) => {
     }),
   });
   await savePlatformOverrides();
-  state.qualityResult = null;
+  markSelectedListingMutated();
   $("#editorMessage").textContent = "Saved";
   await loadAll();
 });
@@ -1316,7 +1324,7 @@ $("#duplicateButton").addEventListener("click", async () => {
   const listing = selectedListing();
   if (!listing) return;
   const clone = await api(`/listings/${listing.id}/duplicate`, { method: "POST" });
-  state.selectedListingId = clone.id;
+  selectListing(clone.id);
   await loadAll();
 });
 
@@ -1324,7 +1332,7 @@ $("#deleteListingButton").addEventListener("click", async () => {
   const listing = selectedListing();
   if (!listing) return;
   await api(`/listings/${listing.id}`, { method: "DELETE" });
-  state.selectedListingId = null;
+  selectListing(null);
   await loadAll();
 });
 
@@ -1337,6 +1345,7 @@ $("#imageInput").addEventListener("change", async (event) => {
     await api(`/listings/${listing.id}/images`, { method: "POST", body: data, headers: {} });
   }
   event.target.value = "";
+  markSelectedListingMutated();
   await loadAll();
 });
 
@@ -1356,13 +1365,35 @@ $("#imageList").addEventListener("click", async (event) => {
       method: "PATCH",
       body: JSON.stringify({ image_ids: imageIds }),
     });
+    markSelectedListingMutated();
     await loadAll();
     return;
   }
   const deleteButton = event.target.closest("[data-delete-image]");
   if (!deleteButton) return;
   await api(`/listings/${listing.id}/images/${deleteButton.dataset.deleteImage}`, { method: "DELETE" });
+  markSelectedListingMutated();
   await loadAll();
+});
+
+$("#platformList").addEventListener("change", (event) => {
+  const checkbox = event.target.closest("[data-platform]");
+  if (!checkbox) return;
+  if (checkbox.checked) {
+    state.selectedPlatforms.add(checkbox.dataset.platform);
+  } else {
+    state.selectedPlatforms.delete(checkbox.dataset.platform);
+  }
+  resetListingReviewState();
+  const listing = selectedListing();
+  if (listing) renderPrepublishReview(listing);
+});
+
+$("#platformList").addEventListener("input", (event) => {
+  if (!event.target.closest("[data-platform-description]")) return;
+  resetListingReviewState();
+  const listing = selectedListing();
+  if (listing) renderPrepublishReview(listing);
 });
 
 $("#validateButton").addEventListener("click", async () => {
@@ -1434,8 +1465,7 @@ async function queueAssistedPackage({ forceNewRevision = false } = {}) {
     method: "POST",
     body: JSON.stringify({ platforms, process_now: true, force_new_revision: forceNewRevision }),
   });
-  state.validationResults = {};
-  state.qualityResult = null;
+  resetListingReviewState();
   state.jobQuery.offset = 0;
   $("#editorMessage").textContent = forceNewRevision ? "Fresh assisted package queued" : "Assisted package queued";
   show("queue");

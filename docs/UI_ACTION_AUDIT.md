@@ -49,7 +49,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 | Upload images | `#imageInput change` | `POST /api/listings/{id}/images` | Wired |
 | Reorder images | `#imageList click` move buttons | `PATCH /api/listings/{id}/images/order` | Wired |
 | Delete image | `#imageList click` delete button | `DELETE /api/listings/{id}/images/{image_id}` | Wired |
-| Select platform / edit platform description | platform cards plus save paths | `POST /api/listings/{id}/platforms` during save/validate/publish | Wired |
+| Select platform / edit platform description | `#platformList change/input` plus save paths | Local review-state invalidation; `POST /api/listings/{id}/platforms` during save/validate/publish | Wired |
 | Validate platforms | `#validateButton click` | `GET /api/listings/{id}/validate` | Wired |
 | Copy prepublish package or field | `#prepublishReview click` | Clipboard/local fallback | Wired |
 | Queue assisted package | `#publishButton click` | `POST /api/listings/{id}/publish` | Wired |

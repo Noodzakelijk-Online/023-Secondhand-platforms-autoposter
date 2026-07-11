@@ -74,7 +74,7 @@ Legend:
 | 62 | Done | `app/services/job_state.py`, `docs/STATE_MACHINES.md` | Keep transition docs aligned. |
 | 63 | Partial | SQLAlchemy domain models and schema invariants | Refine aggregate boundaries if needed. |
 | 64 | Done | Schema validators, `tests/test_data_invariants.py` | Keep invariants aligned with new fields. |
-| 65 | Partial | Central frontend state object in `public/app.js` | Add deeper consistency rules/tests. |
+| 65 | Done | Explicit listing state transition helpers in `public/app.js`, `tests/test_frontend_state_consistency.py` | Keep stale review-state invalidation aligned with new listing mutation paths. |
 | 66 | Partial | Prepublish review panel in UI | Add executed walkthrough evidence. |
 | 67 | Done | Adapter compliance notes from `GET /api/platforms`, platform/prepublish UI in `public/app.js`, `tests/test_ui_wording.py` | Keep notes visible when adapters or compliance language change. |
 | 68 | Done | `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Update with each official API candidate. |

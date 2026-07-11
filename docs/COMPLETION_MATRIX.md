@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 59.
-- Partial: 30.
+- Done: 60.
+- Partial: 29.
 - Not started: 0.
 
 ## Phase Status
@@ -84,7 +84,7 @@ Legend:
 | 62 | State Machines | Done | Publishing job transitions are centralized in `app.services.job_state` with tests and docs. |
 | 63 | Domain Model | Partial | Domain entities exist; invariants/revisions need refinement. |
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
-| 65 | Frontend State Consistency | Partial | Basic state object exists; deeper consistency rules needed. |
+| 65 | Frontend State Consistency | Done | Listing selection, listing mutations, image changes, platform selection, and platform description edits now use explicit state-transition helpers that clear stale validation/quality/prepublish state with regression coverage. |
 | 66 | Prepublish Safety Review | Partial | Validation now feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, and mapped-field copy buttons; executed walkthrough evidence still needed. |
 | 67 | Platform Compliance UI | Done | Platform cards and prepublish review cards display adapter compliance notes alongside capabilities, posting links, validation warnings, and copy-ready package controls. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
