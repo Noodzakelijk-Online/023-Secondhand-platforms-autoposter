@@ -5,8 +5,8 @@ This checklist prevents the project from being described as finished, launched, 
 ## Claims That Must Stay Blocked
 
 - Do not claim final release readiness while `docs/RELEASE_READINESS.md` says `Status: not release-ready yet`.
-- Do not claim full automatic marketplace publishing while registered adapters remain assisted or token exchange is incomplete.
-- Do not claim eBay official API publishing until OAuth token exchange, refresh, seller policy checks, sandbox listing proof, quota handling, and official adapter behavior are implemented and tested.
+- Do not claim full automatic marketplace publishing while registered adapters remain assisted.
+- Do not claim eBay official API publishing until seller policy checks, live sandbox listing proof, quota handling, and official adapter behavior are implemented and tested.
 - Do not claim production readiness while the target database is behind Alembic head, production secrets are unproven, or worker status is not captured.
 - Do not claim browser/accessibility completion until `docs/BROWSER_ACCESSIBILITY_QA.md` has executed walkthrough evidence.
 - Do not claim fresh-clone readiness until a fresh-clone dry run is documented.

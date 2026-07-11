@@ -170,7 +170,7 @@ Only JPEG, PNG, GIF, and WebP are enabled by default.
 | Marktplaats | Assisted | Prepares mapped fields. User completes login, verification, category/payment choices, and final submission. |
 | Koopplein | Assisted | Prepares fields and tracks status. User confirms final post manually. |
 | Nextdoor | Assisted | Keeps neighborhood/account confirmations user-controlled. |
-| eBay | Assisted by default | OAuth consent foundation exists for future official API work, but token exchange and credential-dependent publishing are not enabled. |
+| eBay | Assisted by default | OAuth/token foundations exist for future official API work, but credential-dependent publishing is not enabled. |
 | Tweedehands | Assisted | Legacy import/posting scripts are separate and must be run only in compliant user-controlled sessions. |
 
 See `docs/PLATFORM_COMPLETION_CONTRACTS.md` for the tested per-platform completion contract.

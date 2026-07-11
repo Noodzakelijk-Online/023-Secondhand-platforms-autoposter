@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 69.
-- Partial: 20.
+- Done: 70.
+- Partial: 19.
 - Not started: 0.
 
 ## Phase Status
@@ -35,7 +35,7 @@ Legend:
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
 | 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields, and the listing editor now shows a prepublish review with copy-ready mapped fields; deeper manual completion workflows still need browser evidence. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Done | See `docs/UI_WORDING_AUDIT.md`; frontend wording uses assisted-package language and tests block automatic publishing overclaims. |
-| 16 | Official API Foundations | Partial | eBay OAuth consent URL/state/callback foundation exists with hashed short-lived state, sandbox-first config, and secret-manager token handoff status; real token exchange and official publishing are still not implemented. |
+| 16 | Official API Foundations | Done | eBay OAuth consent, state validation, token exchange, refresh, secret-store persistence, sandbox Inventory API probe boundary, and quota backoff foundations exist; official publishing remains disabled until adapter-specific sandbox listing proof is added. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
 | 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Done | Idempotency keys include user, listing, revision, platform, action, account, and operation mode; UI/API expose explicit regenerate-package flow for user-controlled fresh assisted packages. |

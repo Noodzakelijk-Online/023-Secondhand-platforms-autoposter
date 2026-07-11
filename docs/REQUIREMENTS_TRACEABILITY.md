@@ -25,7 +25,7 @@ Legend:
 | 13 | Done | `docs/PLATFORM_REALITY_REVIEW.md` | Re-review if platform policies change. |
 | 14 | Partial | `app/services/jobs.py`, `public/app.js` prepublish review | Add executed browser evidence. |
 | 15 | Done | `docs/UI_WORDING_AUDIT.md`, `tests/test_ui_wording.py`, `public/index.html`, `public/app.js` | Re-audit wording when platform modes, official API behavior, or primary job actions change. |
-| 16 | Partial | `app/services/oauth.py`, `tests/test_ebay_oauth.py` | Add token exchange, refresh, sandbox API proof. |
+| 16 | Done | `app/services/oauth.py`, `app/services/secrets.py`, `tests/test_ebay_oauth.py`, `tests/test_config.py`, `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Add an official publishing adapter only after live sandbox listing proof, seller-policy checks, and production secret-manager evidence exist. |
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |
 | 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |
 | 19 | Done | `app/services/jobs.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_listing_revisions.py`, `tests/test_regenerate_package_ui.py` | Keep regenerate/repost semantics explicit if future official API publishing or manual completion confirmation is added. |
@@ -40,7 +40,7 @@ Legend:
 | 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
 | 29 | Done | JSON, CSV, and image ZIP portability routes in `app/api.py`, Settings UI controls, `tests/test_data_portability.py` | Keep JSON privacy boundary, CSV fields, and image ZIP manifest aligned as listing fields change. |
 | 30 | Done | Data delete/export/import audit events, owner-scoped `/api/audit-events`, Settings privacy activity UI, retention purge, `tests/test_data_portability.py` | Keep audit events sanitized and scoped as new privacy-sensitive actions are added. |
-| 31 | Done | Account CRUD/status routes and UI, connection metadata scrubbing, eBay OAuth handoff records, `tests/test_api.py`, `tests/test_ebay_oauth.py` | Keep raw platform secrets out of app tables/API responses; real token exchange remains tracked under phase 16. |
+| 31 | Done | Account CRUD/status routes and UI, connection metadata scrubbing, eBay OAuth handoff records, `tests/test_api.py`, `tests/test_ebay_oauth.py` | Keep raw platform secrets out of app tables/API responses and exports. |
 | 32 | Done | Security headers in `app/middleware.py`, bearer-only CSRF posture in `docs/AUTH_SECURITY_POSTURE.md`, `tests/test_api_hardening.py` | Keep CSP and auth transport reviewed when frontend assets or auth mode change. |
 | 33 | Done | `docs/ERROR_HANDLING_UX.md`, `app/middleware.py`, `public/app.js`, `tests/test_api_hardening.py`, `tests/test_frontend_error_ux.py` | Keep error codes, retryability, and frontend display aligned when new error classes are introduced. |
 | 34 | Partial | Global message/banner, import error handling, retry guidance, and field recovery in `public/app.js` | Add executed browser evidence for error, retry, import, and validation recovery flows. |

@@ -18,7 +18,7 @@ This review checks whether the current product story matches what the repository
 | Claim | Status | Why it is not yet real |
 | --- | --- | --- |
 | Fully automated marketplace publishing | Not real | All registered adapters are assisted; no official API publish adapter exists. |
-| eBay official API listing creation | Not real | OAuth consent foundation exists, but token exchange, refresh, seller policy checks, and sandbox listing proof are missing. |
+| eBay official API listing creation | Not real | OAuth/token foundations exist, but seller policy checks, live sandbox listing proof, and an official publishing adapter are missing. |
 | Production launch readiness | Not real | Deployment database, worker, secrets, CORS, backup, browser, and fresh-clone evidence are missing. |
 | Non-technical user-proven usability | Not real | Only a proxy simulation exists; no observed external user walkthrough is recorded. |
 | Full multilingual UI | Not real | Locale metadata exists, but visible UI copy is mostly English. |

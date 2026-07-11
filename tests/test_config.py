@@ -22,6 +22,8 @@ def test_ebay_oauth_uses_sandbox_authorize_url_by_default():
     settings = Settings()
 
     assert settings.ebay_oauth_authorize_url == "https://auth.sandbox.ebay.com/oauth2/authorize"
+    assert settings.ebay_oauth_token_url == "https://api.sandbox.ebay.com/identity/v1/oauth2/token"
+    assert settings.ebay_inventory_api_base_url == "https://api.sandbox.ebay.com/sell/inventory/v1"
     assert "https://api.ebay.com/oauth/api_scope/sell.inventory" in settings.ebay_oauth_scope_list
 
 
@@ -30,10 +32,24 @@ def test_ebay_oauth_production_requires_client_and_redirect_config():
         app_env="development",
         ebay_oauth_environment="production",
         ebay_oauth_client_id="",
+        ebay_oauth_client_secret="",
         ebay_oauth_redirect_uri="",
     )
 
     with pytest.raises(RuntimeError, match="EBAY OAuth production mode"):
+        validate_startup_safety(settings)
+
+
+def test_ebay_oauth_production_requires_client_secret():
+    settings = Settings(
+        app_env="development",
+        ebay_oauth_environment="production",
+        ebay_oauth_client_id="client-id",
+        ebay_oauth_client_secret="",
+        ebay_oauth_redirect_uri="https://app.example.com/api/accounts/ebay/oauth/callback",
+    )
+
+    with pytest.raises(RuntimeError, match="EBAY_OAUTH_CLIENT_SECRET"):
         validate_startup_safety(settings)
 
 

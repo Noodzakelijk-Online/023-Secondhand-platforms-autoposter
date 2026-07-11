@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     default_locale: str = "en"
     supported_locales: str = "en,nl"
     ebay_oauth_client_id: str = ""
+    ebay_oauth_client_secret: str = ""
     ebay_oauth_redirect_uri: str = ""
     ebay_oauth_environment: str = "sandbox"
     ebay_oauth_scopes: str = (
@@ -45,12 +46,17 @@ class Settings(BaseSettings):
     )
     ebay_oauth_state_ttl_seconds: int = 600
     ebay_token_secret_ref_prefix: str = "secret://ebay/oauth"
+    token_secret_dir: str = "./data/secrets"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property
     def upload_path(self) -> Path:
         return Path(self.upload_dir)
+
+    @property
+    def token_secret_path(self) -> Path:
+        return Path(self.token_secret_dir)
 
     @property
     def max_upload_bytes(self) -> int:
@@ -108,8 +114,28 @@ class Settings(BaseSettings):
         return "https://auth.sandbox.ebay.com/oauth2/authorize"
 
     @property
+    def ebay_oauth_token_url(self) -> str:
+        if self.ebay_oauth_environment.lower() == "production":
+            return "https://api.ebay.com/identity/v1/oauth2/token"
+        return "https://api.sandbox.ebay.com/identity/v1/oauth2/token"
+
+    @property
+    def ebay_inventory_api_base_url(self) -> str:
+        if self.ebay_oauth_environment.lower() == "production":
+            return "https://api.ebay.com/sell/inventory/v1"
+        return "https://api.sandbox.ebay.com/sell/inventory/v1"
+
+    @property
     def ebay_oauth_configured(self) -> bool:
         return bool(self.ebay_oauth_client_id.strip() and self.ebay_oauth_redirect_uri.strip())
+
+    @property
+    def ebay_oauth_token_exchange_configured(self) -> bool:
+        return bool(
+            self.ebay_oauth_client_id.strip()
+            and self.ebay_oauth_client_secret.strip()
+            and self.ebay_oauth_redirect_uri.strip()
+        )
 
 
 def validate_startup_safety(settings: Settings) -> None:
@@ -156,6 +182,8 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("EBAY_OAUTH_SCOPES must contain at least one scope")
     if settings.ebay_oauth_environment.lower() == "production" and not settings.ebay_oauth_configured:
         problems.append("EBAY OAuth production mode requires EBAY_OAUTH_CLIENT_ID and EBAY_OAUTH_REDIRECT_URI")
+    if settings.ebay_oauth_environment.lower() == "production" and not settings.ebay_oauth_client_secret.strip():
+        problems.append("EBAY OAuth production mode requires EBAY_OAUTH_CLIENT_SECRET")
 
     if problems:
         detail = "; ".join(problems)

@@ -62,7 +62,7 @@ Exit rule: launch can proceed only with explicit acceptance of remaining partial
 | Gate | Status | Reason |
 | --- | --- | --- |
 | Gate 1 | Passing locally | Verification passes; matrix and traceability are guarded by tests. |
-| Gate 2 | Partial | Core safety tests exist; deployment-specific proof and secret-manager token exchange remain. |
+| Gate 2 | Partial | Core safety tests and OAuth token-exchange foundations exist; deployment-specific secret-manager proof remains. |
 | Gate 3 | Partial | Core workflow exists; executed browser/accessibility walkthrough evidence remains. |
 | Gate 4 | Partial | Local verification exists; fresh-clone and target deployment evidence remain. |
 | Gate 5 | Not started | Final search and acceptance are intentionally release-end activities. |

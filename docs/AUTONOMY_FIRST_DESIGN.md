@@ -18,7 +18,7 @@ The product should reduce repetitive listing work without taking control away fr
 | Quality assistant | Local deterministic assistant scores readiness and suggests copy. | User chooses whether to apply suggestions. |
 | Platform validation | Adapters identify missing fields and mapped fields. | User fixes fields and chooses target platforms. |
 | Assisted publishing | Jobs prepare posting packages and links. | User completes login, confirmation, payment, and final posting manually. |
-| eBay OAuth foundation | Consent URL and callback state exist. | Token exchange and official API publishing remain blocked until explicitly implemented. |
+| eBay OAuth foundation | Consent URL, callback state, token exchange, refresh, and sandbox Inventory API probe boundaries exist. | Official API publishing remains blocked until explicitly implemented and proven. |
 | Data portability | Export/import and account deletion are self-service. | User initiates export, import, or deletion. |
 | Local analytics | Dashboard derives aggregate insights locally. | No external tracking or cross-user analytics. |
 
@@ -45,7 +45,7 @@ Blocked until further evidence:
 - A button labeled too strongly could imply automatic posting. UI and docs must keep assisted wording.
 - Applying quality suggestions should never overwrite user copy without a visible action.
 - Analytics should remain aggregate and local to avoid becoming hidden behavior tracking.
-- Official API foundations must stay fail-closed until secret-manager-backed token exchange exists.
+- Official publishing must stay fail-closed until seller-policy checks, live sandbox listing proof, and production secret-manager evidence exist.
 
 ## Next Improvements
 

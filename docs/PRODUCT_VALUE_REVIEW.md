@@ -22,7 +22,7 @@ A non-technical secondhand seller wants to create one good listing, reuse it acr
 - The app reduces preparation effort, but final marketplace submission remains manual for all platforms.
 - Browser walkthrough evidence is still missing, so non-technical usability is not proven.
 - Platform-specific category and compliance depth is still shallow.
-- eBay OAuth is only a consent foundation; token exchange and official publishing are not implemented.
+- eBay OAuth foundations now include token exchange, refresh, and sandbox Inventory API probe boundaries, but official publishing is still not implemented.
 - The UI is mostly English and only has a localization foundation.
 
 ## Product Verdict

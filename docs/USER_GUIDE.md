@@ -63,6 +63,6 @@ Run diagnostics from Settings to inspect startup safety, database, migrations, u
 ## Known Limits
 
 - final marketplace submission is manual for all registered production platforms.
-- eBay OAuth consent foundation exists, but token exchange and official publishing are not implemented.
+- eBay OAuth/token foundations exist, but official publishing is not implemented.
 - Browser/accessibility walkthrough evidence is still required before final launch.
 - Deployment-specific PostgreSQL, edge security, backup, and rate-limit evidence is still required before client launch.

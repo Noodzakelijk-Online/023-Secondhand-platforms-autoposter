@@ -33,6 +33,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | SaaS/account readiness | `tests/test_saas_readiness.py` | Personal-account readiness contract, billing-free status, workspace deferral, and owner-scoped usage counts. |
 | Storage | `tests/test_storage_uploads.py` | Filename sanitization, MIME/signature validation, duplicate detection, delete/reorder behavior, and metadata persistence. |
 | Category mappings | `tests/test_category_mappings.py` | Mapping CRUD/upsert/patch behavior and mapping use in validation/publish output. |
+| Official API foundations | `tests/test_ebay_oauth.py`, `tests/test_platform_rate_limits.py` | eBay OAuth state safety, token exchange, token refresh, secret-store redaction, sandbox Inventory API probe shape, and quota-header backoff. |
 | Jobs/worker | `tests/test_worker.py`, `tests/test_job_state.py`, `tests/test_platform_rate_limits.py`, `tests/test_config.py` | Database-backed queue processing, worker empty-queue behavior, job detail route, filtering/sorting/pagination, atomic claims, stale-running recovery, state transitions, platform cooldown overrides, and official API quota-header backoff. |
 | Listing revisions/idempotency | `tests/test_listing_revisions.py` | Revision increments and publish idempotency boundaries. |
 | Domain model | `tests/test_domain_model.py` | Listing aggregate cascade behavior for images, drafts, mappings, jobs, logs, and attempts. |

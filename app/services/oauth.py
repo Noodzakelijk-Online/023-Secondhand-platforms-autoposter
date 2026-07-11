@@ -1,13 +1,20 @@
 import secrets
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from typing import Any
 from urllib.parse import urlencode
 
+import httpx
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.config import Settings
 from app.models import PlatformAccount, PlatformOAuthState, User
 from app.security import hash_token
+from app.services.secrets import TokenSecretStore, get_token_secret_store
+
+HttpPost = Callable[..., httpx.Response]
+HttpGet = Callable[..., httpx.Response]
 
 
 def create_ebay_authorization_url(db: Session, user: User, settings: Settings) -> tuple[str, datetime]:
@@ -47,6 +54,9 @@ def consume_ebay_authorization_callback(
     state: str,
     code: str,
     settings: Settings,
+    *,
+    http_post: HttpPost | None = None,
+    secret_store: TokenSecretStore | None = None,
 ) -> PlatformAccount:
     if not state or not code:
         raise HTTPException(status_code=400, detail="Missing eBay OAuth state or authorization code")
@@ -91,9 +101,18 @@ def consume_ebay_authorization_callback(
             "authorized_at": oauth_state.consumed_at.isoformat(),
         }
     }
+    if settings.ebay_oauth_token_exchange_configured:
+        token_summary = exchange_ebay_authorization_code(
+            code,
+            secret_ref=secret_ref,
+            settings=settings,
+            http_post=http_post,
+            secret_store=secret_store,
+        )
+        connection_data["oauth"].update(token_summary)
     if account:
         account.mode = "official_api"
-        account.status = "needs_token_exchange"
+        account.status = _oauth_account_status(connection_data)
         account.connection_data = connection_data
         account.secret_ref = secret_ref
     else:
@@ -102,7 +121,7 @@ def consume_ebay_authorization_callback(
             platform="ebay",
             display_name="eBay official API",
             mode="official_api",
-            status="needs_token_exchange",
+            status=_oauth_account_status(connection_data),
             connection_data=connection_data,
             secret_ref=secret_ref,
         )
@@ -110,3 +129,135 @@ def consume_ebay_authorization_callback(
     db.commit()
     db.refresh(account)
     return account
+
+
+def _oauth_account_status(connection_data: dict[str, Any]) -> str:
+    return "connected" if connection_data["oauth"]["token_exchange"] == "stored" else "needs_token_exchange"
+
+
+def exchange_ebay_authorization_code(
+    code: str,
+    *,
+    secret_ref: str,
+    settings: Settings,
+    http_post: HttpPost | None = None,
+    secret_store: TokenSecretStore | None = None,
+) -> dict[str, Any]:
+    if not settings.ebay_oauth_token_exchange_configured:
+        raise HTTPException(status_code=503, detail="eBay OAuth token exchange is not configured")
+
+    post = http_post or httpx.post
+    try:
+        response = post(
+            settings.ebay_oauth_token_url,
+            data={
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": settings.ebay_oauth_redirect_uri,
+            },
+            auth=(settings.ebay_oauth_client_id, settings.ebay_oauth_client_secret),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=15,
+        )
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail="eBay OAuth token exchange failed") from exc
+
+    if response.status_code >= 400:
+        raise HTTPException(status_code=502, detail="eBay OAuth token exchange was rejected")
+
+    try:
+        token_payload = response.json()
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail="eBay OAuth token response was not JSON") from exc
+    if not token_payload.get("access_token") or not token_payload.get("refresh_token"):
+        raise HTTPException(status_code=502, detail="eBay OAuth token response was incomplete")
+
+    store = secret_store or get_token_secret_store(settings)
+    store.write_json(secret_ref, token_payload)
+    return {
+        "token_exchange": "stored",
+        "token_type": token_payload.get("token_type", "Bearer"),
+        "access_token_expires_in": token_payload.get("expires_in"),
+        "refresh_token_expires_in": token_payload.get("refresh_token_expires_in"),
+        "token_url": settings.ebay_oauth_token_url,
+    }
+
+
+def refresh_ebay_access_token(
+    secret_ref: str,
+    *,
+    settings: Settings,
+    http_post: HttpPost | None = None,
+    secret_store: TokenSecretStore | None = None,
+) -> dict[str, Any]:
+    if not settings.ebay_oauth_token_exchange_configured:
+        raise HTTPException(status_code=503, detail="eBay OAuth token refresh is not configured")
+
+    store = secret_store or get_token_secret_store(settings)
+    current_payload = store.read_json(secret_ref)
+    refresh_token = current_payload.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=503, detail="Stored eBay token payload has no refresh token")
+
+    post = http_post or httpx.post
+    try:
+        response = post(
+            settings.ebay_oauth_token_url,
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+                "scope": " ".join(settings.ebay_oauth_scope_list),
+            },
+            auth=(settings.ebay_oauth_client_id, settings.ebay_oauth_client_secret),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=15,
+        )
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail="eBay OAuth token refresh failed") from exc
+
+    if response.status_code >= 400:
+        raise HTTPException(status_code=502, detail="eBay OAuth token refresh was rejected")
+    try:
+        refreshed_payload = response.json()
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail="eBay OAuth refresh response was not JSON") from exc
+    if not refreshed_payload.get("access_token"):
+        raise HTTPException(status_code=502, detail="eBay OAuth refresh response was incomplete")
+
+    updated_payload = {**current_payload, **refreshed_payload, "refresh_token": refresh_token}
+    store.write_json(secret_ref, updated_payload)
+    return {
+        "token_refresh": "stored",
+        "token_type": updated_payload.get("token_type", "Bearer"),
+        "access_token_expires_in": updated_payload.get("expires_in"),
+        "token_url": settings.ebay_oauth_token_url,
+    }
+
+
+def verify_ebay_inventory_api_access(
+    secret_ref: str,
+    *,
+    settings: Settings,
+    http_get: HttpGet | None = None,
+    secret_store: TokenSecretStore | None = None,
+) -> dict[str, Any]:
+    store = secret_store or get_token_secret_store(settings)
+    token_payload = store.read_json(secret_ref)
+    access_token = token_payload.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=503, detail="Stored eBay token payload has no access token")
+
+    get = http_get or httpx.get
+    url = f"{settings.ebay_inventory_api_base_url}/inventory_item"
+    try:
+        response = get(url, headers={"Authorization": f"Bearer {access_token}"}, params={"limit": 1}, timeout=15)
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail="eBay Inventory API verification failed") from exc
+    if response.status_code >= 400:
+        raise HTTPException(status_code=502, detail="eBay Inventory API verification was rejected")
+    return {
+        "inventory_api": "reachable",
+        "environment": settings.ebay_oauth_environment.lower(),
+        "url": url,
+        "status_code": response.status_code,
+    }
