@@ -15,7 +15,7 @@ The app keeps a revision number for each listing. Editing a listing creates a ne
 
 ## Improve Listing Quality
 
-Use Quality assistant from the listing editor. It scores buyer-readiness, flags missing or weak fields, and offers deterministic suggestions. Suggestions are not applied automatically; choose Apply for each suggestion you want.
+Use Quality assistant from the listing editor. It scores buyer-readiness, flags missing or weak fields, adds category-specific checks for common categories such as electronics, furniture, fashion, and vehicles, and offers deterministic suggestions. Suggestions are not applied automatically; choose Apply for each suggestion you want.
 
 ## Prepare Platform Packages
 

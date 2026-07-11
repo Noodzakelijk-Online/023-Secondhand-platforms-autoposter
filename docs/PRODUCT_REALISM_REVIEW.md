@@ -8,7 +8,7 @@ This review checks whether the current product story matches what the repository
 | --- | --- | --- |
 | A user can manage reusable listings. | Real. The app supports listing CRUD, images, revisions, templates, category mappings, and search/filter/page controls. | `app/api.py`, `public/app.js`, `tests/test_api.py` |
 | A user can prepare multi-platform posting packages. | Real as assisted posting. Adapters validate and map fields; jobs produce `needs_user_action` packages. | `app/adapters/assisted.py`, `tests/test_no_mocks_production.py` |
-| A user can improve listing readiness. | Real within deterministic local limits. The quality assistant does not invent facts or call external AI. | `app/services/quality.py`, `tests/test_listing_quality.py` |
+| A user can improve listing readiness. | Real within deterministic local limits. The quality assistant adds category-specific checks, does not invent facts, and does not call external AI. | `app/services/quality.py`, `tests/test_listing_quality.py` |
 | A user can understand local business state. | Real. Local analytics derive owner-scoped aggregates without external tracking. | `app/services/analytics.py`, `tests/test_analytics.py` |
 | A user can export/import/delete owned data. | Real for JSON business data and account deletion; image binaries are not included in export. | `tests/test_data_portability.py` |
 | The app has release-control documentation. | Real. Matrix, traceability, task graph, gates, and false-completion docs exist. | `docs/REQUIREMENTS_TRACEABILITY.md` |

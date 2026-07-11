@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 53.
-- Partial: 36.
+- Done: 54.
+- Partial: 35.
 - Not started: 0.
 
 ## Phase Status
@@ -46,7 +46,7 @@ Legend:
 | 24 | UI Action Audit | Done | See `docs/UI_ACTION_AUDIT.md`; visible dashboard actions are mapped to handlers/endpoints, with browser-evidence gaps called out. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Done | Templates can be saved, variant-tagged, filtered, searched, sorted, applied, edited, deleted, exported, and imported; category mappings can be created/edited/deleted. |
-| 27 | Listing Quality Assistant | Partial | Local deterministic quality assistant now scores listings, identifies buyer-readiness issues, and offers safe title/description/tag suggestions in API and UI; external AI and richer marketplace-specific optimization are not implemented. |
+| 27 | Listing Quality Assistant | Done | Local deterministic quality assistant scores listings, flags buyer-readiness issues, adds category-specific guidance for electronics/furniture/fashion/vehicles, and offers reviewable title/description/tag suggestions in API and UI. |
 | 28 | Search, Filtering, Sorting, And Pagination | Done | Listing, job, account, template, and category-mapping API/UI screens expose focused search/filter/sort controls with bounded limit/offset pagination and total-count headers. |
 | 29 | Exports And Imports | Partial | JSON export/import exists for listings, override drafts, templates, category mappings, and sanitized accounts; image binary export and CSV tools still needed. |
 | 30 | Privacy And Data Control | Partial | Auth isolation, sanitized user export/import, self-service account/data deletion, sanitized audit events, and audit retention purging exist; admin review UI still needs work. |

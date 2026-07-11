@@ -36,7 +36,7 @@ Legend:
 | 24 | Done | `docs/UI_ACTION_AUDIT.md`, `tests/test_ui_action_audit.py` | Keep action audit current when visible controls change. |
 | 25 | Done | `docs/API_USAGE_AUDIT.md` | Keep updated with routes and UI changes. |
 | 26 | Done | Template variants in `app/models.py`, `app/schemas.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_template_variants.py` | Keep template variant controls aligned with export/import and UI filters. |
-| 27 | Partial | `app/services/quality.py`, `tests/test_listing_quality.py` | Add richer per-category or optional AI provider. |
+| 27 | Done | Category-specific local quality rules in `app/services/quality.py`, API/UI quality flow, `tests/test_listing_quality.py` | Keep heuristics local, explainable, and user-applied as categories expand. |
 | 28 | Done | `app/query.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_extended_query_controls.py` | Keep query controls and route parameters aligned when list screens or sortable fields change. |
 | 29 | Partial | Export/import routes, `tests/test_data_portability.py` | Add image binary export and CSV tools. |
 | 30 | Partial | Data delete/export/import, audit events, retention purge | Add admin/operator audit review UI if required. |

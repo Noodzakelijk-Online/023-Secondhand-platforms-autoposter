@@ -88,6 +88,60 @@ def test_quality_assistant_scores_ready_listing():
     assert all(issue["severity"] != "critical" for issue in quality["issues"])
 
 
+def test_quality_assistant_adds_category_specific_guidance():
+    headers = auth_headers()
+    listing_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Sony mirrorless camera body",
+            "description": (
+                "Sony mirrorless camera body in used condition with light wear on the grip. "
+                "Includes body cap and strap, with no known sensor damage."
+            ),
+            "price_cents": 42500,
+            "condition": "used",
+            "category": "Electronics",
+            "location": "Arnhem",
+            "brand": "Sony",
+            "pickup_allowed": True,
+        },
+    )
+    assert listing_response.status_code == 200, listing_response.text
+    listing_id = listing_response.json()["id"]
+
+    response = client.get(f"/api/listings/{listing_id}/quality", headers=headers)
+
+    assert response.status_code == 200, response.text
+    quality = response.json()
+    assert quality["checklist"]["has_electronics_details"] is False
+    messages = {issue["message"] for issue in quality["issues"]}
+    assert "Electronics listings work better with brand and model details." in messages
+    assert "Electronics testing and included accessories are unclear." in messages
+    description_suggestion = next(
+        suggestion for suggestion in quality["suggestions"] if suggestion["field"] == "description"
+    )
+    assert "Testing/accessories" in description_suggestion["value"]
+
+    update_response = client.patch(
+        f"/api/listings/{listing_id}",
+        headers=headers,
+        json={
+            "model": "A6000",
+            "description": (
+                "Sony mirrorless camera body in used condition with light wear on the grip. "
+                "Tested working today and includes charger, body cap, and strap."
+            ),
+        },
+    )
+    assert update_response.status_code == 200, update_response.text
+
+    updated_quality = client.get(f"/api/listings/{listing_id}/quality", headers=headers).json()
+    assert updated_quality["checklist"]["has_electronics_details"] is True
+    updated_messages = {issue["message"] for issue in updated_quality["issues"]}
+    assert "Electronics testing and included accessories are unclear." not in updated_messages
+
+
 def test_quality_assistant_is_owner_scoped():
     owner_headers = auth_headers("owner")
     listing_response = client.post("/api/listings", headers=owner_headers, json={"title": "Private listing"})
