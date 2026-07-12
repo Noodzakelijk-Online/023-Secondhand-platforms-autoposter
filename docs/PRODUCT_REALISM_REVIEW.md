@@ -19,7 +19,7 @@ This review checks whether the current product story matches what the repository
 | --- | --- | --- |
 | Fully automated marketplace publishing | Not real | All registered adapters are assisted; no official API publish adapter exists. |
 | eBay official API listing creation | Not real | OAuth/token foundations exist, but seller policy checks, live sandbox listing proof, and an official publishing adapter are missing. |
-| Production launch readiness | Not real | Deployment database, worker, secrets, CORS, backup, browser, and fresh-clone evidence are missing. |
+| Production launch readiness | Not real | Deployment database, worker, secrets, CORS, backup, full browser/accessibility matrix, and final release evidence are missing. |
 | Non-technical user-proven usability | Not real | Only a proxy simulation exists; no observed external user walkthrough is recorded. |
 | Full multilingual UI | Partially real | English/Dutch frontend shell catalogs and a browser-local language selector exist, but dynamic API messages, diagnostics payloads, and marketplace catalogs still fall back to English. |
 | Team/workspace collaboration | Deliberately out of scope | Workspaces are deferred by product decision. |
@@ -35,7 +35,7 @@ The app is realistic for local demo and continued hardening. It should not be re
 - production startup and target database evidence are captured,
 - worker deployment is confirmed,
 - backup/restore is proven,
-- browser/accessibility/responsive walkthroughs are executed,
+- full browser/accessibility/responsive launch walkthroughs are executed,
 - a real non-technical user walkthrough is recorded,
 - remaining partial phases are accepted or closed.
 

@@ -6,7 +6,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 
 - Core navigation, listing, image, validation, quality, publishing, queue, account, template, category mapping, diagnostics, data portability, and privacy actions are wired.
 - Some actions are intentionally local-only, such as tab navigation, copy-to-clipboard, suggestion application, and form reset/cancel behavior.
-- Browser walkthrough evidence is still required before claiming end-to-end UI completion.
+- Executed Chromium workflow evidence exists for core seller flows; full keyboard, screen-reader, zoom, and cross-browser launch QA remains tracked separately.
 
 ## Auth And Shell
 

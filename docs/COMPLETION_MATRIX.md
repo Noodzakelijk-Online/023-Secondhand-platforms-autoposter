@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 76.
-- Partial: 13.
+- Done: 77.
+- Partial: 12.
 - Not started: 0.
 
 ## Phase Status
@@ -42,7 +42,7 @@ Legend:
 | 20 | Platform Rate Limiting And Cooldowns | Done | Global/per-platform cooldowns and official API quota-header backoff are centralized in the worker flow; see `docs/RATE_LIMITS.md`, `app/services/platform_rate_limits.py`, and worker tests. |
 | 21 | Live Job Updates Or Polling | Done | Queue UI has controlled live polling for jobs and analytics with pause/resume, manual refresh, status text, and source-level regression coverage. |
 | 22 | Frontend Architecture Decision | Done | Static dashboard retained intentionally. |
-| 23 | Frontend Product Completion | Partial | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, and validation recovery shortcuts exist; browser evidence still needs work. |
+| 23 | Frontend Product Completion | Done | Core screens, category mapping settings, data portability controls, diagnostics, copy-ready package review, validation recovery shortcuts, manual completion controls, localization, and executed Chromium workflow evidence are recorded in `docs/FRONTEND_PRODUCT_COMPLETION.md`. |
 | 24 | UI Action Audit | Done | See `docs/UI_ACTION_AUDIT.md`; visible dashboard actions are mapped to handlers/endpoints, with browser-evidence gaps called out. |
 | 25 | API Usage Audit | Done | See `docs/API_USAGE_AUDIT.md` for route-by-route frontend usage, test coverage, and follow-up gaps. |
 | 26 | Templates And Productivity Features | Done | Templates can be saved, variant-tagged, filtered, searched, sorted, applied, edited, deleted, exported, and imported; category mappings can be created/edited/deleted. |

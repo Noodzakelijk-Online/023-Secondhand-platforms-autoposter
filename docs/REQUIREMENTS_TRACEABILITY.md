@@ -32,7 +32,7 @@ Legend:
 | 20 | Done | `app/services/platform_rate_limits.py`, `app/services/jobs.py`, `docs/RATE_LIMITS.md`, `tests/test_platform_rate_limits.py`, `tests/test_worker.py` | Revisit only when a live official API adapter adds platform-specific quota semantics beyond common headers. |
 | 21 | Done | `GET /api/jobs`, queue polling in `public/app.js`, `public/index.html`, `tests/test_job_polling_ui.py` | Revisit only if SSE/WebSocket delivery becomes necessary for deployment scale. |
 | 22 | Done | Static frontend in `public/`, README architecture notes | Revisit only if frontend complexity changes. |
-| 23 | Partial | `public/index.html`, `public/app.js`, `public/styles.css` | Add executed browser QA evidence. |
+| 23 | Done | `public/index.html`, `public/app.js`, `public/styles.css`, `docs/FRONTEND_PRODUCT_COMPLETION.md`, `docs/BROWSER_E2E_WORKFLOW.md`, `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`, `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`, `tests/test_frontend_product_completion.py` | Keep frontend evidence current when the visible seller workflow changes. |
 | 24 | Done | `docs/UI_ACTION_AUDIT.md`, `tests/test_ui_action_audit.py` | Keep action audit current when visible controls change. |
 | 25 | Done | `docs/API_USAGE_AUDIT.md` | Keep updated with routes and UI changes. |
 | 26 | Done | Template variants in `app/models.py`, `app/schemas.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_template_variants.py` | Keep template variant controls aligned with export/import and UI filters. |
