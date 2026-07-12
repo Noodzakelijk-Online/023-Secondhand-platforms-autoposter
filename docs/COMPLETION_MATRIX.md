@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 72.
-- Partial: 17.
+- Done: 73.
+- Partial: 16.
 - Not started: 0.
 
 ## Phase Status
@@ -33,7 +33,7 @@ Legend:
 | 11 | Platform Adapter System | Done | Adapter contract, registry, assisted adapters, capability metadata, compliance notes, required fields, supported categories, and API/UI exposure exist. |
 | 12 | Platform-Specific Completion Contract | Done | See `docs/PLATFORM_COMPLETION_CONTRACTS.md`; registered adapters have tested per-platform validation, mapping, assisted publish outcomes, blocked actions, and capability metadata. |
 | 13 | Platform-Specific Reality Review | Done | See `docs/PLATFORM_REALITY_REVIEW.md`. |
-| 14 | Assisted Posting As A First-Class Product | Partial | Jobs prepare mapped fields, and the listing editor now shows a prepublish review with copy-ready mapped fields; deeper manual completion workflows still need browser evidence. |
+| 14 | Assisted Posting As A First-Class Product | Done | Jobs prepare mapped fields, the listing editor shows copy-ready prepublish packages, and queue details support user-confirmed manual completion with platform URL/listing ID capture, logs, attempts, and mapping updates. |
 | 15 | Exact Wording Rules For Honest Product Behavior | Done | See `docs/UI_WORDING_AUDIT.md`; frontend wording uses assisted-package language and tests block automatic publishing overclaims. |
 | 16 | Official API Foundations | Done | eBay OAuth consent, state validation, token exchange, refresh, secret-store persistence, sandbox Inventory API probe boundary, and quota backoff foundations exist; official publishing remains disabled until adapter-specific sandbox listing proof is added. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |

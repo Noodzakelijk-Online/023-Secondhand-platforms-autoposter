@@ -17,7 +17,7 @@ The product should reduce repetitive listing work without taking control away fr
 | Listing creation | User enters master listing data and images. | User saves, edits, duplicates, or deletes listing. |
 | Quality assistant | Local deterministic assistant scores readiness and suggests copy. | User chooses whether to apply suggestions. |
 | Platform validation | Adapters identify missing fields and mapped fields. | User fixes fields and chooses target platforms. |
-| Assisted publishing | Jobs prepare posting packages and links. | User completes login, confirmation, payment, and final posting manually. |
+| Assisted publishing | Jobs prepare posting packages and links, then let the seller record user-confirmed manual completion with the marketplace URL and optional listing ID. | User completes login, confirmation, payment, and final posting manually before recording completion. |
 | eBay OAuth foundation | Consent URL, callback state, token exchange, refresh, and sandbox Inventory API probe boundaries exist. | Official API publishing remains blocked until explicitly implemented and proven. |
 | Data portability | Export/import and account deletion are self-service. | User initiates export, import, or deletion. |
 | Local analytics | Dashboard derives aggregate insights locally. | No external tracking or cross-user analytics. |
@@ -30,6 +30,7 @@ Allowed now:
 - Running local validation and quality checks.
 - Queueing assisted jobs.
 - Recording job logs and attempts.
+- Recording explicit user-confirmed manual completion with platform URL capture.
 - Producing local analytics.
 
 Blocked until further evidence:
@@ -49,7 +50,6 @@ Blocked until further evidence:
 
 ## Next Improvements
 
-- Add explicit user-confirmed manual completion for assisted jobs, including platform URL capture.
 - Add clearer UI text around `needs_user_action` jobs.
 - Add browser walkthrough evidence proving non-technical users understand where manual action is required.
 - Keep this review aligned with `docs/FALSE_COMPLETION_PREVENTION.md`.

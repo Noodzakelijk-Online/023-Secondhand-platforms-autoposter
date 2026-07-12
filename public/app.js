@@ -137,6 +137,10 @@ const COPY_CATALOG = {
     "queue.title": "Assisted package queue",
     "queue.liveOn": "Live refresh on",
     "queue.pause": "Pause live refresh",
+    "queue.manualCompletion": "Confirm manual completion",
+    "queue.platformUrl": "Marketplace listing URL",
+    "queue.platformListingId": "Marketplace listing ID",
+    "queue.complete": "Record completion",
     "accounts.title": "Platform accounts",
     "accounts.displayName": "Display name",
     "accounts.save": "Save account",
@@ -232,6 +236,10 @@ const COPY_CATALOG = {
     "queue.title": "Wachtrij voor assistentiepakketten",
     "queue.liveOn": "Live verversen aan",
     "queue.pause": "Live verversen pauzeren",
+    "queue.manualCompletion": "Handmatige voltooiing bevestigen",
+    "queue.platformUrl": "Marketplace-advertentie URL",
+    "queue.platformListingId": "Marketplace-advertentie ID",
+    "queue.complete": "Voltooiing vastleggen",
     "accounts.title": "Platformaccounts",
     "accounts.displayName": "Weergavenaam",
     "accounts.save": "Account opslaan",
@@ -1733,6 +1741,7 @@ $("#jobList").addEventListener("click", (event) => {
     <p><span class="${statusClass(job.status)}">${escapeHtml(job.status)}</span></p>
     <p class="muted">${escapeHtml(job.error_message || job.result?.posting_url || "")}</p>
     <p class="retry-guidance">${escapeHtml(jobRetryGuidance(job))}</p>
+    ${manualCompletionHtml(job)}
     <h3>Logs</h3>
     ${(job.logs || []).map((log) => `<p class="job-log">${escapeHtml(log.message)}</p>`).join("")}
   `;
@@ -1740,7 +1749,30 @@ $("#jobList").addEventListener("click", (event) => {
     await api(`/jobs/${job.id}/retry`, { method: "POST" });
     await loadAll();
   });
+  $("#manualCompletionForm")?.addEventListener("submit", async (submitEvent) => {
+    submitEvent.preventDefault();
+    await api(`/jobs/${job.id}/manual-completion`, {
+      method: "POST",
+      body: JSON.stringify({
+        platform_url: $("#manualPlatformUrl").value,
+        platform_listing_id: $("#manualPlatformListingId").value || null,
+      }),
+    });
+    await loadAll();
+  });
 });
+
+function manualCompletionHtml(job) {
+  if (job.status !== "needs_user_action") return "";
+  return `
+    <form id="manualCompletionForm" class="manual-completion">
+      <h3>${escapeHtml(t("queue.manualCompletion"))}</h3>
+      <label>${escapeHtml(t("queue.platformUrl"))}<input id="manualPlatformUrl" type="url" required /></label>
+      <label>${escapeHtml(t("queue.platformListingId"))}<input id="manualPlatformListingId" /></label>
+      <button type="submit">${escapeHtml(t("queue.complete"))}</button>
+    </form>
+  `;
+}
 
 function jobRetryGuidance(job) {
   if (job.status === "failed") return "Retry after fixing the listing, platform account, or reported validation issue.";

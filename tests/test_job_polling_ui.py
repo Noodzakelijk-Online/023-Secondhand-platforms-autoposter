@@ -25,3 +25,18 @@ def test_frontend_exposes_controlled_job_polling():
     ]
     for fragment in required_script:
         assert fragment in script
+
+
+def test_frontend_exposes_manual_completion_controls():
+    script = Path("public/app.js").read_text(encoding="utf-8")
+
+    required_script = [
+        "manualCompletionForm",
+        "manualPlatformUrl",
+        "manualPlatformListingId",
+        "/manual-completion",
+        "Confirm manual completion",
+        "Handmatige voltooiing bevestigen",
+    ]
+    for fragment in required_script:
+        assert fragment in script

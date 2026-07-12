@@ -18,6 +18,7 @@ from app.models import (
 from app.services.job_state import (
     ACTIVE_IDEMPOTENCY_STATUSES,
     FAILED,
+    NEEDS_USER_ACTION,
     PUBLISHED,
     QUEUED,
     RUNNING,
@@ -259,6 +260,54 @@ def retry_job(db: Session, job: PublishingJob) -> PublishingJob:
     db.commit()
     db.refresh(job)
     return process_job(db, job.id)
+
+
+def confirm_manual_completion(
+    db: Session,
+    job: PublishingJob,
+    *,
+    platform_url: str,
+    platform_listing_id: str | None = None,
+) -> PublishingJob:
+    if job.status != NEEDS_USER_ACTION:
+        raise ValueError("Only jobs waiting for user action can be manually completed")
+    if job.operation_mode != "assisted":
+        raise ValueError("Manual completion is only supported for assisted jobs")
+
+    mapping = get_or_create_mapping(db, job.listing_id, job.platform)
+    now = datetime.now(UTC)
+    transition_job(job, PUBLISHED)
+    job.error_message = None
+    job.finished_at = now
+    job.result = {
+        **(job.result or {}),
+        "manual_completion": {
+            "confirmed_by_user": True,
+            "platform_url": platform_url,
+            "platform_listing_id": platform_listing_id,
+            "confirmed_at": now.isoformat(),
+        },
+    }
+
+    mapping.status = PUBLISHED
+    mapping.platform_url = platform_url
+    mapping.platform_listing_id = platform_listing_id
+    mapping.last_published_at = now
+    mapping.validation_errors = []
+
+    db.add(
+        PublicationAttempt(
+            job_id=job.id,
+            platform=job.platform,
+            status=PUBLISHED,
+            error_message=None,
+            payload_snapshot=job.result["manual_completion"],
+        )
+    )
+    add_log(db, job, "info", "User confirmed manual marketplace completion.", job.result["manual_completion"])
+    db.commit()
+    db.refresh(job)
+    return job
 
 
 def effective_platform_overrides(db: Session, listing: Listing, platform: str, overrides: dict) -> dict:

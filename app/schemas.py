@@ -312,6 +312,19 @@ class PublishRequest(BaseModel):
     force_new_revision: bool = False
 
 
+class ManualCompletionRequest(BaseModel):
+    platform_url: str = Field(min_length=8, max_length=500)
+    platform_listing_id: str | None = Field(default=None, max_length=255)
+
+    @field_validator("platform_url")
+    @classmethod
+    def validate_platform_url(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not (cleaned.startswith("https://") or cleaned.startswith("http://")):
+            raise ValueError("platform_url must start with http:// or https://")
+        return cleaned
+
+
 class JobLogOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

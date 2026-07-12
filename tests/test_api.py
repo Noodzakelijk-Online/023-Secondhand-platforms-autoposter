@@ -98,9 +98,73 @@ def test_create_validate_and_publish_listing_flow():
     assert job["result"]["automation_mode"] == "assisted"
     assert job["logs"]
 
+    complete_response = client.post(
+        f"/api/jobs/{job['id']}/manual-completion",
+        headers=headers,
+        json={
+            "platform_url": "https://www.marktplaats.nl/v/huis-en-inrichting/lampen/m123456-desk-lamp",
+            "platform_listing_id": "m123456",
+        },
+    )
+    assert complete_response.status_code == 200, complete_response.text
+    completed_job = complete_response.json()
+    assert completed_job["status"] == "published"
+    assert completed_job["result"]["manual_completion"]["confirmed_by_user"] is True
+    assert completed_job["result"]["manual_completion"]["platform_listing_id"] == "m123456"
+    assert any("User confirmed manual marketplace completion" in log["message"] for log in completed_job["logs"])
+
     detail_response = client.get(f"/api/listings/{listing_id}", headers=headers)
     assert detail_response.status_code == 200, detail_response.text
     assert detail_response.json()["title"] == "Vintage desk lamp"
+    mapping = next(item for item in detail_response.json()["platform_mappings"] if item["platform"] == "marktplaats")
+    assert mapping["status"] == "published"
+    assert mapping["platform_url"] == "https://www.marktplaats.nl/v/huis-en-inrichting/lampen/m123456-desk-lamp"
+    assert mapping["platform_listing_id"] == "m123456"
+    assert mapping["last_published_at"]
+
+
+def test_manual_completion_requires_user_action_job_and_platform_url():
+    headers = auth_headers()
+    listing_response = client.post(
+        "/api/listings",
+        headers=headers,
+        json={
+            "title": "Manual completion guard",
+            "description": "Valid listing.",
+            "price_cents": 1200,
+            "condition": "used",
+            "category": "Other",
+            "location": "Arnhem",
+        },
+    )
+    listing_id = listing_response.json()["id"]
+    image_response = client.post(
+        f"/api/listings/{listing_id}/images",
+        headers=headers,
+        files={"file": ("guard.png", PNG_BYTES, "image/png")},
+    )
+    assert image_response.status_code == 200, image_response.text
+    publish_response = client.post(
+        f"/api/listings/{listing_id}/publish",
+        headers=headers,
+        json={"platforms": ["koopplein"], "process_now": False},
+    )
+    job_id = publish_response.json()[0]["id"]
+
+    invalid_url_response = client.post(
+        f"/api/jobs/{job_id}/manual-completion",
+        headers=headers,
+        json={"platform_url": "not-a-url"},
+    )
+    assert invalid_url_response.status_code == 422
+
+    premature_response = client.post(
+        f"/api/jobs/{job_id}/manual-completion",
+        headers=headers,
+        json={"platform_url": "https://koopplein.nl/item/123"},
+    )
+    assert premature_response.status_code == 409
+    assert "waiting for user action" in premature_response.json()["error"]["message"]
 
 
 def test_validation_reports_missing_fields():

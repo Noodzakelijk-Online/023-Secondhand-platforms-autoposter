@@ -23,7 +23,7 @@ Legend:
 | 11 | Done | `app/adapters/base.py`, `app/adapters/assisted.py`, `app/adapters/registry.py`, `tests/test_api.py` | Keep capability metadata aligned when adapters or platform modes change. |
 | 12 | Done | `docs/PLATFORM_COMPLETION_CONTRACTS.md`, `tests/test_platform_contracts.py`, `app/adapters/` | Keep platform contracts current when adapters, categories, blocked actions, or official API modes change. |
 | 13 | Done | `docs/PLATFORM_REALITY_REVIEW.md` | Re-review if platform policies change. |
-| 14 | Partial | `app/services/jobs.py`, `public/app.js` prepublish review | Add executed browser evidence. |
+| 14 | Done | `app/services/jobs.py`, `app/api.py`, `public/app.js`, `tests/test_api.py`, `tests/test_job_state.py`, `tests/test_job_polling_ui.py` | Keep assisted-job completion records aligned with queue UI wording, listing mappings, logs, and attempts. |
 | 15 | Done | `docs/UI_WORDING_AUDIT.md`, `tests/test_ui_wording.py`, `public/index.html`, `public/app.js` | Re-audit wording when platform modes, official API behavior, or primary job actions change. |
 | 16 | Done | `app/services/oauth.py`, `app/services/secrets.py`, `tests/test_ebay_oauth.py`, `tests/test_config.py`, `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Add an official publishing adapter only after live sandbox listing proof, seller-policy checks, and production secret-manager evidence exist. |
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |

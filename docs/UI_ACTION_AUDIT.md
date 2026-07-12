@@ -63,6 +63,7 @@ This audit maps visible dashboard actions to behavior in `public/app.js` and bac
 | Filter/sort/page jobs | queue query handlers | `GET /api/jobs` with query parameters | Wired |
 | Open job details | `#jobList click` | Local detail render from loaded jobs | Wired |
 | Retry job | `#retryJobButton click` | `POST /api/jobs/{id}/retry` | Wired |
+| Record manual completion | `#manualCompletionForm submit` | `POST /api/jobs/{id}/manual-completion` | Wired |
 
 ## Accounts
 

@@ -192,6 +192,20 @@ nav {
   overflow-wrap: anywhere;
 }
 
+.manual-completion {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px;
+}
+
+.manual-completion h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
 .app-message.success {
   border-color: #a8d8be;
   background: #edf8f2;

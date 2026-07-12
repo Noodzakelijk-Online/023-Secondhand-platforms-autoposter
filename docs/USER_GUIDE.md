@@ -38,9 +38,12 @@ Open Queue to watch assisted package jobs. The queue supports:
 - manual refresh;
 - live refresh with pause/resume;
 - job logs;
+- user-confirmed manual completion with marketplace URL and optional listing ID;
 - retry guidance.
 
 Retry only after fixing the listing, platform account, or validation issue that caused the previous job to fail. For `needs_user_action` jobs, retry is mainly for regenerating package output after a deliberate listing change.
+
+After you finish the marketplace-side posting steps, open the job details, paste the marketplace listing URL, optionally add the listing ID, and record completion. The app updates the job and platform mapping from your confirmation; it still treats final marketplace submission as manual.
 
 ## Accounts, Templates, And Mappings
 

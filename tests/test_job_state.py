@@ -33,6 +33,14 @@ def test_job_state_allows_expected_worker_flow():
     assert job.status == QUEUED
 
 
+def test_job_state_allows_user_confirmed_manual_completion():
+    job = FakeJob(status=NEEDS_USER_ACTION)
+
+    transition_job(job, PUBLISHED)
+
+    assert job.status == PUBLISHED
+
+
 def test_job_state_rejects_unknown_statuses():
     job = FakeJob(status=RUNNING)
 

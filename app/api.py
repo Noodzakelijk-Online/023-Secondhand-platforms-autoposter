@@ -38,6 +38,7 @@ from app.schemas import (
     ListingOut,
     ListingQualityResult,
     ListingUpdate,
+    ManualCompletionRequest,
     OAuthStartResponse,
     PlatformAccountCreate,
     PlatformAccountOut,
@@ -52,7 +53,13 @@ from app.schemas import (
     ValidationResult,
 )
 from app.services.audit import record_audit_event
-from app.services.jobs import enqueue_publish_job, get_or_create_mapping, process_job, retry_job
+from app.services.jobs import (
+    confirm_manual_completion,
+    enqueue_publish_job,
+    get_or_create_mapping,
+    process_job,
+    retry_job,
+)
 from app.services.oauth import consume_ebay_authorization_callback, create_ebay_authorization_url
 from app.services.quality import analyze_listing_quality
 from app.storage import (
@@ -486,6 +493,32 @@ def retry_publish_job(job_id: int, user: User = Depends(get_current_user), db: S
     if not job or job.listing.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Job not found")
     return retry_job(db, job)
+
+
+@router.post("/jobs/{job_id}/manual-completion", response_model=PublishingJobOut, tags=["Jobs"])
+def complete_manual_job(
+    job_id: int,
+    payload: ManualCompletionRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    job = (
+        db.query(PublishingJob)
+        .options(selectinload(PublishingJob.logs), selectinload(PublishingJob.listing))
+        .filter(PublishingJob.id == job_id)
+        .one_or_none()
+    )
+    if not job or job.listing.owner_id != user.id:
+        raise HTTPException(status_code=404, detail="Job not found")
+    try:
+        return confirm_manual_completion(
+            db,
+            job,
+            platform_url=payload.platform_url,
+            platform_listing_id=payload.platform_listing_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("/accounts", response_model=list[PlatformAccountOut], tags=["Accounts"])

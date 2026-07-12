@@ -40,6 +40,7 @@ This audit maps the FastAPI surface to visible frontend usage, tests, and remain
 | `GET` | `/api/jobs` | Dashboard/latest jobs and queue view with platform/status/sort/page controls | `test_worker.py` | Visible and tested. |
 | `GET` | `/api/jobs/{job_id}` | Not directly used | `test_worker.py` | Useful for future deep-linking. |
 | `POST` | `/api/jobs/{job_id}/retry` | Queue job detail retry button | `test_worker.py` | Visible and tested. |
+| `POST` | `/api/jobs/{job_id}/manual-completion` | Queue job detail manual completion form | `test_api.py`, `test_job_polling_ui.py` | Visible and tested; only assisted jobs waiting for user action can be confirmed. |
 | `GET` | `/api/accounts` | Accounts list with platform/status/sort/page controls | `test_api.py`, `test_extended_query_controls.py` | Visible and tested. |
 | `POST` | `/api/accounts` | Account form | `test_api.py` | Visible and tested. |
 | `PATCH` | `/api/accounts/{account_id}` | Account edit flow | `test_api.py`, `test_extended_query_controls.py` | Visible and tested; connection metadata is scrubbed. |

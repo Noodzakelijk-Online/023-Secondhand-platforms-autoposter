@@ -78,6 +78,7 @@ Listing payloads include `category_attributes`, a bounded JSON object for catego
 | `GET` | `/api/jobs` | List owned jobs with platform/status/sort/page controls. |
 | `GET` | `/api/jobs/{job_id}` | Read one owned job. |
 | `POST` | `/api/jobs/{job_id}/retry` | Requeue a job after correcting the underlying issue. |
+| `POST` | `/api/jobs/{job_id}/manual-completion` | Mark an assisted `needs_user_action` job as user-confirmed published with marketplace URL and optional listing ID. |
 
 ## Accounts, Templates, And Category Mappings
 
