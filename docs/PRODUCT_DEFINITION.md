@@ -72,4 +72,4 @@ The current implementation uses assisted mode for every exposed platform.
 
 Production-ready currently means the app has a coherent frontend, backend, database model, authentication, image upload, platform adapter contract, validation, job tracking, retry support, personal-account SaaS boundaries without billing, documentation, tests, Docker setup, and honest assisted posting behavior.
 
-It does not yet mean paid subscriptions, organizations, team seats, official API publishing, external object storage, CI/CD, Alembic migrations, browser E2E coverage, or third-party credential integrations.
+It does not yet mean paid subscriptions, organizations, team seats, official API publishing, external object storage, CI/CD, Alembic migrations, full browser/accessibility launch coverage, or third-party credential integrations.

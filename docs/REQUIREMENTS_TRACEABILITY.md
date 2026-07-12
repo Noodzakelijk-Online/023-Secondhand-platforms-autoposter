@@ -52,7 +52,7 @@ Legend:
 | 40 | Done | `docs/NO_MOCKS_PRODUCTION_AUDIT.md`, `tests/test_no_mocks_production.py` | Re-run when adapters change. |
 | 41 | Done | `docs/TESTING_STRATEGY.md` | Update strategy as coverage changes. |
 | 42 | Done | `docs/ACCEPTANCE_TESTS.md`, `tests/test_acceptance_workflow.py`, `tests/test_api.py` | Keep acceptance workflow aligned with seller-critical API behavior; browser E2E remains tracked separately. |
-| 43 | Partial | Worker/API smoke coverage | Add true browser E2E workflows. |
+| 43 | Done | `tests/test_acceptance_workflow.py`, `scripts/browser_e2e_workflow.cjs`, `docs/BROWSER_E2E_WORKFLOW.md`, `docs/browser-evidence/e2e-workflow.json`, `tests/test_browser_e2e_workflow.py` | Keep browser E2E evidence current when the seller workflow changes. |
 | 44 | Done | `pyproject.toml`, `scripts/verify.py` | Consider type-check gate later. |
 | 45 | Done | `.github/workflows/verify.yml` | Keep CI matrix aligned with verify script. |
 | 46 | Done | `Readme.md`, `docs/USER_GUIDE.md`, `docs/API_REFERENCE.md`, `tests/test_documentation_overhaul.py` | Keep user guide and API reference aligned when workflows, endpoints, or launch limits change. |

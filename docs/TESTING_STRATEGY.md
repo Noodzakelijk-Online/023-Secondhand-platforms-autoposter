@@ -43,6 +43,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 | Observability | `tests/test_observability.py` | Structured JSON log formatting and request log metadata. |
 | Internationalization | `tests/test_internationalization.py` | Locale metadata, frontend copy catalog presence, Dutch shell copy, locale selector, and English fallback contract. |
 | Accessibility | `tests/test_accessibility_audit.py` | Static dashboard smoke checks for labeled controls, named buttons, image alt text, landmarks, headings, and live status regions. |
+| Browser workflow evidence | `scripts/browser_e2e_workflow.cjs`, `tests/test_browser_e2e_workflow.py`, `docs/BROWSER_E2E_WORKFLOW.md` | Executed Chromium workflow for registration, listing save, image upload, validation, assisted job queueing, manual completion, JSON export, and account deletion. |
 | Legacy isolation | `tests/test_legacy_quarantine.py` | Ensures legacy browser automation imports do not leak into the web app path. |
 
 ## Data And Isolation
@@ -61,8 +62,7 @@ GitHub Actions runs the same command on pushes and pull requests to `main` via `
 
 ## Remaining Gaps
 
-- Browser end-to-end tests for the static dashboard.
-- Browser-executed accessibility and keyboard navigation tests.
+- Browser-executed accessibility, keyboard navigation, and cross-browser matrix tests.
 - Multi-worker concurrency tests with database locking semantics.
 - PostgreSQL-backed migration and integration test run.
 - Frontend state consistency tests for filters, pagination, and edit modes.

@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-07-12T10:42:48.727Z",
+  "baseUrl": "http://127.0.0.1:8000",
+  "browser": "chromium",
+  "assertions": [
+    "fresh user registration opens dashboard shell",
+    "listing is created and saved through the real editor",
+    "image upload appears in the editor",
+    "selected platform validation shows prepublish copy controls",
+    "assisted job is queued and manually completed",
+    "JSON export downloads user data",
+    "account deletion returns to the auth view"
+  ],
+  "exportedListings": 1,
+  "exportedTitle": "Browser E2E oak lamp",
+  "screenshot": "docs/browser-evidence/e2e-final-auth.png",
+  "download": "docs/browser-evidence/e2e-export.json"
+}

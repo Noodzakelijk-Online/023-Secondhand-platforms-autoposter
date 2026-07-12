@@ -1,0 +1,103 @@
+{
+  "version": "1",
+  "exported_at": "2026-07-12T10:42:48.148170Z",
+  "user": {
+    "id": 1,
+    "email": "browser-e2e-1783852965945@example.com",
+    "name": "Browser E2E"
+  },
+  "listings": [
+    {
+      "title": "Browser E2E oak lamp",
+      "description": "Solid oak lamp tested through a full browser workflow. Pickup available by appointment.",
+      "price_cents": 4250,
+      "currency": "EUR",
+      "condition": "good",
+      "category": "Home and furniture",
+      "location": "Utrecht",
+      "delivery_options": {
+        "pickup": true,
+        "shipping": false
+      },
+      "pickup_allowed": true,
+      "shipping_allowed": false,
+      "shipping_cost_cents": 0,
+      "dimensions": {},
+      "weight_grams": 0,
+      "brand": "",
+      "model": "",
+      "color": "",
+      "material": "oak",
+      "category_attributes": {},
+      "notes": "",
+      "internal_notes": "",
+      "tags": [
+        "lamp",
+        "oak",
+        "browser"
+      ],
+      "status": "draft",
+      "revision": 2,
+      "images": [
+        {
+          "filename": "lamp.png",
+          "storage_path": "data\\uploads\\1\\lamp-c9df424fd5714afa9e5e19b692687d7a.png",
+          "content_type": "image/png",
+          "file_size": 68,
+          "checksum_sha256": "4b5c5c92cec3b23e6a294fc0eea43234ef5126c5a64f4c6c531ac8430ab0b844",
+          "position": 0
+        }
+      ],
+      "platform_mappings": [
+        {
+          "platform": "ebay",
+          "platform_listing_id": null,
+          "status": "skipped",
+          "platform_url": null,
+          "overrides": {},
+          "validation_errors": [],
+          "last_published_at": null
+        },
+        {
+          "platform": "koopplein",
+          "platform_listing_id": null,
+          "status": "skipped",
+          "platform_url": null,
+          "overrides": {},
+          "validation_errors": [],
+          "last_published_at": null
+        },
+        {
+          "platform": "marktplaats",
+          "platform_listing_id": "browser-e2e",
+          "status": "published",
+          "platform_url": "https://www.marktplaats.nl/v/huis-en-inrichting/lampen/browser-e2e",
+          "overrides": {},
+          "validation_errors": [],
+          "last_published_at": "2026-07-12T10:42:47.912978"
+        },
+        {
+          "platform": "nextdoor",
+          "platform_listing_id": null,
+          "status": "skipped",
+          "platform_url": null,
+          "overrides": {},
+          "validation_errors": [],
+          "last_published_at": null
+        },
+        {
+          "platform": "tweedehands",
+          "platform_listing_id": null,
+          "status": "skipped",
+          "platform_url": null,
+          "overrides": {},
+          "validation_errors": [],
+          "last_published_at": null
+        }
+      ]
+    }
+  ],
+  "platform_accounts": [],
+  "templates": [],
+  "category_mappings": []
+}
