@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 74.
-- Partial: 15.
+- Done: 75.
+- Partial: 14.
 - Not started: 0.
 
 ## Phase Status
@@ -53,7 +53,7 @@ Legend:
 | 31 | Platform Account Management | Done | Account create/list/update/delete is wired in API and UI with setup statuses, owner scoping, secret-key scrubbing for manual connection metadata, and eBay OAuth handoff records that expose no raw tokens. |
 | 32 | Security Headers And Web Security | Done | Middleware enforces request IDs, nosniff, frame denial, referrer policy, permissions policy, CSP, COOP/CORP, HTTPS HSTS, and documented bearer-only CSRF posture with regression tests. |
 | 33 | Error Message Quality | Done | See `docs/ERROR_HANDLING_UX.md`; structured error envelopes include stable codes, field errors, retryability, request IDs, tests, and frontend metadata preservation. |
-| 34 | Frontend Error UX | Partial | Auth/editor messages, structured global API/network error banner, busy state, validation-to-field recovery actions, import errors, and job retry guidance exist; executed browser evidence still needs depth. |
+| 34 | Frontend Error UX | Done | Auth/editor messages, structured global API/network error banner, busy state, validation-to-field recovery actions, import errors, and job retry guidance exist with executed Chromium evidence in `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`. |
 | 35 | Docker And Local Development | Done | Dockerfile and Compose exist. |
 | 36 | Self-Diagnostic Doctor Command | Done | `python -m app.doctor` checks startup safety, database, migrations, uploads, platform adapters, and legacy isolation. |
 | 37 | Verification Commands | Done | `python scripts/verify.py` runs Ruff lint, compile checks, the full pytest suite, and doctor diagnostics. |

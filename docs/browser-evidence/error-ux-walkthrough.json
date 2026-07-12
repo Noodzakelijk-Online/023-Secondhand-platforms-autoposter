@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-07-12T10:37:36.357Z",
+  "baseUrl": "http://127.0.0.1:8000",
+  "browser": "chromium",
+  "assertions": [
+    "invalid login shows inline auth error",
+    "validation missing fields render recovery actions",
+    "recovery action focuses a repair target",
+    "failed job details show retry guidance",
+    "invalid JSON import shows a visible import error"
+  ],
+  "recoveryButtons": 6,
+  "focusedAfterRecovery": "description",
+  "retryGuidance": "Retry after fixing the listing, platform account, or reported validation issue.",
+  "importError": "Expected property name or '}' in JSON at position 1 (line 1 column 2)",
+  "screenshot": "docs/browser-evidence/error-ux.png"
+}

@@ -43,7 +43,7 @@ Legend:
 | 31 | Done | Account CRUD/status routes and UI, connection metadata scrubbing, eBay OAuth handoff records, `tests/test_api.py`, `tests/test_ebay_oauth.py` | Keep raw platform secrets out of app tables/API responses and exports. |
 | 32 | Done | Security headers in `app/middleware.py`, bearer-only CSRF posture in `docs/AUTH_SECURITY_POSTURE.md`, `tests/test_api_hardening.py` | Keep CSP and auth transport reviewed when frontend assets or auth mode change. |
 | 33 | Done | `docs/ERROR_HANDLING_UX.md`, `app/middleware.py`, `public/app.js`, `tests/test_api_hardening.py`, `tests/test_frontend_error_ux.py` | Keep error codes, retryability, and frontend display aligned when new error classes are introduced. |
-| 34 | Partial | Global message/banner, import error handling, retry guidance, and field recovery in `public/app.js` | Add executed browser evidence for error, retry, import, and validation recovery flows. |
+| 34 | Done | `public/app.js`, `scripts/browser_error_ux_walkthrough.cjs`, `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`, `docs/browser-evidence/error-ux-walkthrough.json`, `tests/test_browser_error_ux_walkthrough.py` | Keep browser evidence current when auth errors, import errors, validation recovery, or retry guidance changes. |
 | 35 | Done | `Dockerfile`, `docker-compose.yml` | Keep in sync with runtime dependencies. |
 | 36 | Done | `app/doctor.py`, `tests/test_doctor.py` | Add checks as new infrastructure appears. |
 | 37 | Done | `scripts/verify.py` | Keep quality gate current. |

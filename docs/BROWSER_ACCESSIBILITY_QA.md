@@ -6,6 +6,8 @@ Automated source-level accessibility smoke coverage is tracked separately in `do
 
 Executed Chromium evidence for the prepublish safety review is recorded in `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`. That evidence is intentionally narrower than this full launch checklist.
 
+Executed Chromium evidence for frontend error and recovery behavior is recorded in `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`. That evidence is also narrower than this full launch checklist.
+
 ## Scope
 
 Run this against the exact deployment candidate and environment that will be shown to users.
