@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 71.
-- Partial: 18.
+- Done: 72.
+- Partial: 17.
 - Not started: 0.
 
 ## Phase Status
@@ -79,7 +79,7 @@ Legend:
 | 57 | Product Analytics Local-First | Done | User-scoped local analytics endpoint and dashboard insights derive aggregates from listings, mappings, jobs, and quality checks without external tracking; see `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md`. |
 | 58 | SaaS Readiness Without Forcing Billing | Done | See `docs/SAAS_READINESS.md`; authenticated account readiness exposes owner-scoped usage, personal-account scope, no billing requirement, and workspace deferral. |
 | 59 | Workspaces Optional Review | Done | See `docs/WORKSPACES_OPTIONAL_REVIEW.md`; workspaces are explicitly deferred, with future model/role/export/audit requirements captured. |
-| 60 | Internationalization | Partial | Locale configuration, startup validation, `/api/localization`, and `docs/INTERNATIONALIZATION.md` exist; visible UI copy is still mostly English and full locale catalogs are future work. |
+| 60 | Internationalization | Done | Locale configuration, startup validation, `/api/localization`, frontend English/Dutch copy catalog, browser-local locale preference, English fallback rules, and source regression tests exist. |
 | 61 | Feature Flags | Done | `app.feature_flags` centralizes runtime flags, production safety checks, doctor output, and docs. |
 | 62 | State Machines | Done | Publishing job transitions are centralized in `app.services.job_state` with tests and docs. |
 | 63 | Domain Model | Done | See `docs/DOMAIN_MODEL.md`; listing aggregate ownership, schema invariants, revisioning, idempotency, owner scoping, and cascade deletion have regression coverage. |

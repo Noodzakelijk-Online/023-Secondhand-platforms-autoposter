@@ -21,7 +21,7 @@ This review checks whether the current product story matches what the repository
 | eBay official API listing creation | Not real | OAuth/token foundations exist, but seller policy checks, live sandbox listing proof, and an official publishing adapter are missing. |
 | Production launch readiness | Not real | Deployment database, worker, secrets, CORS, backup, browser, and fresh-clone evidence are missing. |
 | Non-technical user-proven usability | Not real | Only a proxy simulation exists; no observed external user walkthrough is recorded. |
-| Full multilingual UI | Not real | Locale metadata exists, but visible UI copy is mostly English. |
+| Full multilingual UI | Partially real | English/Dutch frontend shell catalogs and a browser-local language selector exist, but dynamic API messages, diagnostics payloads, and marketplace catalogs still fall back to English. |
 | Team/workspace collaboration | Deliberately out of scope | Workspaces are deferred by product decision. |
 
 ## Marketplace Realism

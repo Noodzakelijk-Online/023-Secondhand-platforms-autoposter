@@ -62,13 +62,242 @@ const state = {
     lastUpdatedAt: null,
   },
   pendingRequests: 0,
+  locale: localStorage.getItem("autoposterLocale") || document.documentElement.lang || "en",
+  localization: null,
 };
 
 const $ = (selector) => document.querySelector(selector);
-const money = (cents) => (cents / 100).toLocaleString(undefined, { style: "currency", currency: "EUR" });
+const COPY_CATALOG = {
+  en: {
+    "app.name": "Secondhand Autoposter",
+    "auth.email": "Email",
+    "auth.password": "Password",
+    "auth.name": "Name",
+    "auth.signIn": "Sign in",
+    "auth.createAccount": "Create account",
+    "nav.dashboard": "Dashboard",
+    "nav.listings": "Listings",
+    "nav.queue": "Queue",
+    "nav.accounts": "Accounts",
+    "nav.settings": "Settings",
+    "nav.signOut": "Sign out",
+    "nav.language": "Language",
+    "status.checking": "Checking",
+    "status.offline": "Offline",
+    "action.newListing": "New listing",
+    "action.refresh": "Refresh",
+    "action.previous": "Previous",
+    "action.next": "Next",
+    "action.save": "Save",
+    "action.duplicate": "Duplicate",
+    "action.delete": "Delete",
+    "action.cancel": "Cancel",
+    "action.validate": "Validate",
+    "action.check": "Check",
+    "action.queuePackage": "Queue assisted package",
+    "action.regeneratePackage": "Regenerate package",
+    "dashboard.insights": "Insights",
+    "dashboard.localOnly": "Local only",
+    "dashboard.recentListings": "Recent listings",
+    "dashboard.latestJobs": "Latest jobs",
+    "metric.listings": "Listings",
+    "metric.ready": "Ready",
+    "metric.needAction": "Need action",
+    "metric.failed": "Failed",
+    "listings.search": "Search",
+    "listings.searchPlaceholder": "title, category, location",
+    "label.status": "Status",
+    "label.sort": "Sort",
+    "label.platform": "Platform",
+    "label.title": "Title",
+    "label.price": "Price",
+    "label.condition": "Condition",
+    "label.category": "Category",
+    "label.location": "Location",
+    "label.tags": "Tags",
+    "label.brand": "Brand",
+    "label.model": "Model",
+    "label.color": "Color",
+    "label.material": "Material",
+    "label.categoryAttributes": "Category attributes",
+    "label.weightGrams": "Weight grams",
+    "label.shippingCost": "Shipping cost",
+    "label.pickup": "Pickup",
+    "label.shipping": "Shipping",
+    "label.template": "Template",
+    "label.description": "Description",
+    "label.deliveryOptions": "Delivery options",
+    "label.dimensions": "Dimensions",
+    "label.notes": "Notes",
+    "label.internalNotes": "Internal notes",
+    "quality.title": "Quality assistant",
+    "images.title": "Images",
+    "images.upload": "Upload image",
+    "platforms.title": "Platforms",
+    "queue.title": "Assisted package queue",
+    "queue.liveOn": "Live refresh on",
+    "queue.pause": "Pause live refresh",
+    "accounts.title": "Platform accounts",
+    "accounts.displayName": "Display name",
+    "accounts.save": "Save account",
+    "templates.title": "Description templates",
+    "templates.name": "Name",
+    "templates.variant": "Variant",
+    "templates.body": "Body",
+    "templates.save": "Save template",
+    "mappings.title": "Category mappings",
+    "mappings.source": "Source category",
+    "mappings.target": "Platform category",
+    "mappings.save": "Save mapping",
+    "settings.data": "Data portability",
+    "settings.exportJson": "Export JSON",
+    "settings.exportCsv": "Export listings CSV",
+    "settings.exportImages": "Export images ZIP",
+    "settings.importJson": "Import JSON",
+    "settings.importCsv": "Import listings CSV",
+    "settings.diagnostics": "Diagnostics",
+    "settings.runDiagnostics": "Run diagnostics",
+    "settings.notRun": "Not run yet.",
+    "settings.privacy": "Privacy",
+    "settings.deleteAccount": "Delete my account data",
+    "settings.privacyWarning": "This removes your account, sessions, listings, jobs, templates, mappings, accounts, and uploaded images.",
+    "settings.privacyActivity": "Privacy activity",
+  },
+  nl: {
+    "app.name": "Tweedehands Autoposter",
+    "auth.email": "E-mail",
+    "auth.password": "Wachtwoord",
+    "auth.name": "Naam",
+    "auth.signIn": "Inloggen",
+    "auth.createAccount": "Account maken",
+    "nav.dashboard": "Dashboard",
+    "nav.listings": "Advertenties",
+    "nav.queue": "Wachtrij",
+    "nav.accounts": "Accounts",
+    "nav.settings": "Instellingen",
+    "nav.signOut": "Uitloggen",
+    "nav.language": "Taal",
+    "status.checking": "Controleren",
+    "status.offline": "Offline",
+    "action.newListing": "Nieuwe advertentie",
+    "action.refresh": "Vernieuwen",
+    "action.previous": "Vorige",
+    "action.next": "Volgende",
+    "action.save": "Opslaan",
+    "action.duplicate": "Dupliceren",
+    "action.delete": "Verwijderen",
+    "action.cancel": "Annuleren",
+    "action.validate": "Valideren",
+    "action.check": "Controleren",
+    "action.queuePackage": "Assistentiepakket in wachtrij",
+    "action.regeneratePackage": "Pakket opnieuw maken",
+    "dashboard.insights": "Inzichten",
+    "dashboard.localOnly": "Alleen lokaal",
+    "dashboard.recentListings": "Recente advertenties",
+    "dashboard.latestJobs": "Laatste taken",
+    "metric.listings": "Advertenties",
+    "metric.ready": "Klaar",
+    "metric.needAction": "Actie nodig",
+    "metric.failed": "Mislukt",
+    "listings.search": "Zoeken",
+    "listings.searchPlaceholder": "titel, categorie, locatie",
+    "label.status": "Status",
+    "label.sort": "Sorteren",
+    "label.platform": "Platform",
+    "label.title": "Titel",
+    "label.price": "Prijs",
+    "label.condition": "Staat",
+    "label.category": "Categorie",
+    "label.location": "Locatie",
+    "label.tags": "Tags",
+    "label.brand": "Merk",
+    "label.model": "Model",
+    "label.color": "Kleur",
+    "label.material": "Materiaal",
+    "label.categoryAttributes": "Categoriekenmerken",
+    "label.weightGrams": "Gewicht in gram",
+    "label.shippingCost": "Verzendkosten",
+    "label.pickup": "Ophalen",
+    "label.shipping": "Verzenden",
+    "label.template": "Sjabloon",
+    "label.description": "Beschrijving",
+    "label.deliveryOptions": "Leveringsopties",
+    "label.dimensions": "Afmetingen",
+    "label.notes": "Notities",
+    "label.internalNotes": "Interne notities",
+    "quality.title": "Kwaliteitsassistent",
+    "images.title": "Afbeeldingen",
+    "images.upload": "Afbeelding uploaden",
+    "platforms.title": "Platformen",
+    "queue.title": "Wachtrij voor assistentiepakketten",
+    "queue.liveOn": "Live verversen aan",
+    "queue.pause": "Live verversen pauzeren",
+    "accounts.title": "Platformaccounts",
+    "accounts.displayName": "Weergavenaam",
+    "accounts.save": "Account opslaan",
+    "templates.title": "Beschrijving-sjablonen",
+    "templates.name": "Naam",
+    "templates.variant": "Variant",
+    "templates.body": "Inhoud",
+    "templates.save": "Sjabloon opslaan",
+    "mappings.title": "Categoriemapping",
+    "mappings.source": "Broncategorie",
+    "mappings.target": "Platformcategorie",
+    "mappings.save": "Mapping opslaan",
+    "settings.data": "Data-overdracht",
+    "settings.exportJson": "JSON exporteren",
+    "settings.exportCsv": "Advertenties CSV exporteren",
+    "settings.exportImages": "Afbeeldingen ZIP exporteren",
+    "settings.importJson": "JSON importeren",
+    "settings.importCsv": "Advertenties CSV importeren",
+    "settings.diagnostics": "Diagnostiek",
+    "settings.runDiagnostics": "Diagnostiek uitvoeren",
+    "settings.notRun": "Nog niet uitgevoerd.",
+    "settings.privacy": "Privacy",
+    "settings.deleteAccount": "Mijn accountgegevens verwijderen",
+    "settings.privacyWarning": "Dit verwijdert je account, sessies, advertenties, taken, sjablonen, mappings, accounts en geuploade afbeeldingen.",
+    "settings.privacyActivity": "Privacyactiviteit",
+  },
+};
+
+const money = (cents) => (cents / 100).toLocaleString(state.locale, { style: "currency", currency: "EUR" });
 let listingSearchTimer = null;
 let templateSearchTimer = null;
 let mappingSearchTimer = null;
+
+function t(key) {
+  return COPY_CATALOG[state.locale]?.[key] || COPY_CATALOG.en[key] || key;
+}
+
+function applyTranslations() {
+  document.documentElement.lang = state.locale;
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    node.textContent = t(node.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-label]").forEach((node) => {
+    const textNode = Array.from(node.childNodes).find((child) => child.nodeType === Node.TEXT_NODE && child.textContent.trim());
+    if (textNode) textNode.textContent = t(node.dataset.i18nLabel);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+    node.placeholder = t(node.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    node.title = t(node.dataset.i18nTitle);
+  });
+  const localeSelect = $("#localeSelect");
+  if (localeSelect) localeSelect.value = state.locale;
+  const activeView = document.querySelector(".nav.active")?.dataset.view || "dashboard";
+  const titleKey = `nav.${activeView}`;
+  const title = $("#viewTitle");
+  if (title) title.textContent = t(titleKey);
+}
+
+function setLocale(locale) {
+  state.locale = COPY_CATALOG[locale] ? locale : "en";
+  localStorage.setItem("autoposterLocale", state.locale);
+  applyTranslations();
+  render();
+}
 
 class ApiError extends Error {
   constructor(message, options = {}) {
@@ -246,7 +475,7 @@ function show(view) {
   document.querySelectorAll(".view").forEach((node) => node.classList.remove("active"));
   document.querySelectorAll(".nav").forEach((node) => node.classList.toggle("active", node.dataset.view === view));
   $(`#${view}View`).classList.add("active");
-  $("#viewTitle").textContent = view[0].toUpperCase() + view.slice(1);
+  $("#viewTitle").textContent = t(`nav.${view}`);
 }
 
 function statusClass(status) {
@@ -998,11 +1227,21 @@ window.addEventListener("unhandledrejection", (event) => {
 });
 
 async function boot() {
+  applyTranslations();
+  try {
+    state.localization = await api("/localization", { headers: {} });
+    const supported = new Set((state.localization.supported_locales || []).map((locale) => locale.code));
+    if (!supported.has(state.locale)) state.locale = state.localization.default_locale || "en";
+    applyTranslations();
+  } catch {
+    applyTranslations();
+  }
+
   try {
     const health = await api("/health", { headers: {} });
     $("#healthBadge").textContent = health.status;
   } catch {
-    $("#healthBadge").textContent = "Offline";
+    $("#healthBadge").textContent = t("status.offline");
   }
 
   if (!state.token) return;
@@ -1069,6 +1308,8 @@ $("#logoutButton").addEventListener("click", () => {
 });
 
 document.querySelectorAll(".nav").forEach((node) => node.addEventListener("click", () => show(node.dataset.view)));
+
+$("#localeSelect")?.addEventListener("change", (event) => setLocale(event.target.value));
 
 $("#newListingButton").addEventListener("click", async () => {
   const listing = await api("/listings", {

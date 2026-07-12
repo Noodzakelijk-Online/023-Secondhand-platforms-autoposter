@@ -23,7 +23,7 @@ A non-technical secondhand seller wants to create one good listing, reuse it acr
 - Browser walkthrough evidence is still missing, so non-technical usability is not proven.
 - Platform-specific category and compliance depth is still shallow.
 - eBay OAuth foundations now include token exchange, refresh, and sandbox Inventory API probe boundaries, but official publishing is still not implemented.
-- The UI is mostly English and only has a localization foundation.
+- The primary UI shell has English/Dutch localization, while dynamic server/platform messages remain English-first.
 
 ## Product Verdict
 

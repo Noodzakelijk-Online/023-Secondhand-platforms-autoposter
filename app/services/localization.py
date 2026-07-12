@@ -14,10 +14,10 @@ def localization_metadata(settings: Settings) -> dict:
             {
                 "code": locale,
                 "name": LANGUAGE_NAMES.get(locale, locale),
-                "complete": locale == "en",
+                "complete": locale in {"en", "nl"},
             }
             for locale in locales
         ],
-        "ui_catalog_status": "english_complete",
+        "ui_catalog_status": "frontend_catalog_with_english_fallback",
         "fallback_locale": "en",
     }

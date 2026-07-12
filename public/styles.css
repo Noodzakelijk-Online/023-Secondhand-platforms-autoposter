@@ -133,6 +133,20 @@ nav {
   gap: 8px;
 }
 
+.locale-control {
+  color: #d5dee6;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.locale-control select {
+  width: 100%;
+  background: #263442;
+  border-color: #3d5062;
+  color: white;
+}
+
 .nav {
   text-align: left;
   background: transparent;
