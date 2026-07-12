@@ -8,7 +8,7 @@ This checklist prevents the project from being described as finished, launched, 
 - Do not claim full automatic marketplace publishing while registered adapters remain assisted.
 - Do not claim eBay official API publishing until seller policy checks, live sandbox listing proof, quota handling, and official adapter behavior are implemented and tested.
 - Do not claim production readiness while the target database is behind Alembic head, production secrets are unproven, or worker status is not captured.
-- Do not claim browser/accessibility completion until `docs/BROWSER_ACCESSIBILITY_QA.md` has executed walkthrough evidence.
+- Do not claim full browser/accessibility completion until `docs/BROWSER_ACCESSIBILITY_QA.md` has completed keyboard, zoom, screen-reader, responsive, and cross-browser evidence.
 - Do not claim fresh-clone readiness until a fresh-clone dry run is documented.
 
 ## Required Before Marking Final Release

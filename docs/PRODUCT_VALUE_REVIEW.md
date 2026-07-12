@@ -20,14 +20,14 @@ A non-technical secondhand seller wants to create one good listing, reuse it acr
 ## Value Gaps
 
 - The app reduces preparation effort, but final marketplace submission remains manual for all platforms; users can record user-confirmed manual completion afterward.
-- Browser walkthrough evidence is still missing, so non-technical usability is not proven.
+- Real non-technical usability is not proven, and the full browser/accessibility/responsive launch matrix is still incomplete.
 - Platform-specific category and compliance depth is still shallow.
 - eBay OAuth foundations now include token exchange, refresh, and sandbox Inventory API probe boundaries, but official publishing is still not implemented.
 - The primary UI shell has English/Dutch localization, while dynamic server/platform messages remain English-first.
 
 ## Product Verdict
 
-The product already has credible demo value as an assisted listing preparation and workflow tool. It is not yet a final launch product because user walkthrough, browser/accessibility evidence, deployment proof, and official API publishing evidence remain incomplete.
+The product already has credible demo value as an assisted listing preparation and workflow tool. It is not yet a final launch product because real user walkthrough, full browser/accessibility matrix evidence, deployment proof, and official API publishing evidence remain incomplete.
 
 ## Next Highest-Value Improvements
 

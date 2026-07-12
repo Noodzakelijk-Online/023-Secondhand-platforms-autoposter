@@ -61,7 +61,7 @@ Legend:
 | 49 | Done | `docs/TECHNICAL_DEBT_REGISTER.md` | Keep debt items current. |
 | 50 | Done | `docs/RED_TEAM_REVIEW.md` | Re-review after sensitive changes. |
 | 51 | Done | `docs/ADVERSARIAL_TEST_REPORT.md` | Re-run adversarial review near release. |
-| 52 | Partial | `docs/BROWSER_ACCESSIBILITY_QA.md` | Execute walkthrough and record evidence. |
+| 52 | Done | `docs/UI_UX_DEBUGGING_ROUNDS.md`, `docs/BROWSER_E2E_WORKFLOW.md`, `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`, `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`, `tests/test_ui_ux_debugging_rounds.py` | Keep debugging-round evidence current when browser workflow scripts or visible UX flows change. |
 | 53 | Done | `docs/ACCESSIBILITY_AUDIT.md`, `tests/test_accessibility_audit.py`, `public/index.html` | Keep smoke checks aligned with new visible controls and still execute the broader browser checklist before launch. |
 | 54 | Partial | Responsive checklist in docs | Execute browser matrix. |
 | 55 | Done | `docs/BACKUP_RESTORE.md` | Validate restore against deployment target. |
@@ -69,7 +69,7 @@ Legend:
 | 57 | Done | `app/services/analytics.py`, `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md` | Keep local-only analytics posture. |
 | 58 | Done | `docs/SAAS_READINESS.md`, `GET /api/account/readiness`, `tests/test_saas_readiness.py` | Reopen only if subscriptions, organizations, seats, or role-based team access enter scope. |
 | 59 | Done | `docs/WORKSPACES_OPTIONAL_REVIEW.md`, `tests/test_workspaces_optional_review.py` | Reopen only if team collaboration enters scope. |
-| 60 | Done | `app/services/localization.py`, `/api/localization`, `public/index.html`, `public/app.js`, `docs/INTERNATIONALIZATION.md`, `tests/test_internationalization.py` | Keep new static UI copy in the catalog; broader browser walkthrough evidence remains tracked under phases 52 and 54. |
+| 60 | Done | `app/services/localization.py`, `/api/localization`, `public/index.html`, `public/app.js`, `docs/INTERNATIONALIZATION.md`, `tests/test_internationalization.py` | Keep new static UI copy in the catalog; broader keyboard/responsive browser coverage remains tracked under phase 54. |
 | 61 | Done | `app/feature_flags.py`, `docs/FEATURE_FLAGS.md` | Keep flags safety-reviewed. |
 | 62 | Done | `app/services/job_state.py`, `docs/STATE_MACHINES.md` | Keep transition docs aligned. |
 | 63 | Done | `docs/DOMAIN_MODEL.md`, `app/models.py`, `tests/test_domain_model.py`, `tests/test_data_invariants.py`, `tests/test_listing_revisions.py` | Keep aggregate cascade and invariant coverage aligned with new domain entities. |

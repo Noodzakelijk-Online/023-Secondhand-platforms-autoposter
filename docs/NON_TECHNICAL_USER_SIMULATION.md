@@ -30,7 +30,7 @@ Mira wants to:
 | 5 | Apply a suggestion. | Suggestion changes form fields only after explicit user action. | Supported. |
 | 6 | Select platforms and validate. | App reports missing fields and copy-ready mapped fields. | Supported. |
 | 7 | Queue assisted package. | App creates assisted jobs and labels final action as user-controlled. | Supported. |
-| 8 | Open Queue. | User can inspect job status, logs, retry where relevant, see needs-action context, and record manual completion with a marketplace URL. | Supported at source/API level; executed browser walkthrough evidence is still needed. |
+| 8 | Open Queue. | User can inspect job status, logs, retry where relevant, see needs-action context, and record manual completion with a marketplace URL. | Supported by source, API, and Chromium workflow evidence; external non-technical user evidence is still needed. |
 | 9 | Export JSON. | Export excludes secrets, sessions, and image binaries. | Supported. |
 | 10 | Delete account data. | Owned records and uploaded images are removed. | Supported. |
 

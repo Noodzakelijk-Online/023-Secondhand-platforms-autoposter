@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 77.
-- Partial: 12.
+- Done: 78.
+- Partial: 11.
 - Not started: 0.
 
 ## Phase Status
@@ -71,7 +71,7 @@ Legend:
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
 | 50 | Red Team Review | Done | See `docs/RED_TEAM_REVIEW.md`. |
 | 51 | Adversarial Test Report | Done | See `docs/ADVERSARIAL_TEST_REPORT.md`. |
-| 52 | UI/UX Debugging Rounds | Partial | Manual browser QA checklist exists in `docs/BROWSER_ACCESSIBILITY_QA.md`; executed walkthrough evidence still needed. |
+| 52 | UI/UX Debugging Rounds | Done | Executed Chromium UI/UX rounds covered prepublish review, error/recovery UX, and the seller workflow; see `docs/UI_UX_DEBUGGING_ROUNDS.md`. Full keyboard, zoom, screen-reader, and cross-browser responsive launch checks remain under Phase 54. |
 | 53 | Accessibility | Done | See `docs/ACCESSIBILITY_AUDIT.md`; static accessibility smoke tests verify form labels, button names, image alt text, landmarks, headings, and live status regions. |
 | 54 | Responsive And Browser Compatibility | Partial | Responsive checklist covers mobile/tablet/desktop viewport checks; browser matrix execution still needed. |
 | 55 | Backup, Restore, And Data Reconciliation | Done | See `docs/BACKUP_RESTORE.md` for backup scope, restore order, and reconciliation checks. |

@@ -52,7 +52,7 @@ The adapter system is intentionally assisted-only for registered production plat
 
 ## Audit Findings
 
-No critical local-code blocker was found that invalidates the current assisted-posting demo posture. The strongest unresolved blockers are environment-dependent: PostgreSQL/concurrent-worker proof, deployment-edge controls, browser/accessibility evidence, and real user walkthrough evidence.
+No critical local-code blocker was found that invalidates the current assisted-posting demo posture. The strongest unresolved blockers are environment-dependent: PostgreSQL/concurrent-worker proof, deployment-edge controls, full browser/accessibility matrix evidence, and real user walkthrough evidence.
 
 The highest product risk remains overclaiming automation. Current UI wording, adapter behavior, and tests now consistently describe assisted package preparation, not automatic marketplace submission.
 
@@ -74,4 +74,4 @@ The largest future implementation risk is official API publishing. It should rem
 
 ## Release Impact
 
-This audit is enough to close the formal local deep-audit documentation gap. It does not make the project release-ready. The release gate still depends on browser evidence, fresh-clone verification, deployment evidence, target-database migration proof, client acceptance of assisted-posting limits, and any chosen official API/storage work.
+This audit is enough to close the formal local deep-audit documentation gap. It does not make the project release-ready. The release gate still depends on full browser/accessibility matrix evidence, fresh-clone verification, deployment evidence, target-database migration proof, client acceptance of assisted-posting limits, and any chosen official API/storage work.

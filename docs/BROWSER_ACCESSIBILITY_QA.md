@@ -8,6 +8,8 @@ Executed Chromium evidence for the prepublish safety review is recorded in `docs
 
 Executed Chromium evidence for frontend error and recovery behavior is recorded in `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`. That evidence is also narrower than this full launch checklist.
 
+Executed UI/UX debugging rounds are summarized in `docs/UI_UX_DEBUGGING_ROUNDS.md`. This checklist remains open for keyboard, zoom, screen-reader, responsive, and cross-browser launch evidence.
+
 ## Scope
 
 Run this against the exact deployment candidate and environment that will be shown to users.
