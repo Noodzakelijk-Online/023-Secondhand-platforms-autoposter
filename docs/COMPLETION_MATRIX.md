@@ -11,8 +11,8 @@ Legend:
 ## Summary
 
 - Total phases: 89.
-- Done: 73.
-- Partial: 16.
+- Done: 74.
+- Partial: 15.
 - Not started: 0.
 
 ## Phase Status
@@ -85,7 +85,7 @@ Legend:
 | 63 | Domain Model | Done | See `docs/DOMAIN_MODEL.md`; listing aggregate ownership, schema invariants, revisioning, idempotency, owner scoping, and cascade deletion have regression coverage. |
 | 64 | Data Invariants | Done | Listing schemas now enforce non-negative money/weight, currency format, tag cleanup, and API invariant tests. |
 | 65 | Frontend State Consistency | Done | Listing selection, listing mutations, image changes, platform selection, and platform description edits now use explicit state-transition helpers that clear stale validation/quality/prepublish state with regression coverage. |
-| 66 | Prepublish Safety Review | Partial | Validation now feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, and mapped-field copy buttons; executed walkthrough evidence still needed. |
+| 66 | Prepublish Safety Review | Done | Validation feeds a prepublish review panel with missing fields, fix shortcuts, compliance notes, posting links, mapped-field copy buttons, selected-platform validation, and executed Chromium desktop/mobile evidence in `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`. |
 | 67 | Platform Compliance UI | Done | Platform cards and prepublish review cards display adapter compliance notes alongside capabilities, posting links, validation warnings, and copy-ready package controls. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |

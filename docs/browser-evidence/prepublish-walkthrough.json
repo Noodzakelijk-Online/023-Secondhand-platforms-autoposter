@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-07-12T10:21:16.816Z",
+  "baseUrl": "http://127.0.0.1:8000",
+  "browser": "chromium",
+  "listingId": 5,
+  "assertions": [
+    "auth token accepted by dashboard shell",
+    "listing can be opened from the real Listings view",
+    "Marktplaats platform selection opens prepublish review",
+    "validation populates ready state and mapped category",
+    "copy-ready package and field controls are present",
+    "desktop and mobile screenshots were captured"
+  ],
+  "results": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "screenshot": "docs/browser-evidence/prepublish-desktop.png",
+      "prepublishVisible": true,
+      "copyButtons": 20,
+      "packageButtons": 1
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "screenshot": "docs/browser-evidence/prepublish-mobile.png",
+      "prepublishVisible": true,
+      "copyButtons": 20,
+      "packageButtons": 1
+    }
+  ]
+}

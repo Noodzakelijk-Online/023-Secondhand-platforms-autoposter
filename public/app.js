@@ -1651,7 +1651,11 @@ $("#validateButton").addEventListener("click", async () => {
   const listing = selectedListing();
   if (!listing) return;
   await savePlatformOverrides();
-  const results = await api(`/listings/${listing.id}/validate`);
+  const selectedPlatforms = [...state.selectedPlatforms];
+  const validationRequests = selectedPlatforms.length
+    ? selectedPlatforms.map((platform) => api(`/listings/${listing.id}/validate?platform=${encodeURIComponent(platform)}`))
+    : [api(`/listings/${listing.id}/validate`)];
+  const results = (await Promise.all(validationRequests)).flat();
   state.validationResults = Object.fromEntries(results.map((result) => [result.platform, result]));
   $("#editorMessage").textContent = `${results.filter((item) => item.ready).length}/${results.length} ready`;
   await loadAll();

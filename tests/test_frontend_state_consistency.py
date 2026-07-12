@@ -36,3 +36,15 @@ def test_frontend_invalidates_prepublish_state_when_platform_inputs_change():
     ]
     for fragment in required_fragments:
         assert fragment in script
+
+
+def test_validation_requests_are_scoped_to_selected_platforms():
+    script = frontend_script()
+
+    required_fragments = [
+        "const selectedPlatforms = [...state.selectedPlatforms];",
+        "validate?platform=${encodeURIComponent(platform)}",
+        "const results = (await Promise.all(validationRequests)).flat();",
+    ]
+    for fragment in required_fragments:
+        assert fragment in script

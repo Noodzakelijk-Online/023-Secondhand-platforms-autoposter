@@ -75,7 +75,7 @@ Legend:
 | 63 | Done | `docs/DOMAIN_MODEL.md`, `app/models.py`, `tests/test_domain_model.py`, `tests/test_data_invariants.py`, `tests/test_listing_revisions.py` | Keep aggregate cascade and invariant coverage aligned with new domain entities. |
 | 64 | Done | Schema validators, `tests/test_data_invariants.py` | Keep invariants aligned with new fields. |
 | 65 | Done | Explicit listing state transition helpers in `public/app.js`, `tests/test_frontend_state_consistency.py` | Keep stale review-state invalidation aligned with new listing mutation paths. |
-| 66 | Partial | Prepublish review panel in UI | Add executed walkthrough evidence. |
+| 66 | Done | `public/app.js`, `scripts/browser_prepublish_walkthrough.cjs`, `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`, `docs/browser-evidence/prepublish-walkthrough.json`, `tests/test_frontend_state_consistency.py` | Keep selected-platform validation and evidence current when prepublish review behavior changes. |
 | 67 | Done | Adapter compliance notes from `GET /api/platforms`, platform/prepublish UI in `public/app.js`, `tests/test_ui_wording.py` | Keep notes visible when adapters or compliance language change. |
 | 68 | Done | `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Update with each official API candidate. |
 | 69 | Done | Performance indexes migration and docs | Benchmark against production-like data later. |
