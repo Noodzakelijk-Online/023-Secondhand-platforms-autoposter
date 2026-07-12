@@ -29,7 +29,7 @@ Exit rule: deployment dry runs may begin only after this gate is green.
 Required evidence:
 
 - A non-technical user can register, create a listing, upload an image, use quality guidance, validate platforms, queue assisted posting, inspect job output, export data, and delete the account.
-- Browser, responsive, and accessibility walkthrough findings are recorded.
+- Browser workflow, responsive matrix, and accessibility walkthrough findings are recorded.
 - Any visible action either works against a real endpoint or is removed from the UI.
 
 Exit rule: release-readiness review may begin only after this gate is green.
@@ -63,6 +63,6 @@ Exit rule: launch can proceed only with explicit acceptance of remaining partial
 | --- | --- | --- |
 | Gate 1 | Passing locally | Verification passes; matrix and traceability are guarded by tests. |
 | Gate 2 | Partial | Core safety tests and OAuth token-exchange foundations exist; deployment-specific secret-manager proof remains. |
-| Gate 3 | Partial | Core workflow exists; executed browser/accessibility walkthrough evidence remains. |
+| Gate 3 | Partial | Core workflow, UI/UX debugging, and responsive browser evidence exist; keyboard, zoom, screen-reader, and real-user walkthrough evidence remain. |
 | Gate 4 | Partial | Local verification exists; fresh-clone and target deployment evidence remain. |
 | Gate 5 | Not started | Final search and acceptance are intentionally release-end activities. |

@@ -63,7 +63,7 @@ Legend:
 | 51 | Done | `docs/ADVERSARIAL_TEST_REPORT.md` | Re-run adversarial review near release. |
 | 52 | Done | `docs/UI_UX_DEBUGGING_ROUNDS.md`, `docs/BROWSER_E2E_WORKFLOW.md`, `docs/BROWSER_PREPUBLISH_WALKTHROUGH.md`, `docs/BROWSER_ERROR_UX_WALKTHROUGH.md`, `tests/test_ui_ux_debugging_rounds.py` | Keep debugging-round evidence current when browser workflow scripts or visible UX flows change. |
 | 53 | Done | `docs/ACCESSIBILITY_AUDIT.md`, `tests/test_accessibility_audit.py`, `public/index.html` | Keep smoke checks aligned with new visible controls and still execute the broader browser checklist before launch. |
-| 54 | Partial | Responsive checklist in docs | Execute browser matrix. |
+| 54 | Done | `scripts/browser_responsive_matrix.cjs`, `docs/RESPONSIVE_BROWSER_COMPATIBILITY.md`, `docs/browser-evidence/responsive-matrix.json`, `tests/test_responsive_browser_compatibility.py` | Keep browser/viewport matrix evidence current when responsive layout or navigation changes. |
 | 55 | Done | `docs/BACKUP_RESTORE.md` | Validate restore against deployment target. |
 | 56 | Done | `app/observability.py`, `/api/metrics`, runbook | Add Prometheus/OTel only if required. |
 | 57 | Done | `app/services/analytics.py`, `docs/PRODUCT_ANALYTICS_LOCAL_FIRST.md` | Keep local-only analytics posture. |
