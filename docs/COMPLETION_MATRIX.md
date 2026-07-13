@@ -2,6 +2,8 @@
 
 This matrix tracks progress against `Secondhand_Platforms_Autoposter_Giant_Codex_Goal_Prompt.pdf`.
 
+The remaining `Partial` phases are listed in `docs/EXTERNAL_EVIDENCE_BACKLOG.md` with required external evidence and capture locations.
+
 Legend:
 
 - `Done`: implemented to a practical standard in this repository.
@@ -67,7 +69,7 @@ Legend:
 | 45 | CI/CD Quality Gates | Done | `.github/workflows/verify.yml` runs `python scripts/verify.py` on pushes and pull requests to `main`. |
 | 46 | Documentation Overhaul | Done | README links a seller user guide and API reference; docs cover assisted workflows, endpoint groups, error shape, pagination, data portability, and launch limits with regression tests. |
 | 47 | Completion Matrix | Done | This file. |
-| 48 | Final Verification Report | Done | See `docs/FINAL_VERIFICATION_REPORT.md`; local verification passed at commit `7de54a4` with 69 tests. |
+| 48 | Final Verification Report | Done | See `docs/FINAL_VERIFICATION_REPORT.md`; local verification passed on 2026-07-13 with 190 tests, and the release gate remains blocked on external evidence. |
 | 49 | Technical Debt Register | Done | See `docs/TECHNICAL_DEBT_REGISTER.md`. |
 | 50 | Red Team Review | Done | See `docs/RED_TEAM_REVIEW.md`. |
 | 51 | Adversarial Test Report | Done | See `docs/ADVERSARIAL_TEST_REPORT.md`. |
@@ -89,7 +91,7 @@ Legend:
 | 67 | Platform Compliance UI | Done | Platform cards and prepublish review cards display adapter compliance notes alongside capabilities, posting links, validation warnings, and copy-ready package controls. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
-| 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates and `docs/RELEASE_EVIDENCE_RECORD.md` provides the structured launch evidence record; final launch evidence still needed. |
+| 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates, `docs/RELEASE_EVIDENCE_RECORD.md` provides the structured launch evidence record, and `scripts/release_gate.py --json` reports blocked with detailed missing-evidence fields until evidence is complete; final launch evidence still needed. |
 | 71 | Supply Chain And Dependencies | Done | `scripts/audit_dependencies.py` and `.github/workflows/supply-chain.yml` run `pip-audit`; see `docs/SUPPLY_CHAIN.md`. |
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
@@ -100,11 +102,11 @@ Legend:
 | 78 | Requirements Traceability | Done | See `docs/REQUIREMENTS_TRACEABILITY.md`; a regression test ensures all 89 phase statuses stay synchronized with this matrix. |
 | 79 | Task Graph And Codex Execution Management | Done | See `docs/TASK_GRAPH_AND_EXECUTION.md` for execution lanes, critical path, and future Codex run rules. |
 | 80 | Progressive Stabilization Gates | Done | See `docs/PROGRESSIVE_STABILIZATION_GATES.md` for staged local, security, workflow, deployment, and launch acceptance gates. |
-| 81 | Implementation Depth Requirement | Partial | Core app is wired; many deep hardening tasks remain. |
+| 81 | Implementation Depth Requirement | Partial | See `docs/IMPLEMENTATION_DEPTH_REVIEW.md`; core app and local hardening are deep, but target deployment, real-user, manual accessibility, and official API proof gates remain. |
 | 82 | No Partial UI Without Backend Wiring | Done | Current visible core UI calls real API endpoints. |
 | 83 | No Backend Endpoint Without Frontend Or Purpose | Done | Current endpoints support visible app flows or documented API use. |
 | 84 | False Completion Prevention | Done | See `docs/FALSE_COMPLETION_PREVENTION.md`; tests guard required anti-overclaim wording for release readiness, assisted posting, eBay API, and fresh-clone evidence. |
-| 85 | Final No-Excuses Search | Partial | See `docs/FINAL_NO_EXCUSES_SEARCH.md`; pre-final overclaim/secret searches were run, but the true final search must be repeated near release. |
+| 85 | Final No-Excuses Search | Partial | See `docs/FINAL_NO_EXCUSES_SEARCH.md`; pre-final overclaim/secret searches were run, but the true final search must be repeated after release evidence and before final acceptance. |
 | 86 | Final Fresh-Clone Dry Run | Done | See `docs/FRESH_CLONE_DRY_RUN.md`; a clean clone of the pushed repository at `ca42634` passed `python scripts\verify.py` with 139 tests. |
-| 87 | Final Acceptance Criteria | Partial | Core acceptance partially met; full PDF criteria not complete. |
-| 88 | Final Response Requirements | Partial | Prior final response covered current work; final release response pending. |
+| 87 | Final Acceptance Criteria | Partial | See `docs/FINAL_ACCEPTANCE_RECORD.md`; criteria are structured, but final acceptance is not captured or accepted. |
+| 88 | Final Response Requirements | Partial | See `docs/FINAL_RESPONSE_REQUIREMENTS.md`; `scripts/final_response_check.py` blocks unsafe final release answers until release gate and final acceptance are ready. |

@@ -10,6 +10,7 @@ def test_final_no_excuses_search_is_marked_pre_final_until_release_evidence_exis
         "not release-ready",
         "Real non-technical user walkthrough is not executed",
         "Deployment database, worker, backup, production secrets, and CORS evidence are missing",
+        "docs/FINAL_ACCEPTANCE_RECORD.md is not accepted",
         "remains partial",
     ]
     for phrase in required_phrases:

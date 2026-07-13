@@ -1,8 +1,8 @@
 # Final Verification Report
 
-Date: 2026-07-12
+Date: 2026-07-13
 
-Verification target: current working checkout on 2026-07-12. Fresh-clone evidence remains recorded separately at `ca42634` in `docs/FRESH_CLONE_DRY_RUN.md`.
+Verification target: current working checkout on 2026-07-13. Fresh-clone evidence remains recorded separately at `ca42634` in `docs/FRESH_CLONE_DRY_RUN.md`.
 
 ## Verification Command
 
@@ -16,8 +16,10 @@ Result: passed from the working checkout. See `docs/FRESH_CLONE_DRY_RUN.md` for 
 
 - Ruff lint: passed.
 - Python compile checks: passed.
-- Pytest suite: passed, 145 tests.
+- Pytest suite: passed, 190 tests.
 - Doctor diagnostics: passed with local-development warnings.
+- Release gate: blocked as expected until external evidence records are complete.
+- Final response preflight: blocked as expected until release gate and final acceptance are ready.
 
 ## Expected Local Warnings
 
@@ -27,6 +29,15 @@ The doctor command returned `warning` status for expected local-development cond
 - The local SQLite database is not stamped at Alembic head `20260703_0010`.
 
 These warnings do not block local verification, but they remain production launch blockers until deployment uses a strong `SECRET_KEY` and the target database is migrated to Alembic head.
+
+## Release Gate Snapshot
+
+`python scripts/release_gate.py` currently reports `blocked` and `python scripts/release_gate.py --json` lists the missing evidence fields, per-record counts, and total missing evidence count because:
+
+- release readiness still says not release-ready yet
+- release evidence has `Not captured` entries
+- non-technical user walkthrough evidence has `Not captured` entries
+- final acceptance is not accepted
 
 ## Current Release Assessment
 

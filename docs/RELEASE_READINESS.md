@@ -10,6 +10,8 @@ The app has a working core, tests, migrations, Docker setup, assisted posting, j
 
 Use `docs/RELEASE_EVIDENCE_RECORD.md` as the launch evidence record. Any item left as `Not captured` must either remain a blocker or have an explicit accepted-risk decision recorded before launch.
 
+Run `python scripts/release_gate.py` before any final launch claim. The command must report `ready`; a `blocked` result is expected until the external evidence records are complete and accepted. Use `python scripts/release_gate.py --json` when the missing evidence list needs to be captured in another tool or release checklist; missing entries are reported as `Section / Field` so duplicated labels such as `Decision` stay unambiguous. The JSON output also includes `missing_evidence_counts` and `total_missing_evidence` so release progress can be tracked without parsing the full list.
+
 ## Required Before Client Launch
 
 - Run `python scripts/verify.py` from a clean checkout.

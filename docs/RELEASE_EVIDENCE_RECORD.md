@@ -22,6 +22,7 @@ Use this record for the final client-launch decision. Leave entries as `Not capt
 | `python -m app.doctor --json` output | Not captured |
 | Known warnings accepted for launch | Not captured |
 | Final no-excuses search date and findings | Not captured |
+| Final acceptance record | Not captured; use `docs/FINAL_ACCEPTANCE_RECORD.md` |
 
 ## Deployment Evidence
 
@@ -65,3 +66,4 @@ Use this record for the final client-launch decision. Leave entries as `Not capt
 | Decision | Not captured |
 | Remaining accepted risks | Not captured |
 | Blockers deferred with owner/date | Not captured |
+| Final response readiness | Not captured; use `docs/FINAL_RESPONSE_REQUIREMENTS.md` |

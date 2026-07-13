@@ -54,6 +54,7 @@ Required evidence:
 - No platform is represented as fully automated without official API credential, sandbox, quota, and policy evidence.
 - Final no-excuses search is complete.
 - Final acceptance criteria and known residual risks are documented.
+- `python scripts/release_gate.py` reports `ready`.
 
 Exit rule: launch can proceed only with explicit acceptance of remaining partial phases.
 
@@ -65,4 +66,4 @@ Exit rule: launch can proceed only with explicit acceptance of remaining partial
 | Gate 2 | Partial | Core safety tests and OAuth token-exchange foundations exist; deployment-specific secret-manager proof remains. |
 | Gate 3 | Partial | Core workflow, UI/UX debugging, and responsive browser evidence exist; keyboard, zoom, screen-reader, and real-user walkthrough evidence remain. |
 | Gate 4 | Partial | Local verification exists; fresh-clone and target deployment evidence remain. |
-| Gate 5 | Not started | Final search and acceptance are intentionally release-end activities. |
+| Gate 5 | Blocked | `python scripts/release_gate.py` reports `blocked` because final release evidence records are incomplete. |

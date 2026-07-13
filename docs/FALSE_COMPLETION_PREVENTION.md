@@ -17,6 +17,9 @@ This checklist prevents the project from being described as finished, launched, 
 - Completion matrix, traceability, task graph, and stabilization gates agree.
 - Every remaining `Partial` or `Not started` phase has an accepted launch decision or is completed with evidence.
 - Final no-excuses search is performed and recorded.
+- `docs/FINAL_ACCEPTANCE_RECORD.md` is accepted.
+- `docs/FINAL_RESPONSE_REQUIREMENTS.md` can be answered without launch blockers.
+- `python scripts/final_response_check.py` reports `ready`.
 - Client/user accepts assisted-posting limitations.
 - Deployment evidence from `docs/RELEASE_READINESS.md` is captured.
 

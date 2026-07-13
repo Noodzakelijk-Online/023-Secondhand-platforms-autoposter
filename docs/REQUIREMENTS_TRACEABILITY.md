@@ -2,6 +2,8 @@
 
 This document maps the 89 goal phases to concrete repository evidence. It is not a claim that every phase is complete; it is a release-control index for finding the code, tests, and documents that support each status in `docs/COMPLETION_MATRIX.md`.
 
+The remaining `Partial` phases are consolidated in `docs/EXTERNAL_EVIDENCE_BACKLOG.md`.
+
 Legend:
 
 - `Evidence`: primary file, test, or document supporting the current status.
@@ -57,7 +59,7 @@ Legend:
 | 45 | Done | `.github/workflows/verify.yml` | Keep CI matrix aligned with verify script. |
 | 46 | Done | `Readme.md`, `docs/USER_GUIDE.md`, `docs/API_REFERENCE.md`, `tests/test_documentation_overhaul.py` | Keep user guide and API reference aligned when workflows, endpoints, or launch limits change. |
 | 47 | Done | `docs/COMPLETION_MATRIX.md` | Keep counts synchronized. |
-| 48 | Done | `docs/FINAL_VERIFICATION_REPORT.md` | Refresh before final release. |
+| 48 | Done | `docs/FINAL_VERIFICATION_REPORT.md`, `tests/test_final_verification_report.py` | Refresh before final release and after release-blocking evidence-control changes. |
 | 49 | Done | `docs/TECHNICAL_DEBT_REGISTER.md` | Keep debt items current. |
 | 50 | Done | `docs/RED_TEAM_REVIEW.md` | Re-review after sensitive changes. |
 | 51 | Done | `docs/ADVERSARIAL_TEST_REPORT.md` | Re-run adversarial review near release. |
@@ -79,7 +81,7 @@ Legend:
 | 67 | Done | Adapter compliance notes from `GET /api/platforms`, platform/prepublish UI in `public/app.js`, `tests/test_ui_wording.py` | Keep notes visible when adapters or compliance language change. |
 | 68 | Done | `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Update with each official API candidate. |
 | 69 | Done | Performance indexes migration and docs | Benchmark against production-like data later. |
-| 70 | Partial | `docs/RELEASE_READINESS.md`, `docs/RELEASE_EVIDENCE_RECORD.md`, `tests/test_release_readiness.py` | Capture final launch evidence. |
+| 70 | Partial | `docs/RELEASE_READINESS.md`, `docs/RELEASE_EVIDENCE_RECORD.md`, `scripts/release_gate.py`, `tests/test_release_readiness.py`, `tests/test_release_gate.py` | Capture final launch evidence; `python scripts/release_gate.py --json` lists the remaining missing evidence fields. |
 | 71 | Done | `scripts/audit_dependencies.py`, supply-chain workflow/docs | Keep audits current with dependencies. |
 | 72 | Done | `docs/BACKUP_RESTORE.md` | Prove restore in target environment. |
 | 73 | Done | `docs/OPERATOR_RUNBOOK.md` | Update when operations change. |
@@ -89,15 +91,15 @@ Legend:
 | 77 | Done | `docs/PRODUCT_REALISM_REVIEW.md`, `docs/PLATFORM_REALITY_REVIEW.md`, `tests/test_product_realism_review.py` | Revisit if product positioning or automation scope changes. |
 | 78 | Done | This traceability document plus `tests/test_requirements_traceability.py` | Keep synchronized with completion matrix. |
 | 79 | Done | `docs/TASK_GRAPH_AND_EXECUTION.md` | Keep execution lanes and critical path aligned with the matrix. |
-| 80 | Done | `docs/PROGRESSIVE_STABILIZATION_GATES.md` | Keep gate status aligned with release readiness evidence. |
-| 81 | Partial | Core app and many docs/tests | Continue replacing partials with evidence. |
+| 80 | Done | `docs/PROGRESSIVE_STABILIZATION_GATES.md`, `tests/test_progressive_stabilization_gates.py` | Keep gate status aligned with release readiness evidence and `scripts/release_gate.py`. |
+| 81 | Partial | `docs/IMPLEMENTATION_DEPTH_REVIEW.md`, core app and many docs/tests | Complete external depth gates or record accepted risks in final acceptance. |
 | 82 | Done | `docs/API_USAGE_AUDIT.md`, visible UI/API wiring | Keep route/UI audit current. |
 | 83 | Done | `docs/API_USAGE_AUDIT.md` | Keep purposeful endpoint mapping current. |
 | 84 | Done | `docs/FALSE_COMPLETION_PREVENTION.md`, `tests/test_false_completion_prevention.py` | Keep blocked claims aligned with release readiness status. |
-| 85 | Partial | `docs/FINAL_NO_EXCUSES_SEARCH.md`, `tests/test_final_no_excuses_search.py` | Repeat the no-excuses search at final release time after launch evidence exists. |
+| 85 | Partial | `docs/FINAL_NO_EXCUSES_SEARCH.md`, `tests/test_final_no_excuses_search.py` | Repeat the no-excuses search after launch evidence exists and before final acceptance. |
 | 86 | Done | `docs/FRESH_CLONE_DRY_RUN.md` | Repeat after release-blocking changes or immediately before final launch. |
-| 87 | Partial | Completion matrix and product definition | Final acceptance remains pending. |
-| 88 | Partial | Prior turn summaries and docs | Final release response pending. |
+| 87 | Partial | `docs/FINAL_ACCEPTANCE_RECORD.md`, `tests/test_final_acceptance_controls.py` | Capture accepted final launch decision. |
+| 88 | Partial | `docs/FINAL_RESPONSE_REQUIREMENTS.md`, `scripts/final_response_check.py`, `tests/test_final_acceptance_controls.py`, `tests/test_final_response_check.py` | Prepare final release response only after acceptance evidence exists and final response preflight reports ready. |
 
 ## Traceability Maintenance
 

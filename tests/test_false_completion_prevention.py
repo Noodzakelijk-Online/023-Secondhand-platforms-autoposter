@@ -10,6 +10,9 @@ def test_false_completion_prevention_blocks_overclaims():
         "eBay official API publishing",
         "fresh-clone dry run",
         "assisted-posting limitations",
+        "docs/FINAL_ACCEPTANCE_RECORD.md",
+        "docs/FINAL_RESPONSE_REQUIREMENTS.md",
+        "python scripts/final_response_check.py",
         "not a final client launch release",
     ]
     for phrase in required_phrases:

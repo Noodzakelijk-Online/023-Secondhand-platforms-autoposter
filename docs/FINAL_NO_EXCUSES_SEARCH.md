@@ -2,6 +2,8 @@
 
 This is a pre-final search, not the final release search. The project is still not release-ready, so the real final search must be repeated after browser, deployment, and acceptance evidence exists.
 
+The final run must be recorded after `docs/RELEASE_EVIDENCE_RECORD.md` is complete and before `docs/FINAL_ACCEPTANCE_RECORD.md` is accepted.
+
 ## Search Date
 
 2026-07-13
@@ -24,6 +26,7 @@ rg -n "password|access_token|refresh_token|client_secret|LASTPASS|COOKIE|SESSION
 | Auth token/password strings appear in app and tests. | Expected implementation/test references. | Continue export/log privacy tests. |
 | Legacy Selenium scripts contain password/CAPTCHA-related references. | Expected quarantined legacy code and duplicate archived source. | Keep legacy quarantine tests and docs. |
 | Worker/job wording now includes PostgreSQL `SKIP LOCKED` evidence. | Expected after the Phase 18 hardening slice; the query is source-tested, not live target-database proof. | Run the same worker flow against the target PostgreSQL database before launch. |
+| Final acceptance and final response wording appears in release-control docs. | Expected. `docs/FINAL_ACCEPTANCE_RECORD.md` says `Status: not accepted.` and `docs/FINAL_RESPONSE_REQUIREMENTS.md` says the final release response is not ready. | Keep until final evidence exists. |
 
 ## Current Blockers To A True Final Search
 
@@ -32,6 +35,7 @@ rg -n "password|access_token|refresh_token|client_secret|LASTPASS|COOKIE|SESSION
 - Deployment database, worker, backup, production secrets, and CORS evidence are missing.
 - eBay official API publishing remains unimplemented.
 - Several phases remain `Partial`.
+- docs/FINAL_ACCEPTANCE_RECORD.md is not accepted.
 
 ## Verdict
 
