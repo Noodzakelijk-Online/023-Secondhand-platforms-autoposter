@@ -16,7 +16,7 @@ This review looks for ways a user, operator, or attacker could misuse the curren
 
 | Risk | Current control | Remaining action |
 | --- | --- | --- |
-| Credential stuffing or password guessing | Argon2 hashes, bearer sessions, revocation, and database-backed failed-login throttling. | Add deployment-edge rate-limit evidence for the chosen host/proxy. |
+| Credential stuffing or password guessing | Argon2 hashes, bearer sessions, revocation, and database-backed hashed failed-login throttling with expiry, success clearing, and `Retry-After` responses. | Add deployment-edge rate-limit evidence for the chosen host/proxy. |
 | Cross-user data access | Owner filters and direct owner-isolation tests cover core resources. | Keep owner-isolation tests mandatory when adding new owned tables or endpoints. |
 | Fake automation claims | Registered production adapters are assisted and tests block fake published success. | Re-review UI copy before client launch and after any official API integration. |
 | Platform anti-abuse bypass | Assisted package flow leaves login, CAPTCHA, payment, and final confirmation to the account owner. | Keep legacy browser automation out of production deployment and docs. |
@@ -57,4 +57,3 @@ Before client launch, this review should be refreshed after:
 - any remote storage backend,
 - any new admin/operator UI,
 - any new endpoint that reads or mutates owned data.
-

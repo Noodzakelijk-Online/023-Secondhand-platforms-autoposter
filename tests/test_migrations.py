@@ -1,6 +1,11 @@
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.schema import CreateIndex, CreateTable
+
+from app import models  # noqa: F401
+from app.database import Base
 
 
 def test_alembic_migration_runs_from_empty_database(tmp_path):
@@ -64,3 +69,23 @@ def test_alembic_migration_runs_from_empty_database(tmp_path):
     oauth_state_indexes = {index["name"] for index in inspect(engine).get_indexes("platform_oauth_states")}
     assert "ix_platform_oauth_states_state_hash" in oauth_state_indexes
     assert "ix_platform_oauth_states_expires_at" in oauth_state_indexes
+
+
+def test_model_schema_renders_for_postgresql_dialect():
+    dialect = postgresql.dialect()
+    rendered = []
+
+    for table in Base.metadata.sorted_tables:
+        rendered.append(str(CreateTable(table).compile(dialect=dialect)))
+        for index in table.indexes:
+            rendered.append(str(CreateIndex(index).compile(dialect=dialect)))
+
+    sql = "\n".join(rendered)
+
+    assert "CREATE TABLE users" in sql
+    assert "CREATE TABLE listings" in sql
+    assert "CREATE TABLE publishing_jobs" in sql
+    assert "TIMESTAMP WITH TIME ZONE" in sql
+    assert "JSON" in sql
+    assert "CREATE INDEX ix_publishing_jobs_due_queue" in sql
+    assert "ON DELETE CASCADE" in sql

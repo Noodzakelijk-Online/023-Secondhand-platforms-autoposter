@@ -1,10 +1,12 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
+from sqlalchemy.dialects import postgresql
+
 from app.adapters.base import PublishOutcome
 from app.database import Base, SessionLocal, engine
 from app.models import PublishingJob
-from app.services.jobs import claim_due_queued_job_ids, recover_stale_running_jobs
+from app.services.jobs import claim_due_queued_job_ids, due_queued_jobs_query, recover_stale_running_jobs
 from app.worker import run_once
 from tests.test_api import PNG_BYTES, client
 
@@ -150,6 +152,22 @@ def test_due_job_claims_are_atomic_across_worker_sessions(monkeypatch):
 
     monkeypatch.delenv("JOB_PROCESS_INLINE")
     get_settings.cache_clear()
+
+
+def test_postgresql_due_job_claim_query_uses_skip_locked():
+    db = SessionLocal()
+    try:
+        statement = due_queued_jobs_query(
+            db,
+            datetime(2026, 1, 1, tzinfo=UTC),
+            limit=5,
+            lock=True,
+        ).statement
+        compiled = str(statement.compile(dialect=postgresql.dialect()))
+    finally:
+        db.close()
+
+    assert "FOR UPDATE SKIP LOCKED" in compiled
 
 
 def test_platform_rate_limit_overrides_delay_same_platform_jobs(monkeypatch):

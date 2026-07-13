@@ -3,6 +3,41 @@ import pytest
 from app.config import Settings, validate_startup_safety
 
 
+def env_example_keys() -> set[str]:
+    keys = set()
+    for line in open(".env.example", encoding="utf-8"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, _ = stripped.split("=", 1)
+        keys.add(key)
+    return keys
+
+
+def test_env_example_documents_all_runtime_settings():
+    expected_keys = {field_name.upper() for field_name in Settings.model_fields}
+
+    assert expected_keys - env_example_keys() == set()
+
+
+def test_production_like_configuration_profile_passes_startup_safety():
+    settings = Settings(
+        app_env="production",
+        secret_key="production-secret-with-enough-entropy",
+        database_url="postgresql+psycopg://autoposter:secret@db.example.com:5432/autoposter",
+        public_base_url="https://autoposter.example.com",
+        cors_origins="https://autoposter.example.com",
+        auto_create_tables=False,
+        dev_auto_login=False,
+        job_process_inline=False,
+        log_format="json",
+        storage_backend="s3",
+        s3_bucket="autoposter-prod-images",
+    )
+
+    validate_startup_safety(settings)
+
+
 def test_platform_rate_limit_overrides_are_platform_specific():
     settings = Settings(platform_rate_limit_seconds=60, platform_rate_limit_overrides="marktplaats=120, ebay=300")
 

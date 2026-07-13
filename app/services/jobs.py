@@ -329,25 +329,49 @@ def effective_platform_overrides(db: Session, listing: Listing, platform: str, o
 
 
 def get_due_queued_jobs(db: Session, limit: int) -> list[PublishingJob]:
-    now = datetime.now(UTC)
-    return (
+    return due_queued_jobs_query(db, datetime.now(UTC), limit).all()
+
+
+def due_queued_jobs_query(db: Session, now: datetime, limit: int, *, lock: bool = False):
+    query = (
         db.query(PublishingJob)
         .filter(PublishingJob.status == QUEUED)
         .filter(PublishingJob.scheduled_at <= now)
         .filter((PublishingJob.next_retry_at.is_(None)) | (PublishingJob.next_retry_at <= now))
         .order_by(PublishingJob.scheduled_at.asc(), PublishingJob.id.asc())
-        .limit(limit)
-        .all()
     )
+    if lock:
+        query = query.with_for_update(skip_locked=True)
+    return query.limit(limit)
 
 
 def claim_due_queued_job_ids(db: Session, limit: int) -> list[int]:
+    if supports_skip_locked(db):
+        return claim_due_queued_job_ids_with_locks(db, limit)
+
     due_job_ids = [job.id for job in get_due_queued_jobs(db, limit)]
     claimed_job_ids = []
     for job_id in due_job_ids:
         if claim_job_for_processing(db, job_id, due_only=True):
             claimed_job_ids.append(job_id)
     return claimed_job_ids
+
+
+def supports_skip_locked(db: Session) -> bool:
+    bind = db.get_bind()
+    return bind.dialect.name in {"postgresql", "mysql", "mariadb", "oracle"}
+
+
+def claim_due_queued_job_ids_with_locks(db: Session, limit: int) -> list[int]:
+    now = datetime.now(UTC)
+    jobs = due_queued_jobs_query(db, now, limit, lock=True).all()
+    job_ids = [job.id for job in jobs]
+    for job in jobs:
+        transition_job(job, RUNNING)
+        job.updated_at = now
+    if jobs:
+        db.commit()
+    return job_ids
 
 
 def recover_stale_running_jobs(db: Session, stale_after_seconds: int) -> int:

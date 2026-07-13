@@ -20,7 +20,7 @@ A non-technical secondhand seller wants to create one good listing, reuse it acr
 ## Value Gaps
 
 - The app reduces preparation effort, but final marketplace submission remains manual for all platforms; users can record user-confirmed manual completion afterward.
-- Real non-technical usability is not proven, and keyboard, zoom, and screen-reader launch evidence is still incomplete.
+- Real non-technical usability is not proven; the observation record is prepared, and keyboard, zoom, and screen-reader launch evidence is still incomplete.
 - Platform-specific category and compliance depth is still shallow.
 - eBay OAuth foundations now include token exchange, refresh, and sandbox Inventory API probe boundaries, but official publishing is still not implemented.
 - The primary UI shell has English/Dutch localization, while dynamic server/platform messages remain English-first.

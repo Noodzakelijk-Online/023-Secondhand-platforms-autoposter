@@ -2,6 +2,8 @@
 
 This is a proxy simulation, not a substitute for observing a real non-technical user. It defines the walkthrough that must be executed before final release and records what the current product should be able to support.
 
+Use `docs/NON_TECHNICAL_USER_WALKTHROUGH_RECORD.md` for the real observed walkthrough. Leave fields as `Not captured` until an external user session is actually observed.
+
 ## Persona
 
 Mira is a casual secondhand seller who wants to list a desk lamp on several marketplaces. She is comfortable using web forms, but she does not understand API credentials, background workers, migrations, or marketplace automation limits.
@@ -54,6 +56,7 @@ Before this phase can be marked `Done`, a real non-technical user walkthrough mu
 - confusion points
 - UI copy changes made afterward
 - final acceptance or remaining blockers
+- completed `docs/NON_TECHNICAL_USER_WALKTHROUGH_RECORD.md` with observed results
 
 ## Current Verdict
 

@@ -35,6 +35,7 @@ def error_response(
     details: dict | None = None,
     field_errors: dict | None = None,
     retryable: bool = False,
+    headers: dict[str, str] | None = None,
 ) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
@@ -48,6 +49,7 @@ def error_response(
                 "request_id": getattr(request.state, "request_id", None),
             }
         },
+        headers=headers,
     )
 
 
@@ -110,6 +112,7 @@ def setup_middleware(app: FastAPI) -> None:
             message=message,
             details=details,
             retryable=http_error_retryable(exc.status_code),
+            headers=exc.headers,
         )
 
     @app.exception_handler(RequestValidationError)

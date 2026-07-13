@@ -23,9 +23,9 @@ Legend:
 | 1 | Deep Technical Audit | Done | See `docs/DEEP_TECHNICAL_AUDIT.md`; route/model/storage/auth/adapter/job/frontend/test risks are reviewed with remaining deployment gates called out. |
 | 2 | Product Completion Definition | Done | See `docs/PRODUCT_DEFINITION.md`. |
 | 3 | Architecture Cleanup | Done | Route modules are split by responsibility across `app/routes/auth.py`, `app/routes/system.py`, `app/api.py`, and shared dependencies in `app/dependencies.py`; see `docs/ARCHITECTURE.md` and `tests/test_architecture.py`. |
-| 4 | Database And Migrations | Partial | SQLAlchemy schema and Alembic initial migration exist; migration workflow needs broader production coverage and PostgreSQL verification. |
-| 5 | Configuration And Startup Safety | Partial | `.env.example`, production startup guards, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
-| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed failed-login throttling exist; external edge rate limits still need deployment-specific evidence. |
+| 4 | Database And Migrations | Partial | SQLAlchemy schema, Alembic migrations, SQLite migration smoke coverage, and PostgreSQL dialect schema rendering coverage exist; live PostgreSQL migration verification is still needed. |
+| 5 | Configuration And Startup Safety | Partial | `.env.example` is test-synchronized with runtime settings; production startup guards, production-like profile validation, auth/storage/log mode validation, and runtime numeric setting validation exist; deployment-specific environment evidence still needed. |
+| 6 | Authentication And User Security | Partial | Register/login/logout/current user, session expiration/revocation, Argon2 password hashing, PBKDF2 upgrade, bearer-only auth posture, and database-backed hashed failed-login throttling with expiry, success clearing, and `Retry-After` responses exist; external edge rate limits still need deployment-specific evidence. |
 | 7 | Authorization And Ownership | Done | Core user-owned resources are filtered by owner with direct regression coverage for listings, jobs, accounts, templates, mappings, exports, imports, and deletion. |
 | 8 | API Hardening | Done | Request IDs, security headers, structured error envelopes, OpenAPI route tags, bounded list pagination/filtering, login throttling, and general API rate limiting exist with regression coverage. |
 | 9 | Secure Image And File Storage | Done | Local and S3-compatible storage backends, safe filenames, size/MIME/signature validation, checksums, duplicate detection, image reordering, delete cleanup, image ZIP manifest handling, and storage policy docs exist. |
@@ -37,7 +37,7 @@ Legend:
 | 15 | Exact Wording Rules For Honest Product Behavior | Done | See `docs/UI_WORDING_AUDIT.md`; frontend wording uses assisted-package language and tests block automatic publishing overclaims. |
 | 16 | Official API Foundations | Done | eBay OAuth consent, state validation, token exchange, refresh, secret-store persistence, sandbox Inventory API probe boundary, and quota backoff foundations exist; official publishing remains disabled until adapter-specific sandbox listing proof is added. |
 | 17 | Legacy Script Quarantine | Done | Root legacy scripts live under `legacy/selenium/`; duplicate old source is archived under `legacy/archive/`; tests guard root separation and web-app import isolation. |
-| 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, atomic due-job claiming, stale-running recovery, and worker tests exist; production scheduling polish and database-specific concurrency verification still need work. |
+| 18 | Real Job System | Partial | Persistent job records, a worker entrypoint, PostgreSQL-oriented `SKIP LOCKED` due-job claiming with SQLite fallback, stale-running recovery, and worker tests exist; live target-database concurrency verification still needs work. |
 | 19 | Job Idempotency And Duplicate Posting Prevention | Done | Idempotency keys include user, listing, revision, platform, action, account, and operation mode; UI/API expose explicit regenerate-package flow for user-controlled fresh assisted packages. |
 | 20 | Platform Rate Limiting And Cooldowns | Done | Global/per-platform cooldowns and official API quota-header backoff are centralized in the worker flow; see `docs/RATE_LIMITS.md`, `app/services/platform_rate_limits.py`, and worker tests. |
 | 21 | Live Job Updates Or Polling | Done | Queue UI has controlled live polling for jobs and analytics with pause/resume, manual refresh, status text, and source-level regression coverage. |
@@ -89,11 +89,11 @@ Legend:
 | 67 | Platform Compliance UI | Done | Platform cards and prepublish review cards display adapter compliance notes alongside capabilities, posting links, validation warnings, and copy-ready package controls. |
 | 68 | Official API Real Credential Checklist | Done | See `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` for eBay/future API credential gates. |
 | 69 | Performance And Scale Basics | Done | Added common query indexes and `docs/PERFORMANCE_SCALE_BASICS.md`. |
-| 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates; final launch evidence still needed. |
+| 70 | Release Readiness | Partial | `docs/RELEASE_READINESS.md` defines launch gates and `docs/RELEASE_EVIDENCE_RECORD.md` provides the structured launch evidence record; final launch evidence still needed. |
 | 71 | Supply Chain And Dependencies | Done | `scripts/audit_dependencies.py` and `.github/workflows/supply-chain.yml` run `pip-audit`; see `docs/SUPPLY_CHAIN.md`. |
 | 72 | Backup/Restore And Disaster Recovery | Done | See `docs/BACKUP_RESTORE.md`. |
 | 73 | Operator Runbook | Done | See `docs/OPERATOR_RUNBOOK.md`. |
-| 74 | Real Non-Technical User Simulation | Partial | See `docs/NON_TECHNICAL_USER_SIMULATION.md`; proxy walkthrough and risk areas are documented, but real external user evidence is still required. |
+| 74 | Real Non-Technical User Simulation | Partial | See `docs/NON_TECHNICAL_USER_SIMULATION.md` and `docs/NON_TECHNICAL_USER_WALKTHROUGH_RECORD.md`; proxy walkthrough, risk areas, and observation record are documented, but real external user evidence is still required. |
 | 75 | Autonomy-First Design | Done | See `docs/AUTONOMY_FIRST_DESIGN.md`; tests guard user-control boundaries and blocked automation claims. |
 | 76 | Product Value Review | Done | See `docs/PRODUCT_VALUE_REVIEW.md`; current demo value and launch-blocking product gaps are documented and guarded by tests. |
 | 77 | Product Realism Review | Done | See `docs/PRODUCT_REALISM_REVIEW.md`; real capabilities are separated from aspirational automation, launch, i18n, and workspace claims. |

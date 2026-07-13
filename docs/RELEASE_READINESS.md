@@ -8,6 +8,8 @@ Status: not release-ready yet.
 
 The app has a working core, tests, migrations, Docker setup, assisted posting, job tracking, diagnostics, backup guidance, production-safety documentation, and a local verification report in `docs/FINAL_VERIFICATION_REPORT.md`. It still needs final browser, deployment, and credential evidence before a real client launch.
 
+Use `docs/RELEASE_EVIDENCE_RECORD.md` as the launch evidence record. Any item left as `Not captured` must either remain a blocker or have an explicit accepted-risk decision recorded before launch.
+
 ## Required Before Client Launch
 
 - Run `python scripts/verify.py` from a clean checkout.
@@ -45,6 +47,7 @@ Capture these items for the release record:
 - Worker process status.
 - Known warnings accepted for launch.
 - Rollback procedure.
+- Completed `docs/RELEASE_EVIDENCE_RECORD.md` with no unexplained `Not captured` launch-critical gates.
 
 ## Launch Blockers
 

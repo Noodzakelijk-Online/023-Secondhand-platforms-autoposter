@@ -13,9 +13,9 @@ Legend:
 | 1 | Done | `docs/DEEP_TECHNICAL_AUDIT.md`, `docs/RED_TEAM_REVIEW.md`, `docs/TECHNICAL_DEBT_REGISTER.md`, `tests/test_deep_technical_audit.py` | Refresh audit after major route, model, storage, auth, adapter, worker, or deployment changes. |
 | 2 | Done | `docs/PRODUCT_DEFINITION.md` | Keep aligned when product scope changes. |
 | 3 | Done | `app/main.py`, `app/routes/auth.py`, `app/routes/system.py`, `app/dependencies.py`, `app/api.py`, `docs/ARCHITECTURE.md`, `tests/test_architecture.py` | Keep route modules aligned when new product areas are added. |
-| 4 | Partial | `app/models.py`, `migrations/versions/`, `tests/test_migrations.py` | Prove migrations on PostgreSQL target. |
-| 5 | Partial | `app/config.py`, `.env.example`, `tests/test_startup_safety.py` | Capture deployment-specific env evidence. |
-| 6 | Partial | `app/security.py`, `app/rate_limit.py`, `tests/test_auth_security.py` | Add edge/proxy rate-limit evidence. |
+| 4 | Partial | `app/models.py`, `migrations/versions/`, `tests/test_migrations.py` | Run Alembic migrations against the target PostgreSQL database. |
+| 5 | Partial | `app/config.py`, `.env.example`, `tests/test_config.py`, `tests/test_startup_safety.py` | Capture deployment-specific environment evidence from the chosen host. |
+| 6 | Partial | `app/security.py`, `app/rate_limit.py`, `app/middleware.py`, `tests/test_auth_security.py` | Add edge/proxy rate-limit evidence for the chosen deployment. |
 | 7 | Done | `tests/test_owner_isolation.py`, owner filters in `app/api.py` | Keep coverage aligned with new owner-owned routes. |
 | 8 | Done | `app/middleware.py`, `app/rate_limit.py`, `tests/test_api_hardening.py`, `tests/test_api_rate_limit.py` | Keep API limits aligned with deployment edge throttling and traffic patterns. |
 | 9 | Done | `app/storage.py`, `app/config.py`, `docs/IMAGE_STORAGE.md`, `tests/test_storage_uploads.py`, `tests/test_startup_safety.py`, `tests/test_data_portability.py` | Revisit only when adding signed URL delivery, image transformations, or a deployment-specific bucket policy. |
@@ -27,7 +27,7 @@ Legend:
 | 15 | Done | `docs/UI_WORDING_AUDIT.md`, `tests/test_ui_wording.py`, `public/index.html`, `public/app.js` | Re-audit wording when platform modes, official API behavior, or primary job actions change. |
 | 16 | Done | `app/services/oauth.py`, `app/services/secrets.py`, `tests/test_ebay_oauth.py`, `tests/test_config.py`, `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Add an official publishing adapter only after live sandbox listing proof, seller-policy checks, and production secret-manager evidence exist. |
 | 17 | Done | `docs/LEGACY_SCRIPT_QUARANTINE.md`, `tests/test_legacy_quarantine.py` | Remove archive later only by explicit decision. |
-| 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Verify concurrent workers on PostgreSQL. |
+| 18 | Partial | `app/services/jobs.py`, `app/worker.py`, `tests/test_worker.py` | Run concurrent worker verification against the target PostgreSQL database. |
 | 19 | Done | `app/services/jobs.py`, `app/api.py`, `public/index.html`, `public/app.js`, `tests/test_listing_revisions.py`, `tests/test_regenerate_package_ui.py` | Keep regenerate/repost semantics explicit if future official API publishing or manual completion confirmation is added. |
 | 20 | Done | `app/services/platform_rate_limits.py`, `app/services/jobs.py`, `docs/RATE_LIMITS.md`, `tests/test_platform_rate_limits.py`, `tests/test_worker.py` | Revisit only when a live official API adapter adds platform-specific quota semantics beyond common headers. |
 | 21 | Done | `GET /api/jobs`, queue polling in `public/app.js`, `public/index.html`, `tests/test_job_polling_ui.py` | Revisit only if SSE/WebSocket delivery becomes necessary for deployment scale. |
@@ -79,11 +79,11 @@ Legend:
 | 67 | Done | Adapter compliance notes from `GET /api/platforms`, platform/prepublish UI in `public/app.js`, `tests/test_ui_wording.py` | Keep notes visible when adapters or compliance language change. |
 | 68 | Done | `docs/OFFICIAL_API_CREDENTIAL_CHECKLIST.md` | Update with each official API candidate. |
 | 69 | Done | Performance indexes migration and docs | Benchmark against production-like data later. |
-| 70 | Partial | `docs/RELEASE_READINESS.md` | Capture final launch evidence. |
+| 70 | Partial | `docs/RELEASE_READINESS.md`, `docs/RELEASE_EVIDENCE_RECORD.md`, `tests/test_release_readiness.py` | Capture final launch evidence. |
 | 71 | Done | `scripts/audit_dependencies.py`, supply-chain workflow/docs | Keep audits current with dependencies. |
 | 72 | Done | `docs/BACKUP_RESTORE.md` | Prove restore in target environment. |
 | 73 | Done | `docs/OPERATOR_RUNBOOK.md` | Update when operations change. |
-| 74 | Partial | `docs/NON_TECHNICAL_USER_SIMULATION.md`, `tests/test_non_technical_user_simulation.py` | Execute and record a real non-technical user walkthrough. |
+| 74 | Partial | `docs/NON_TECHNICAL_USER_SIMULATION.md`, `docs/NON_TECHNICAL_USER_WALKTHROUGH_RECORD.md`, `tests/test_non_technical_user_simulation.py` | Execute and record a real non-technical user walkthrough. |
 | 75 | Done | `docs/AUTONOMY_FIRST_DESIGN.md`, `tests/test_autonomy_first_design.py` | Keep user-control boundaries aligned with UI wording and adapter behavior. |
 | 76 | Done | `docs/PRODUCT_VALUE_REVIEW.md`, `tests/test_product_value_review.py` | Revisit after non-technical simulation and browser evidence. |
 | 77 | Done | `docs/PRODUCT_REALISM_REVIEW.md`, `docs/PLATFORM_REALITY_REVIEW.md`, `tests/test_product_realism_review.py` | Revisit if product positioning or automation scope changes. |

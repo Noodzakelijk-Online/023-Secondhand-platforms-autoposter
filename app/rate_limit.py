@@ -42,14 +42,18 @@ def _active_bucket(db: Session, identifier: str) -> LoginThrottle | None:
     )
     if not bucket:
         return None
-    started_at = bucket.window_started_at
-    if started_at.tzinfo is None:
-        started_at = started_at.replace(tzinfo=UTC)
+    started_at = _aware_utc(bucket.window_started_at)
     if now - started_at > window:
         db.delete(bucket)
         db.commit()
         return None
     return bucket
+
+
+def _aware_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value
 
 
 def check_login_rate_limit(db: Session, identifier: str) -> None:
@@ -58,7 +62,15 @@ def check_login_rate_limit(db: Session, identifier: str) -> None:
     if not bucket:
         return
     if bucket.attempts >= settings.login_rate_limit_attempts:
-        raise HTTPException(status_code=429, detail="Too many login attempts. Please try again later.")
+        now = datetime.now(UTC)
+        started_at = _aware_utc(bucket.window_started_at)
+        elapsed_seconds = int((now - started_at).total_seconds())
+        retry_after = max(1, settings.login_rate_limit_window_seconds - elapsed_seconds)
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts. Please try again later.",
+            headers={"Retry-After": str(retry_after)},
+        )
 
 
 def record_failed_login(db: Session, identifier: str) -> None:
