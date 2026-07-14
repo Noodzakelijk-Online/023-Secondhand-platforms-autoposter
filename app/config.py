@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlparse
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -33,6 +34,7 @@ class Settings(BaseSettings):
     job_process_inline: bool = True
     job_worker_poll_seconds: int = 5
     job_worker_batch_size: int = 10
+    worker_heartbeat_timeout_seconds: int = 30
     job_stale_running_seconds: int = 1800
     platform_rate_limit_seconds: int = 60
     platform_rate_limit_overrides: str = ""
@@ -166,6 +168,8 @@ def validate_startup_safety(settings: Settings) -> None:
         problems.append("JOB_WORKER_POLL_SECONDS must be positive")
     if settings.job_worker_batch_size <= 0:
         problems.append("JOB_WORKER_BATCH_SIZE must be positive")
+    if settings.worker_heartbeat_timeout_seconds <= 0:
+        problems.append("WORKER_HEARTBEAT_TIMEOUT_SECONDS must be positive")
     if settings.job_stale_running_seconds < 0:
         problems.append("JOB_STALE_RUNNING_SECONDS must be non-negative")
     if settings.platform_rate_limit_seconds < 0:
@@ -201,10 +205,19 @@ def validate_startup_safety(settings: Settings) -> None:
     problems = []
     if settings.secret_key in {"", "change-me-in-production", "replace-with-a-long-random-value"}:
         problems.append("SECRET_KEY must be set to a strong non-default value")
+    elif len(settings.secret_key) < 32:
+        problems.append("SECRET_KEY must be at least 32 characters in production")
     for flag in unsafe_production_feature_flags(settings):
         problems.append(flag.production_error)
-    if settings.cors_origins.strip() == "*":
+    origins = [origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()]
+    if not origins or "*" in origins:
         problems.append("CORS_ORIGINS must be restricted in production")
+    elif any(urlparse(origin).scheme not in {"http", "https"} or not urlparse(origin).netloc for origin in origins):
+        problems.append("CORS_ORIGINS entries must be absolute http(s) origins in production")
+    if not settings.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
+        problems.append("DATABASE_URL must use PostgreSQL in production")
+    if not settings.public_base_url.startswith("https://"):
+        problems.append("PUBLIC_BASE_URL must use https in production")
 
     if problems:
         detail = "; ".join(problems)

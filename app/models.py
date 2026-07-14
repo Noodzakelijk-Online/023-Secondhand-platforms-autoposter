@@ -306,3 +306,13 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(80), index=True)
     event_data: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+
+class WorkerHeartbeat(Base):
+    __tablename__ = "worker_heartbeats"
+    __table_args__ = (Index("ix_worker_heartbeats_last_seen_at", "last_seen_at"),)
+
+    worker_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    processed_jobs: Mapped[int] = mapped_column(Integer, default=0)

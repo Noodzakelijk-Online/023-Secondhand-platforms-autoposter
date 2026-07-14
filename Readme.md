@@ -50,6 +50,19 @@ python -m app.worker
 
 For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately processed in the API request. For production-style operation, set `JOB_PROCESS_INLINE=false` and run the worker process.
 
+## Production deployment
+
+Use the separate production Compose definition; it deliberately has no bundled database and runs Alembic before the API and worker can start.
+
+```bash
+copy .env.production.example .env.production
+# Set secret-manager-backed values in .env.production and a persistent upload location.
+set UPLOAD_VOLUME=C:\path\to\persistent\autoposter-uploads
+docker compose -f docker-compose.production.yml up --build
+```
+
+`DATABASE_URL` must point to target PostgreSQL, `APP_ENV=production`, `AUTH_TRANSPORT=bearer`, `AUTO_CREATE_TABLES=false`, and `JOB_PROCESS_INLINE=false`. The stack exposes `GET /api/health` for liveness and `GET /api/worker-status` for worker-heartbeat readiness. A container start is not final release evidence: record the deployed SHA, migration head, backup/restore result, edge rate-limit policy, user walkthrough, accessibility QA, and acceptance in `docs/RELEASE_EVIDENCE_RECORD.md`.
+
 ## Environment variables
 
 - `SECRET_KEY`: set to a long random value in production.
@@ -70,6 +83,7 @@ For local development, `JOB_PROCESS_INLINE=true` keeps publish jobs immediately 
 - `JOB_PROCESS_INLINE`: processes queued jobs in the request for local simplicity.
 - `JOB_WORKER_POLL_SECONDS`: worker polling interval.
 - `JOB_WORKER_BATCH_SIZE`: maximum queued jobs processed per worker pass.
+- `WORKER_HEARTBEAT_TIMEOUT_SECONDS`: age after which a worker is reported unavailable by `GET /api/worker-status`.
 - `JOB_STALE_RUNNING_SECONDS`: age after which a stuck running job is returned to the queue.
 - `PLATFORM_RATE_LIMIT_SECONDS`: cooldown per platform between job attempts.
 - `PLATFORM_RATE_LIMIT_OVERRIDES`: optional comma-separated per-platform cooldowns such as `marktplaats=120,ebay=300`.
@@ -327,5 +341,6 @@ Jobs with `next_retry_at` in the future remain queued until their retry time. Th
 - Put the app behind HTTPS.
 - Restrict `CORS_ORIGINS`.
 - Run Alembic migrations before production startup.
+- Use `docker-compose.production.yml` only with a separately managed PostgreSQL database and persistent upload storage.
 - Configure platform OAuth/API credentials only through environment variables or a proper secret manager.
 - Keep the security headers middleware enabled. HTTPS deployments also receive HSTS.
