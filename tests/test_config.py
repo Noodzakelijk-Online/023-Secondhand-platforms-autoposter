@@ -23,7 +23,7 @@ def test_env_example_documents_all_runtime_settings():
 def test_production_like_configuration_profile_passes_startup_safety():
     settings = Settings(
         app_env="production",
-        secret_key="production-secret-with-enough-entropy",
+        secret_key="production-secret-with-enough-entropy-32chars",
         database_url="postgresql+psycopg://autoposter:secret@db.example.com:5432/autoposter",
         public_base_url="https://autoposter.example.com",
         cors_origins="https://autoposter.example.com",

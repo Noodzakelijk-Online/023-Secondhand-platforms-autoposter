@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -13,6 +13,7 @@ from app.models import CategoryMapping, Listing, ListingTemplate, PlatformAccoun
 from app.schemas import AccountReadiness, AccountUsage, AnalyticsResult, UserOut
 from app.services.analytics import build_user_analytics
 from app.services.localization import localization_metadata
+from app.services.worker_health import worker_status
 
 router = APIRouter(prefix="/api")
 
@@ -20,6 +21,14 @@ router = APIRouter(prefix="/api")
 @router.get("/health", tags=["Health"])
 def health() -> dict:
     return {"status": "ok", "time": datetime.now(UTC).isoformat()}
+
+
+@router.get("/worker-status", tags=["Diagnostics"])
+def worker_status_endpoint(response: Response, db: Session = Depends(get_db)) -> dict:
+    status = worker_status(db, get_settings().worker_heartbeat_timeout_seconds)
+    if status["status"] != "ok":
+        response.status_code = 503
+    return status
 
 
 @router.get("/diagnostics", tags=["Diagnostics"])

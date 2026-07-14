@@ -1,8 +1,8 @@
 # Final Verification Report
 
-Date: 2026-07-13
+Date: 2026-07-15
 
-Verification target: current working checkout on 2026-07-13. Fresh-clone evidence remains recorded separately at `ca42634` in `docs/FRESH_CLONE_DRY_RUN.md`.
+Verification target: production-hardening working checkout on 2026-07-15, based on `d96b27e`. Fresh-clone evidence remains recorded separately at `ca42634` in `docs/FRESH_CLONE_DRY_RUN.md`.
 
 ## Verification Command
 
@@ -16,7 +16,7 @@ Result: passed from the working checkout. See `docs/FRESH_CLONE_DRY_RUN.md` for 
 
 - Ruff lint: passed.
 - Python compile checks: passed.
-- Pytest suite: passed, 190 tests.
+- Pytest suite: passed, 196 tests.
 - Doctor diagnostics: passed with local-development warnings.
 - Release gate: blocked as expected until external evidence records are complete.
 - Final response preflight: blocked as expected until release gate and final acceptance are ready.
@@ -26,7 +26,7 @@ Result: passed from the working checkout. See `docs/FRESH_CLONE_DRY_RUN.md` for 
 The doctor command returned `warning` status for expected local-development conditions:
 
 - Development is using the default `SECRET_KEY`.
-- The local SQLite database is not stamped at Alembic head `20260703_0010`.
+- The local SQLite database is not stamped at Alembic head `20260715_0011`.
 
 These warnings do not block local verification, but they remain production launch blockers until deployment uses a strong `SECRET_KEY` and the target database is migrated to Alembic head.
 

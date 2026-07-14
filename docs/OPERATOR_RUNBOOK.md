@@ -50,11 +50,22 @@ Docker Compose:
 docker compose up --build
 ```
 
+Production Compose runs migrations as a one-shot service before API and worker startup:
+
+```bash
+copy .env.production.example .env.production
+set UPLOAD_VOLUME=C:\path\to\persistent\autoposter-uploads
+docker compose -f docker-compose.production.yml up --build
+```
+
+Do not add a default database password or a bundled database service to this production file. `DATABASE_URL` must be supplied by the deployment secret manager. Confirm `GET /api/worker-status` reports `status: ok` after the worker has completed at least one poll cycle.
+
 ## Health Checks
 
 - App health: `GET /api/health`
 - Diagnostics: `GET /api/diagnostics`
 - Metrics snapshot: `GET /api/metrics`
+- Worker heartbeat: `GET /api/worker-status` (returns 503 until a fresh worker heartbeat exists)
 - CLI diagnostics: `python -m app.doctor --json`
 
 Expected production status is `ok`. A warning requires operator review. An error requires rollback or repair.
